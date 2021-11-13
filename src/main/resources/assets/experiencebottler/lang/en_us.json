@@ -1,0 +1,31 @@
+{
+  "_comment": "Block",
+  "block.experiencebottler.experience_bottler": "Experience Bottler",
+
+  "_comment": "Item",
+  "item.experiencebottler.bottled_experience": "Bottled Experience",
+  "item.experiencebottler.bottled_experience.tooltip.0": "Experience: %s",
+
+  "_comment": "Stat",
+  "stat.experiencebottler.interact_with_experience_bottler": "Interactions with Experience Bottler",
+
+  "_comment": "Container",
+  "container.experiencebottler.experience_bottler": "Experience Bottler",
+
+  "_comment": "GUI",
+  "gui.experiencebottler.experience_bottler.exp_display.point": "XP",
+  "gui.experiencebottler.experience_bottler.exp_display.level": "Lv",
+  "gui.experiencebottler.label.player_experience": "Player Experience",
+  "gui.experiencebottler.label.bottling_experience": "Bottling Experience",
+  "gui.experiencebottler.label.after_experience": "After Experience",
+
+  "_comment": "Narration",
+  "narration.experiencebottler.experience_type.point": "Point",
+  "narration.experiencebottler.experience_type.level": "Level",
+  "narration.experiencebottler.experience_type_toggle_button": "Button: Toggle the display of experience",
+  "narration.experiencebottler.experience_type_toggle_button.usage.focused": "Press Enter to toggle",
+  "narration.experiencebottler.experience_type_toggle_button.usage.hovered": "Left click to toggle",
+  "narration.experiencebottler.experience_type_toggle_button.info.current_type": "Now displayed as %s",
+  "narration.experiencebottler.experience_input_field": "Text Input: Input the experience to be bottled",
+  "narration.experiencebottler.experience_input_field.info.value": "Current values are %d %s"
+}

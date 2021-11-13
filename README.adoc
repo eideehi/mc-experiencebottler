@@ -1,0 +1,40 @@
+= Experience Bottler - Minecraft Mod for Fabric
+:image-uri-demo-thumbnail: https://app.box.com/shared/static/jdbl19h8s530e6rfotuj22k0lx7fez2e.png
+:image-uri-recipe-experience-bottler: https://app.box.com/shared/static/2belshm5padmppgegk43vpaw0i46j89l.png
+:uri-youtube-demo: https://youtu.be/ZtUIFA9R_CE
+:uri-crowdin: https://crowdin.com/project/eideehi-minecraft-mods
+:uri-license: link:LICENSE
+:uri-fabric: https://fabricmc.net/
+:uri-crowdin-translate: https://github.com/gbl/CrowdinTranslate
+
+Add a block that can be used to bottle any quantity of experience points. The bottled experience points can be drunk like a potion, giving the experience points to user.
+
+== How to install
+As with other mods, there is nothing special to do, just place the mod files in the mods folder of the environment where Fabric is installed. Also, don't forget about the Fabric API.
+
+== How to use
+Experience values can be bottled in any quantity from 1 to 2147483647 into an empty bottle by using the GUI. Up to 64 bottled experience values can be stacked. However, this requires that the quantity of bottled experience must be the same.
+
+A working demo has been uploaded to link:{uri-youtube-demo}[YouTube].
+image:{image-uri-demo-thumbnail}[link={uri-youtube-demo},title="YouTube"]
+
+== Recipes
+Experience Bottler::
+  image:{image-uri-recipe-experience-bottler}[Recipe - Experience Bottler]
+
+== Languages
+The translation files for this mod have been uploaded to {uri-crowdin}[Crowdin].
+In addition, since {uri-crowdin-translate}[CrowdinTranslate] is built into the mod, Experience Bottler will regularly download the latest translation files from {uri-crowdin}[Crowdin]. This means that users do not need to update the mod for the translation files.
+
+|===
+|Language |Translators       |Status
+|en_us    |Translation Tools |100%
+|ja_jp    |EideeHi           |100%
+|===
+
+== Credits
+* {uri-fabric}[Fabric]
+* {uri-crowdin-translate}[CrowdinTranslate]
+
+== License
+Experience Bottler is developed and released under the MIT license. For the full text of the license, please see the {uri-license}[LICENSE] file.

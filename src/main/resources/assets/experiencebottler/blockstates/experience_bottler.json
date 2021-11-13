@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": {"model": "experiencebottler:block/experience_bottler"},
+    "facing=south": {"model": "experiencebottler:block/experience_bottler", "y": 180},
+    "facing=west": {"model": "experiencebottler:block/experience_bottler", "y": 270},
+    "facing=east": {"model": "experiencebottler:block/experience_bottler", "y": 90}
+  }
+}

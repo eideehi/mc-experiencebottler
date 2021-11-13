@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "experiencebottler",
+  "version": "${version}",
+  "name": "EXP Bottler",
+  "description": "Add a block that can be used to bottle any quantity of experience points. The bottled experience points can be drunk like a potion, giving the experience points to user.",
+  "authors": [
+    "EideeHi"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/experience-bottler",
+    "issues": "https://github.com/eideehi/mc-experiencebottler/issues",
+    "sources": "https://github.com/eideehi/mc-experiencebottler"
+  },
+  "license": "MIT",
+  "icon": "assets/experiencebottler/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "net.eidee.minecraft.experiencebottler.core.init.ModInitializerClient"
+    ],
+    "main": [
+      "net.eidee.minecraft.experiencebottler.core.init.ModInitializer"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.12.5",
+    "fabric": "*",
+    "minecraft": "1.17.1"
+  }
+}
