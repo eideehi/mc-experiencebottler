@@ -39,7 +39,7 @@ public class Blocks {
         new ExperienceBottlerBlock(
             FabricBlockSettings.of(Material.METAL, MapColor.IRON_GRAY)
                 .requiresTool()
-                .strength(3.0F, 3.0F)
+                .strength(4.0F, 5.0F)
                 .sounds(BlockSoundGroup.METAL)
                 .nonOpaque());
   }
