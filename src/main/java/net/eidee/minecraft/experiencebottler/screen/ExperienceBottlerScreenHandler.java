@@ -28,8 +28,6 @@ import net.eidee.minecraft.experiencebottler.block.Blocks;
 import net.eidee.minecraft.experiencebottler.item.BottledExperienceItem;
 import net.eidee.minecraft.experiencebottler.item.Items;
 import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingResultInventory;
@@ -122,7 +120,6 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
     }
   }
 
-  @Environment(EnvType.CLIENT)
   public ExperienceBottlerScreenHandler(int syncId, PlayerInventory inventory) {
     this(syncId, inventory, ScreenHandlerContext.EMPTY);
   }
