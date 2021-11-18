@@ -29,7 +29,7 @@ import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 
-/** Defines the screen handlers of the EXP Bottler. */
+/** Defines the screen handlers of the Experience Bottler. */
 @MethodsReturnNonnullByDefault
 public class ScreenHandlers {
   private static ScreenHandlerType<ExperienceBottlerScreenHandler> EXPERIENCE_BOTTLER;
@@ -37,7 +37,7 @@ public class ScreenHandlers {
 
   private ScreenHandlers() {}
 
-  /** Get the screen handler type of the EXP Bottler. */
+  /** Get the screen handler type of the Experience Bottler. */
   public static ScreenHandlerType<ExperienceBottlerScreenHandler> expBottler() {
     if (EXPERIENCE_BOTTLER == null) {
       throw new IllegalStateException("ScreenHandlers not initialized!");

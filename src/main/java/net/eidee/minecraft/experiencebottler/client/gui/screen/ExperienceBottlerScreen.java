@@ -51,7 +51,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.lwjgl.glfw.GLFW;
 
 // HACK: The process flow is not elegant and I want to improve it.
-/** The screen of the EXP Bottler block. */
+/** The screen of the Experience Bottler block. */
 @Environment(EnvType.CLIENT)
 public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScreenHandler>
     implements ScreenHandlerListener, ExperienceInputField.Listener {

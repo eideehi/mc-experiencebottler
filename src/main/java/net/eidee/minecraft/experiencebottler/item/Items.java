@@ -29,7 +29,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Rarity;
 
-/** Defines the items of the EXP Bottler. */
+/** Defines the items of the Experience Bottler. */
 public class Items {
   public static final Item BOTTLED_EXPERIENCE;
 

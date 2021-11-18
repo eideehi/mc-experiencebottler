@@ -26,7 +26,7 @@ package net.eidee.minecraft.experiencebottler;
 
 import net.minecraft.util.Identifier;
 
-/** EXP Bottler's system class. */
+/** Experience Bottler's system class. */
 public class ExperienceBottler {
   public static final String MOD_ID = "experiencebottler";
 

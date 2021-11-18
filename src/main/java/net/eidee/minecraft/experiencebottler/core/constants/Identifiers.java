@@ -27,7 +27,7 @@ package net.eidee.minecraft.experiencebottler.core.constants;
 import net.eidee.minecraft.experiencebottler.ExperienceBottler;
 import net.minecraft.util.Identifier;
 
-/** Defines identifiers of the EXP Bottler. */
+/** Defines identifiers of the Experience Bottler. */
 public class Identifiers {
   public static final Identifier EXPERIENCE_BOTTLER = ExperienceBottler.identifier("experience_bottler");
   public static final Identifier BOTTLED_EXPERIENCE = ExperienceBottler.identifier("bottled_experience");

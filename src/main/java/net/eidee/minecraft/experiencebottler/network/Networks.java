@@ -27,7 +27,7 @@ package net.eidee.minecraft.experiencebottler.network;
 import net.eidee.minecraft.experiencebottler.ExperienceBottler;
 import net.minecraft.util.Identifier;
 
-/** Defines the network identifiers of the EXP Bottler. */
+/** Defines the network identifiers of the Experience Bottler. */
 public class Networks {
   public static final Identifier BOTTLING_EXPERIENCE;
 

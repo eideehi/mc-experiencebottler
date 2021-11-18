@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "experiencebottler",
   "version": "${version}",
-  "name": "EXP Bottler",
+  "name": "Experience Bottler",
   "description": "Add a block that can be used to bottle any quantity of experience points. The bottled experience points can be drunk like a potion, giving the experience points to user.",
   "authors": [
     "EideeHi"

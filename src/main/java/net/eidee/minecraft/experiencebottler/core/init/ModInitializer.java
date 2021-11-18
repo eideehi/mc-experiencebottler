@@ -24,7 +24,7 @@
 
 package net.eidee.minecraft.experiencebottler.core.init;
 
-/** EXP Bottler's common initializer. */
+/** Experience Bottler's common initializer. */
 public class ModInitializer implements net.fabricmc.api.ModInitializer {
   @Override
   public void onInitialize() {

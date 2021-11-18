@@ -38,7 +38,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
 
-/** The screen handler of the EXP Bottler block. */
+/** The screen handler of the Experience Bottler block. */
 public class ExperienceBottlerScreenHandler extends ScreenHandler {
   private final PlayerEntity player;
   private final ScreenHandlerContext context;

@@ -29,7 +29,7 @@ import net.minecraft.stat.StatFormatter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-/** EXP Bottler's stat initializer. */
+/** Experience Bottler's stat initializer. */
 public class StatInitializer {
   private StatInitializer() {}
 

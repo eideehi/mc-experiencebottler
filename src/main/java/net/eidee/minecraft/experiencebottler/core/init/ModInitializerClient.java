@@ -31,7 +31,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
-/** EXP Bottler's client-side initializer. */
+/** Experience Bottler's client-side initializer. */
 @Environment(EnvType.CLIENT)
 public class ModInitializerClient implements ClientModInitializer {
   @Override

@@ -30,7 +30,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-/** EXP Bottler's item initializer. */
+/** Experience Bottler's item initializer. */
 public class ItemInitializer {
   private ItemInitializer() {}
 

@@ -27,7 +27,7 @@ package net.eidee.minecraft.experiencebottler.stat;
 import net.eidee.minecraft.experiencebottler.ExperienceBottler;
 import net.minecraft.util.Identifier;
 
-/** Defines the stats of the EXP Bottler. */
+/** Defines the stats of the Experience Bottler. */
 public class Stats {
   public static final Identifier INTERACT_WITH_EXPERIENCE_BOTTLER;
 

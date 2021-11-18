@@ -30,7 +30,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 
-/** EXP Bottler's screen initializer. */
+/** Experience Bottler's screen initializer. */
 public class ScreenInitializer {
   private ScreenInitializer() {}
 

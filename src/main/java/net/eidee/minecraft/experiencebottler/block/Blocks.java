@@ -30,7 +30,7 @@ import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.sound.BlockSoundGroup;
 
-/** Defines the blocks of the EXP Bottler. */
+/** Defines the blocks of the Experience Bottler. */
 public class Blocks {
   public static final Block EXPERIENCE_BOTTLER;
 

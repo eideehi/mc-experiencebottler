@@ -28,7 +28,7 @@ import net.eidee.minecraft.experiencebottler.network.Networks;
 import net.eidee.minecraft.experiencebottler.network.packet.BottlingExperiencePacket;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
-/** EXP Bottler's network initializer. */
+/** Experience Bottler's network initializer. */
 public class NetworkInitializer {
   private NetworkInitializer() {}
 
