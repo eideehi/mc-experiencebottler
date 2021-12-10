@@ -1,6 +1,8 @@
 plugins {
     id 'fabric-loom' version '0.10.63'
     id 'maven-publish'
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id 'com.modrinth.minotaur' version '1.2.1'
 }
 
 version = project.mod_version
@@ -90,4 +92,51 @@ publishing {
         // The repositories here will be used for publishing your artifact, not for
         // retrieving dependencies.
     }
+}
+
+curseforge {
+    apiKey = project.findProperty('curseforge_apikey') ?: '0'
+    project {
+        id = project.curseforge_projectId
+        releaseType = 'release'
+        addGameVersion project.minecraft_version
+        addGameVersion 'Fabric'
+        changelogType = 'markdown'
+        changelog = "[View changelog on GitHub](${project.changelog_url}#${project.version})"
+
+        mainArtifact(remapJar) {
+            displayName = "${project.display_name} ${project.version}"
+
+            relations {
+                requiredDependency 'fabric-api'
+            }
+        }
+    }
+    options {
+        forgeGradleIntegration = false
+    }
+}
+
+import com.modrinth.minotaur.TaskModrinthUpload
+task modrinth(type: TaskModrinthUpload) {
+    group = 'upload'
+    description = 'Upload the mod to Modrinth'
+
+    onlyIf {
+        project.findProperty('modrinth_token')
+    }
+
+    token = project.findProperty('modrinth_token')
+    projectId = project.modrinth_projectId
+    versionName = "${project.display_name} ${project.version}"
+    versionNumber = project.version
+    changelog = "[View changelog on GitHub](${project.changelog_url}#${project.version})"
+    uploadFile = remapJar
+    addGameVersion("${project.minecraft_version}")
+    addLoader('fabric')
+}
+
+task upload(dependsOn: [tasks.curseforge, tasks.modrinth]) {
+    group = 'upload'
+    description = 'Upload the new version of the file to CurseForge and Modrinth'
 }
