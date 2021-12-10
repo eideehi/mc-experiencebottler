@@ -1,3 +1,6 @@
+## [1.18.1+build.1 / 2021-12-10](#1.18.1+build.1)
+* EideeHi: Migrate to Minecraft 1.18.1
+
 ## [1.18+build.1 / 2021-12-10](#1.18+build.1)
 * EideeHi: Migrate to Minecraft 1.18
 * EideeHi: Add player level after use to the Tooltip in Bottled Experience
