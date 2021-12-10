@@ -95,6 +95,7 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
 
           @Override
           public void onTakeItem(PlayerEntity player, ItemStack stack) {
+            BottledExperienceItem.writeBottledTag(stack, true);
             if (!player.isCreative()) {
               int experience = BottledExperienceItem.readExperienceTag(stack);
               if (experience > 0) {

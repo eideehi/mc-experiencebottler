@@ -26,7 +26,11 @@ package net.eidee.minecraft.experiencebottler.item;
 
 import java.util.List;
 import net.eidee.minecraft.experiencebottler.ExperienceBottler;
+import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -54,14 +58,10 @@ public class BottledExperienceItem extends Item {
   private static final int MAX_USE_TIME = 32;
   private static final int[] EXPERIENCE_LIST = {100, 500, 1000, 5000, 10000, 50000, 100000, 500000};
   private static final String TAG_EXPERIENCE = ExperienceBottler.MOD_ID + ":experience";
+  private static final String TAG_BOTTLED = ExperienceBottler.MOD_ID + ":bottled";
 
   public BottledExperienceItem(Settings settings) {
     super(settings);
-  }
-
-  /** Set the experience value in item stack. */
-  public static void writeExperienceTag(ItemStack stack, int value) {
-    stack.getOrCreateNbt().putInt(TAG_EXPERIENCE, value);
   }
 
   /**
@@ -70,6 +70,27 @@ public class BottledExperienceItem extends Item {
   public static int readExperienceTag(ItemStack stack) {
     NbtCompound nbt = stack.getNbt();
     return nbt != null ? nbt.getInt(TAG_EXPERIENCE) : 0;
+  }
+
+  /** Get the bottled flag in the item stack. If no flag is set, it returns false. */
+  public static boolean readBottledTag(ItemStack stack) {
+    NbtCompound nbt = stack.getNbt();
+    return nbt != null && nbt.getBoolean(TAG_BOTTLED);
+  }
+
+  /** Set the experience value in item stack. */
+  public static void writeExperienceTag(ItemStack stack, int value) {
+    stack.getOrCreateNbt().putInt(TAG_EXPERIENCE, value);
+  }
+
+  /** Set the bottled flag in item stack. */
+  public static void writeBottledTag(ItemStack stack, boolean value) {
+    stack.getOrCreateNbt().putBoolean(TAG_BOTTLED, value);
+  }
+
+  @Override
+  public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    return ItemUsage.consumeHeldItem(world, user, hand);
   }
 
   @Override
@@ -109,28 +130,40 @@ public class BottledExperienceItem extends Item {
   }
 
   @Override
-  public int getMaxUseTime(ItemStack stack) {
-    return MAX_USE_TIME;
-  }
-
-  @Override
   public UseAction getUseAction(ItemStack stack) {
     return UseAction.DRINK;
   }
 
   @Override
-  public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-    return ItemUsage.consumeHeldItem(world, user, hand);
+  public int getMaxUseTime(ItemStack stack) {
+    return MAX_USE_TIME;
   }
 
   @Override
-  public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip,
-      TooltipContext context) {
+  public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
     if (!stack.isEmpty()) {
       int experience = readExperienceTag(stack);
       if (experience > 0) {
         Text value = new LiteralText(String.format("%,d", experience));
         tooltip.add(new TranslatableText("item.experiencebottler.bottled_experience.tooltip.0", value));
+
+        if (world != null && world.isClient()) {
+          this.appendTooltipForClient(stack, world, tooltip, context);
+        }
+      }
+    }
+  }
+
+  @Environment(EnvType.CLIENT)
+  private void appendTooltipForClient(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+    int experience = readExperienceTag(stack);
+    if (experience > 0 && readBottledTag(stack)) {
+      PlayerEntity player = MinecraftClient.getInstance().player;
+      if (player != null) {
+        int playerExperience = ExperienceUtil.getTotalExperience(player);
+        int level = ExperienceUtil.getLevelFromTotalExperience(experience + playerExperience);
+        Text value = new LiteralText(String.format("%,d", level));
+        tooltip.add(new TranslatableText("item.experiencebottler.bottled_experience.tooltip.1", value));
       }
     }
   }
@@ -146,6 +179,7 @@ public class BottledExperienceItem extends Item {
       for (int experience : EXPERIENCE_LIST) {
         ItemStack stack = new ItemStack(this);
         writeExperienceTag(stack, experience);
+        writeBottledTag(stack, true);
         stacks.add(stack);
       }
     }

@@ -40,6 +40,21 @@ public class ExperienceUtil {
     }
   }
 
+  /** Return the level calculated from the total experience. */
+  public static int getLevelFromTotalExperience(int experience) {
+    int level = 0;
+    int amount = experience;
+    while (amount >= 0) {
+      int experienceForLevel = getNextLevelExperience(level);
+      if (amount < experienceForLevel) {
+        break;
+      }
+      level++;
+      amount -= experienceForLevel;
+    }
+    return level;
+  }
+
   /** Return the total experience to reach the level of the specified argument. */
   public static int getTotalExperienceToReachLevel(int level, float progress) {
     int sum = IntStream.range(0, level).map(ExperienceUtil::getNextLevelExperience).sum();
