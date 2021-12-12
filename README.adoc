@@ -30,11 +30,15 @@ In addition, since {uri-crowdin-translate}[CrowdinTranslate] is built into the m
 |Language |Translators       |Status
 |en_us    |Translation Tools |100%
 |ja_jp    |EideeHi           |100%
+|fr_fr    |ɪѕнɪ_ѕαʍα         |100%
 |===
 
 == Credits
-* {uri-fabric}[Fabric]
-* {uri-crowdin-translate}[CrowdinTranslate]
+* Dependencies:
+** {uri-fabric}[Fabric]
+** {uri-crowdin-translate}[CrowdinTranslate]
+* Translators:
+** ɪѕнɪ_ѕαʍα (ishi_sama)
 
 == License
 Experience Bottler is developed and released under the MIT license. For the full text of the license, please see the {uri-license}[LICENSE] file.
