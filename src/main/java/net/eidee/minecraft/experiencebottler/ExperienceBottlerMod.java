@@ -29,7 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /** Experience Bottler's system class. */
-public class ExperienceBottler {
+public class ExperienceBottlerMod {
   public static final String MOD_ID = "experiencebottler";
   private static final Logger logger;
 
@@ -37,7 +37,7 @@ public class ExperienceBottler {
     logger = LogManager.getLogger(MOD_ID);
   }
 
-  private ExperienceBottler() {}
+  private ExperienceBottlerMod() {}
 
   public static Logger getLogger() {
     return logger;

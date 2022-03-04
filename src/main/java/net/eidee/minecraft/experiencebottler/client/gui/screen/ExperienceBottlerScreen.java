@@ -24,7 +24,7 @@
 
 package net.eidee.minecraft.experiencebottler.client.gui.screen;
 
-import static net.eidee.minecraft.experiencebottler.ExperienceBottler.identifier;
+import static net.eidee.minecraft.experiencebottler.ExperienceBottlerMod.identifier;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.eidee.minecraft.experiencebottler.client.gui.widget.ExperienceInputField;

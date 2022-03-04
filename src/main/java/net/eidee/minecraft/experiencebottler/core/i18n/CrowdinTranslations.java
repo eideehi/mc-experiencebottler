@@ -24,7 +24,7 @@
 
 package net.eidee.minecraft.experiencebottler.core.i18n;
 
-import static net.eidee.minecraft.experiencebottler.ExperienceBottler.getLogger;
+import static net.eidee.minecraft.experiencebottler.ExperienceBottlerMod.getLogger;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;

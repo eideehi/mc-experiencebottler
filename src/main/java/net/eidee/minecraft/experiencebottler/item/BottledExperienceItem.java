@@ -25,7 +25,7 @@
 package net.eidee.minecraft.experiencebottler.item;
 
 import java.util.List;
-import net.eidee.minecraft.experiencebottler.ExperienceBottler;
+import net.eidee.minecraft.experiencebottler.ExperienceBottlerMod;
 import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -57,8 +57,8 @@ import org.jetbrains.annotations.Nullable;
 public class BottledExperienceItem extends Item {
   private static final int MAX_USE_TIME = 32;
   private static final int[] EXPERIENCE_LIST = {100, 500, 1000, 5000, 10000, 50000, 100000, 500000};
-  private static final String TAG_EXPERIENCE = ExperienceBottler.MOD_ID + ":experience";
-  private static final String TAG_BOTTLED = ExperienceBottler.MOD_ID + ":bottled";
+  private static final String TAG_EXPERIENCE = ExperienceBottlerMod.MOD_ID + ":experience";
+  private static final String TAG_BOTTLED = ExperienceBottlerMod.MOD_ID + ":bottled";
 
   public BottledExperienceItem(Settings settings) {
     super(settings);

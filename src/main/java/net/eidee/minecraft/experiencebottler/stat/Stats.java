@@ -24,7 +24,8 @@
 
 package net.eidee.minecraft.experiencebottler.stat;
 
-import net.eidee.minecraft.experiencebottler.ExperienceBottler;
+import static net.eidee.minecraft.experiencebottler.ExperienceBottlerMod.identifier;
+
 import net.minecraft.util.Identifier;
 
 /** Defines the stats of the Experience Bottler. */
@@ -32,7 +33,7 @@ public class Stats {
   public static final Identifier INTERACT_WITH_EXPERIENCE_BOTTLER;
 
   static {
-    INTERACT_WITH_EXPERIENCE_BOTTLER = ExperienceBottler.identifier("interact_with_experience_bottler");
+    INTERACT_WITH_EXPERIENCE_BOTTLER = identifier("interact_with_experience_bottler");
   }
 
   private Stats() {}

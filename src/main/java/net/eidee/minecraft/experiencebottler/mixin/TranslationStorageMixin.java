@@ -24,8 +24,8 @@
 
 package net.eidee.minecraft.experiencebottler.mixin;
 
-import static net.eidee.minecraft.experiencebottler.ExperienceBottler.MOD_ID;
-import static net.eidee.minecraft.experiencebottler.ExperienceBottler.getLogger;
+import static net.eidee.minecraft.experiencebottler.ExperienceBottlerMod.MOD_ID;
+import static net.eidee.minecraft.experiencebottler.ExperienceBottlerMod.getLogger;
 
 import java.io.IOException;
 import java.io.InputStream;

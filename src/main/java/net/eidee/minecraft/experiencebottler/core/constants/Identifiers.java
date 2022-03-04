@@ -24,13 +24,14 @@
 
 package net.eidee.minecraft.experiencebottler.core.constants;
 
-import net.eidee.minecraft.experiencebottler.ExperienceBottler;
+import static net.eidee.minecraft.experiencebottler.ExperienceBottlerMod.identifier;
+
 import net.minecraft.util.Identifier;
 
 /** Defines identifiers of the Experience Bottler. */
 public class Identifiers {
-  public static final Identifier EXPERIENCE_BOTTLER = ExperienceBottler.identifier("experience_bottler");
-  public static final Identifier BOTTLED_EXPERIENCE = ExperienceBottler.identifier("bottled_experience");
+  public static final Identifier EXPERIENCE_BOTTLER = identifier("experience_bottler");
+  public static final Identifier BOTTLED_EXPERIENCE = identifier("bottled_experience");
 
   private Identifiers() {}
 }

@@ -24,7 +24,7 @@
 
 package net.eidee.minecraft.experiencebottler.core.init;
 
-//import static net.eidee.minecraft.experiencebottler.ExperienceBottler.MOD_ID;
+//import static net.eidee.minecraft.experiencebottler.ExperienceBottlerMod.MOD_ID;
 
 //import de.guntram.mcmod.crowdintranslate.CrowdinTranslate;
 import net.fabricmc.api.ClientModInitializer;
