@@ -24,8 +24,9 @@
 
 package net.eidee.minecraft.experiencebottler.client.gui.screen;
 
+import static net.eidee.minecraft.experiencebottler.ExperienceBottler.identifier;
+
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.eidee.minecraft.experiencebottler.ExperienceBottler;
 import net.eidee.minecraft.experiencebottler.client.gui.widget.ExperienceInputField;
 import net.eidee.minecraft.experiencebottler.client.gui.widget.ExperienceType;
 import net.eidee.minecraft.experiencebottler.client.gui.widget.ExperienceTypeToggleButton;
@@ -58,7 +59,7 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
   private static final Identifier BACKGROUND;
 
   static {
-    BACKGROUND = ExperienceBottler.identifier("textures/gui/container/experience_bottler.png");
+    BACKGROUND = identifier("textures/gui/container/experience_bottler.png");
   }
 
   private final PlayerEntity player;
@@ -191,9 +192,9 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
   }
 
   @Override
-  public void onClose() {
+  public void removed() {
+    super.removed();
     this.getScreenHandler().removeListener(this);
-    super.onClose();
   }
 
   @Override
@@ -261,7 +262,7 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
   @Override
   public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
     if (keyCode == GLFW.GLFW_KEY_ESCAPE && this.shouldCloseOnEsc()) {
-      this.onClose();
+      this.close();
       return true;
     }
 
@@ -275,17 +276,17 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
       return true;
     }
 
-    if (this.client != null && this.client.options.keyInventory.matchesKey(keyCode, scanCode)) {
-      this.onClose();
+    if (this.client != null && this.client.options.inventoryKey.matchesKey(keyCode, scanCode)) {
+      this.close();
       return true;
     }
 
     this.handleHotbarKeyPressed(keyCode, scanCode);
 
     if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
-      if (this.client.options.keyPickItem.matchesKey(keyCode, scanCode)) {
+      if (this.client.options.pickItemKey.matchesKey(keyCode, scanCode)) {
         this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 0, SlotActionType.CLONE);
-      } else if (this.client.options.keyDrop.matchesKey(keyCode, scanCode)) {
+      } else if (this.client.options.dropKey.matchesKey(keyCode, scanCode)) {
         this.onMouseClick(
             this.focusedSlot,
             this.focusedSlot.id,
