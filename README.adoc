@@ -26,6 +26,8 @@ Experience Bottler::
 The translation files for this mod have been uploaded to {uri-crowdin}[Crowdin].
 In addition, since {uri-crowdin-translate}[CrowdinTranslate] is built into the mod, Experience Bottler will regularly download the latest translation files from {uri-crowdin}[Crowdin]. This means that users do not need to update the mod for the translation files.
 
+NOTE: 1.18.2+build.1 add the function to get Translations from Crowdin as an alternative until CrowdinTranslate is updated.
+
 |===
 |Language |Translators       |Status
 |en_us    |Translation Tools |100%

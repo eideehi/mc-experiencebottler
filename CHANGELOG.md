@@ -1,3 +1,7 @@
+## [1.18.2+build.1 / 2022-03-04](#1.18.2+build.1)
+* EideeHi: Migrate to Minecraft 1.18.2
+* EideeHi: As an alternative until CrowdinTranslate is updated, we have added the ability to retrieve Translations from Crowdin
+
 ## [1.18.1+build.1 / 2021-12-10](#1.18.1+build.1)
 * EideeHi: Migrate to Minecraft 1.18.1
 
