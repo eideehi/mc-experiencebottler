@@ -25,12 +25,23 @@
 package net.eidee.minecraft.experiencebottler;
 
 import net.minecraft.util.Identifier;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /** Experience Bottler's system class. */
 public class ExperienceBottler {
   public static final String MOD_ID = "experiencebottler";
+  private static final Logger logger;
+
+  static {
+    logger = LogManager.getLogger(MOD_ID);
+  }
 
   private ExperienceBottler() {}
+
+  public static Logger getLogger() {
+    return logger;
+  }
 
   public static Identifier identifier(String path) {
     return new Identifier(MOD_ID, path);

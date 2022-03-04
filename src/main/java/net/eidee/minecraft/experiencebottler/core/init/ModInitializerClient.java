@@ -24,9 +24,9 @@
 
 package net.eidee.minecraft.experiencebottler.core.init;
 
-import static net.eidee.minecraft.experiencebottler.ExperienceBottler.MOD_ID;
+//import static net.eidee.minecraft.experiencebottler.ExperienceBottler.MOD_ID;
 
-import de.guntram.mcmod.crowdintranslate.CrowdinTranslate;
+//import de.guntram.mcmod.crowdintranslate.CrowdinTranslate;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -38,6 +38,6 @@ public class ModInitializerClient implements ClientModInitializer {
   public void onInitializeClient() {
     BlockInitializer.initClient();
     ScreenInitializer.initClient();
-    CrowdinTranslate.downloadTranslations("eideehi-minecraft-mods", MOD_ID, MOD_ID);
+    //CrowdinTranslate.downloadTranslations("eideehi-minecraft-mods", MOD_ID, MOD_ID);
   }
 }

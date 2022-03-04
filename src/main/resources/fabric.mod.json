@@ -23,6 +23,9 @@
       "net.eidee.minecraft.experiencebottler.core.init.ModInitializer"
     ]
   },
+  "mixins": [
+    "experiencebottler.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.13.3",
     "fabric": "*",

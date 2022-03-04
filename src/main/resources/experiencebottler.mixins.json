@@ -1,0 +1,9 @@
+{
+  "required": true,
+  "package": "net.eidee.minecraft.experiencebottler.mixin",
+  "mixins": [],
+  "server": [],
+  "client": [
+    "TranslationStorageMixin"
+  ]
+}
