@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 EideeHi
+ * Copyright (c) 2021-2022 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import net.eidee.minecraft.experiencebottler.stat.Stats;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -42,6 +43,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -49,14 +52,64 @@ import org.jetbrains.annotations.Nullable;
 /** The block for bottling the player's experience points. */
 public class ExperienceBottlerBlock extends HorizontalFacingBlock {
   private static final Text CONTAINER_TITLE;
+  private static final VoxelShape TOP_SHAPE;
+  private static final VoxelShape BOTTOM_SHAPE;
+  private static final VoxelShape NORTH_SHAPE;
+  private static final VoxelShape SOUTH_SHAPE;
+  private static final VoxelShape EAST_SHAPE;
+  private static final VoxelShape WEST_SHAPE;
 
   static {
     CONTAINER_TITLE = Text.translatable("container.experiencebottler.experience_bottler");
+    TOP_SHAPE = Block.createCuboidShape(0, 13, 0, 16, 16, 16);
+    BOTTOM_SHAPE = Block.createCuboidShape(0, 0, 0, 16, 2, 16);
+    VoxelShape baseShape = VoxelShapes.union(TOP_SHAPE, BOTTOM_SHAPE);
+    NORTH_SHAPE =
+        VoxelShapes.union(
+            baseShape,
+            Block.createCuboidShape(0, 2, 10, 16, 13, 16),
+            Block.createCuboidShape(0, 2, 0, 3, 6, 10),
+            Block.createCuboidShape(13, 2, 0, 16, 6, 10));
+    SOUTH_SHAPE =
+        VoxelShapes.union(
+            baseShape,
+            Block.createCuboidShape(0, 2, 0, 16, 13, 6),
+            Block.createCuboidShape(0, 2, 6, 3, 6, 16),
+            Block.createCuboidShape(13, 2, 6, 16, 6, 16));
+    EAST_SHAPE =
+        VoxelShapes.union(
+            baseShape,
+            Block.createCuboidShape(0, 2, 0, 6, 13, 16),
+            Block.createCuboidShape(6, 2, 0, 16, 6, 3),
+            Block.createCuboidShape(6, 2, 13, 16, 6, 16));
+    WEST_SHAPE =
+        VoxelShapes.union(
+            baseShape,
+            Block.createCuboidShape(10, 2, 0, 16, 13, 16),
+            Block.createCuboidShape(0, 2, 0, 10, 6, 3),
+            Block.createCuboidShape(0, 2, 13, 10, 6, 16));
   }
 
   public ExperienceBottlerBlock(Settings settings) {
     super(settings);
     this.setDefaultState(this.getStateManager().getDefaultState().with(FACING, Direction.NORTH));
+  }
+
+  @Override
+  public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos,
+      ShapeContext context) {
+    return switch (state.get(FACING)) {
+      case NORTH -> NORTH_SHAPE;
+      case SOUTH -> SOUTH_SHAPE;
+      case EAST -> EAST_SHAPE;
+      case WEST -> WEST_SHAPE;
+      default -> VoxelShapes.fullCube();
+    };
+  }
+
+  @Override
+  public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
+    return VoxelShapes.fullCube();
   }
 
   @Override
