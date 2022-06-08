@@ -1,3 +1,7 @@
+## [1.19+build.1 / 2022-06-08](#1.19+build.1)
+* EideeHi: Migrate to Minecraft 1.19
+* EideeHi: Add shape for outline to 'Experience Bottler' block
+
 ## [1.18.2+build.1 / 2022-03-04](#1.18.2+build.1)
 * EideeHi: Migrate to Minecraft 1.18.2
 * EideeHi: As an alternative until CrowdinTranslate is updated, we have added the ability to retrieve Translations from Crowdin
