@@ -47,7 +47,7 @@ public class BlockInitializer {
   }
 
   /** Initializes the blocks. */
-  public static void init() {
+  static void init() {
     register(
         Blocks.EXPERIENCE_BOTTLER,
         new BlockItem(
@@ -57,7 +57,7 @@ public class BlockInitializer {
 
   /** Initializes the blocks at client-side. */
   @Environment(EnvType.CLIENT)
-  public static void initClient() {
+  static void initClient() {
     BlockRenderLayerMap.INSTANCE.putBlock(Blocks.EXPERIENCE_BOTTLER, RenderLayer.getCutout());
   }
 }

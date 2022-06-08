@@ -39,7 +39,7 @@ public class StatInitializer {
   }
 
   /** Initializes the stats. */
-  public static void init() {
+  static void init() {
     register(Stats.INTERACT_WITH_EXPERIENCE_BOTTLER, StatFormatter.DEFAULT);
   }
 }

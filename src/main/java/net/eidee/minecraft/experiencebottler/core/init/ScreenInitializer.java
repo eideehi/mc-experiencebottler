@@ -37,7 +37,7 @@ public class ScreenInitializer {
   private ScreenInitializer() {}
 
   /** Initializes the screens. */
-  public static void init() {
+  static void init() {
     Registry.register(
         Registry.SCREEN_HANDLER,
         Identifiers.EXPERIENCE_BOTTLER,
@@ -46,7 +46,7 @@ public class ScreenInitializer {
 
   /** Initializes the screens at client-side. */
   @Environment(EnvType.CLIENT)
-  public static void initClient() {
+  static void initClient() {
     HandledScreens.register(ScreenHandlerTypes.EXPERIENCE_BOTTLER, ExperienceBottlerScreen::new);
   }
 }

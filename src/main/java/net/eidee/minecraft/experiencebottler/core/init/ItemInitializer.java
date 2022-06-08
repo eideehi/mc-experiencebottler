@@ -39,7 +39,7 @@ public class ItemInitializer {
   }
 
   /** Initializes the items. */
-  public static void init() {
+  static void init() {
     register(Items.BOTTLED_EXPERIENCE, Identifiers.BOTTLED_EXPERIENCE);
   }
 }

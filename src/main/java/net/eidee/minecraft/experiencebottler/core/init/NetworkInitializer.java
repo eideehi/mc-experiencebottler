@@ -33,7 +33,7 @@ public class NetworkInitializer {
   private NetworkInitializer() {}
 
   /** Initializes the networks. */
-  public static void init() {
+  static void init() {
     ServerPlayNetworking.registerGlobalReceiver(
         Networks.BOTTLING_EXPERIENCE, BottlingExperiencePacket::receive);
   }
