@@ -24,14 +24,29 @@
 
 package net.eidee.minecraft.experiencebottler.core.init;
 
-/** Experience Bottler's common initializer. */
-public class ModInitializer implements net.fabricmc.api.ModInitializer {
-  @Override
-  public void onInitialize() {
+import static net.eidee.minecraft.experiencebottler.ExperienceBottlerMod.MOD_ID;
+
+import de.guntram.mcmod.crowdintranslate.CrowdinTranslate;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
+/** Experience Bottler's initializer. */
+public class ModInitializer {
+
+  /** Mod initialization for the server. */
+  public static void init() {
     BlockInitializer.init();
     ItemInitializer.init();
     StatInitializer.init();
     NetworkInitializer.init();
     ScreenInitializer.init();
+  }
+
+  /** Mod initialization for the client. */
+  @Environment(EnvType.CLIENT)
+  public static void initClient() {
+    BlockInitializer.initClient();
+    ScreenInitializer.initClient();
+    CrowdinTranslate.downloadTranslations("eideehi-minecraft-mods", MOD_ID, MOD_ID);
   }
 }

@@ -17,10 +17,10 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "net.eidee.minecraft.experiencebottler.core.init.ModInitializerClient"
+      "net.eidee.minecraft.experiencebottler.core.init.ModInitializer::initClient"
     ],
     "main": [
-      "net.eidee.minecraft.experiencebottler.core.init.ModInitializer"
+      "net.eidee.minecraft.experiencebottler.core.init.ModInitializer::init"
     ]
   },
   "depends": {
