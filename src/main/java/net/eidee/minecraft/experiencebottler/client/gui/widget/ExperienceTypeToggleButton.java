@@ -35,10 +35,9 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
 /** A button widget to switch between displaying experience as either levels or points. */
@@ -48,8 +47,8 @@ public class ExperienceTypeToggleButton extends PressableWidget {
   private static final Text TEXT_LEVEL;
 
   static {
-    TEXT_POINT = new TranslatableText("gui.experiencebottler.experience_bottler.exp_display.point");
-    TEXT_LEVEL = new TranslatableText("gui.experiencebottler.experience_bottler.exp_display.level");
+    TEXT_POINT = Text.translatable("gui.experiencebottler.experience_bottler.exp_display.point");
+    TEXT_LEVEL = Text.translatable("gui.experiencebottler.experience_bottler.exp_display.level");
   }
 
   private final int id;
@@ -59,7 +58,7 @@ public class ExperienceTypeToggleButton extends PressableWidget {
 
   public ExperienceTypeToggleButton(
       int id, int x, int y, Consumer<ExperienceTypeToggleButton> action) {
-    super(x, y, 18, 18, LiteralText.EMPTY);
+    super(x, y, 18, 18, ScreenTexts.EMPTY);
     this.id = id;
     this.action = action;
     this.experienceType = ExperienceType.POINT;
@@ -137,7 +136,7 @@ public class ExperienceTypeToggleButton extends PressableWidget {
 
   @Override
   protected MutableText getNarrationMessage() {
-    return new TranslatableText("narration.experiencebottler.experience_type_toggle_button");
+    return Text.translatable("narration.experiencebottler.experience_type_toggle_button");
   }
 
   @Override
@@ -147,19 +146,19 @@ public class ExperienceTypeToggleButton extends PressableWidget {
       if (this.isFocused()) {
         builder.put(
             NarrationPart.USAGE,
-            new TranslatableText(
+            Text.translatable(
                 "narration.experiencebottler.experience_type_toggle_button.usage.focused"));
       } else {
         builder.put(
             NarrationPart.USAGE,
-            new TranslatableText(
+            Text.translatable(
                 "narration.experiencebottler.experience_type_toggle_button.usage.hovered"));
       }
 
-      Text type = new TranslatableText(this.getExperienceType().getNarrationKey());
+      Text type = Text.translatable(this.getExperienceType().getNarrationKey());
       builder.put(
           NarrationPart.HINT,
-          new TranslatableText(
+          Text.translatable(
               "narration.experiencebottler.experience_type_toggle_button.info.current_type", type));
     }
   }

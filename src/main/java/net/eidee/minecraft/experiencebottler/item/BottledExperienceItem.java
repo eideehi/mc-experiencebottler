@@ -42,9 +42,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
@@ -125,7 +123,7 @@ public class BottledExperienceItem extends Item {
       }
     }
 
-    world.emitGameEvent(user, GameEvent.DRINKING_FINISH, user.getCameraBlockPos());
+    user.emitGameEvent(GameEvent.DRINK);
     return stack;
   }
 
@@ -144,8 +142,8 @@ public class BottledExperienceItem extends Item {
     if (!stack.isEmpty()) {
       int experience = readExperienceTag(stack);
       if (experience > 0) {
-        Text value = new LiteralText(String.format("%,d", experience));
-        tooltip.add(new TranslatableText("item.experiencebottler.bottled_experience.tooltip.0", value));
+        Text value = Text.literal(String.format("%,d", experience));
+        tooltip.add(Text.translatable("item.experiencebottler.bottled_experience.tooltip.0", value));
 
         if (world != null && world.isClient()) {
           this.appendTooltipForClient(stack, world, tooltip, context);
@@ -162,8 +160,8 @@ public class BottledExperienceItem extends Item {
       if (player != null) {
         int playerExperience = ExperienceUtil.getTotalExperience(player);
         int level = ExperienceUtil.getLevelFromTotalExperience(experience + playerExperience);
-        Text value = new LiteralText(String.format("%,d", level));
-        tooltip.add(new TranslatableText("item.experiencebottler.bottled_experience.tooltip.1", value));
+        Text value = Text.literal(String.format("%,d", level));
+        tooltip.add(Text.translatable("item.experiencebottler.bottled_experience.tooltip.1", value));
       }
     }
   }

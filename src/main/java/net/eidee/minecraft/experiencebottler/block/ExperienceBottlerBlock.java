@@ -37,7 +37,6 @@ import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.state.StateManager.Builder;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -52,7 +51,7 @@ public class ExperienceBottlerBlock extends HorizontalFacingBlock {
   private static final Text CONTAINER_TITLE;
 
   static {
-    CONTAINER_TITLE = new TranslatableText("container.experiencebottler.experience_bottler");
+    CONTAINER_TITLE = Text.translatable("container.experiencebottler.experience_bottler");
   }
 
   public ExperienceBottlerBlock(Settings settings) {

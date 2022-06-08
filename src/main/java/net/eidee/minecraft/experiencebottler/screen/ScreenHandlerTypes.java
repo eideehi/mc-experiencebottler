@@ -24,36 +24,16 @@
 
 package net.eidee.minecraft.experiencebottler.screen;
 
-import net.eidee.minecraft.experiencebottler.core.constants.Identifiers;
-import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 
 /** Defines the screen handlers of the Experience Bottler. */
-@MethodsReturnNonnullByDefault
-public class ScreenHandlers {
-  private static ScreenHandlerType<ExperienceBottlerScreenHandler> EXPERIENCE_BOTTLER;
-  private static boolean initialized = false;
+public class ScreenHandlerTypes {
+  public static final ScreenHandlerType<ExperienceBottlerScreenHandler> EXPERIENCE_BOTTLER;
 
-  private ScreenHandlers() {}
-
-  /** Get the screen handler type of the Experience Bottler. */
-  public static ScreenHandlerType<ExperienceBottlerScreenHandler> expBottler() {
-    if (EXPERIENCE_BOTTLER == null) {
-      throw new IllegalStateException("ScreenHandlers not initialized!");
-    }
-    return EXPERIENCE_BOTTLER;
+  static {
+    EXPERIENCE_BOTTLER = new ScreenHandlerType<>(ExperienceBottlerScreenHandler::new);
   }
 
-  /** Initialize the screen handler types. */
-  public static void init() {
-    if (initialized) {
-      return;
-    }
-    initialized = true;
-
-    EXPERIENCE_BOTTLER =
-        ScreenHandlerRegistry.registerSimple(
-            Identifiers.EXPERIENCE_BOTTLER, ExperienceBottlerScreenHandler::new);
-  }
+  private ScreenHandlerTypes() {}
 }

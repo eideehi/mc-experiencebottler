@@ -48,7 +48,7 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
 
   public ExperienceBottlerScreenHandler(
       int id, PlayerInventory inventory, ScreenHandlerContext context) {
-    super(ScreenHandlers.expBottler(), id);
+    super(ScreenHandlerTypes.EXPERIENCE_BOTTLER, id);
     this.player = inventory.player;
     this.context = context;
     this.input =

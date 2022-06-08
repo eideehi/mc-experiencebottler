@@ -33,10 +33,9 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.lwjgl.glfw.GLFW;
 
@@ -53,7 +52,7 @@ public class ExperienceInputField extends ClickableWidget {
   private int frame = 0;
 
   public ExperienceInputField(TextRenderer textRenderer, int x, int y, Listener listener) {
-    super(x, y, 90, 18, LiteralText.EMPTY);
+    super(x, y, 90, 18, ScreenTexts.EMPTY);
     this.textRenderer = textRenderer;
     this.listener = listener;
     this.experienceType = ExperienceType.POINT;
@@ -246,7 +245,7 @@ public class ExperienceInputField extends ClickableWidget {
 
   @Override
   protected MutableText getNarrationMessage() {
-    return new TranslatableText("narration.experiencebottler.experience_input_field");
+    return Text.translatable("narration.experiencebottler.experience_input_field");
   }
 
   @Override
@@ -254,10 +253,10 @@ public class ExperienceInputField extends ClickableWidget {
     builder.put(NarrationPart.TITLE, this.getNarrationMessage());
     if (this.active) {
       int experience = NumberUtils.toInt(this.getValue());
-      Text type = new TranslatableText(this.getExperienceType().getNarrationKey());
+      Text type = Text.translatable(this.getExperienceType().getNarrationKey());
       builder.put(
           NarrationPart.HINT,
-          new TranslatableText(
+          Text.translatable(
               "narration.experiencebottler.experience_input_field.info.value", experience, type));
     }
   }

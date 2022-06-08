@@ -46,7 +46,6 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.lwjgl.glfw.GLFW;
@@ -221,16 +220,16 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
   protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
     super.drawForeground(matrices, mouseX, mouseY);
 
-    Text label = new TranslatableText("gui.experiencebottler.label.player_experience");
+    Text label = Text.translatable("gui.experiencebottler.label.player_experience");
     int labelX = 68;
     int labelY = 20;
     this.textRenderer.draw(matrices, label, labelX, labelY, 0x404040);
 
-    label = new TranslatableText("gui.experiencebottler.label.bottling_experience");
+    label = Text.translatable("gui.experiencebottler.label.bottling_experience");
     labelY += 32;
     this.textRenderer.draw(matrices, label, labelX, labelY, 0x404040);
 
-    label = new TranslatableText("gui.experiencebottler.label.after_experience");
+    label = Text.translatable("gui.experiencebottler.label.after_experience");
     labelY += 32;
     this.textRenderer.draw(matrices, label, labelX, labelY, 0x404040);
 

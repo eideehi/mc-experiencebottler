@@ -25,10 +25,13 @@
 package net.eidee.minecraft.experiencebottler.core.init;
 
 import net.eidee.minecraft.experiencebottler.client.gui.screen.ExperienceBottlerScreen;
-import net.eidee.minecraft.experiencebottler.screen.ScreenHandlers;
+import net.eidee.minecraft.experiencebottler.core.constants.Identifiers;
+import net.eidee.minecraft.experiencebottler.screen.ScreenHandlerTypes;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
+import net.minecraft.util.registry.Registry;
 
 /** Experience Bottler's screen initializer. */
 public class ScreenInitializer {
@@ -36,12 +39,12 @@ public class ScreenInitializer {
 
   /** Initializes the screens. */
   public static void init() {
-    ScreenHandlers.init();
+    Registry.register(Registry.SCREEN_HANDLER, Identifiers.EXPERIENCE_BOTTLER, ScreenHandlerTypes.EXPERIENCE_BOTTLER);
   }
 
   /** Initializes the screens at client-side. */
   @Environment(EnvType.CLIENT)
   public static void initClient() {
-    ScreenRegistry.register(ScreenHandlers.expBottler(), ExperienceBottlerScreen::new);
+    HandledScreens.register(ScreenHandlerTypes.EXPERIENCE_BOTTLER, ExperienceBottlerScreen::new);
   }
 }
