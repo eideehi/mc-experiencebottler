@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 EideeHi
+ * Copyright (c) 2021-2022 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,23 +25,12 @@
 package net.eidee.minecraft.experiencebottler;
 
 import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /** Experience Bottler's system class. */
 public class ExperienceBottlerMod {
   public static final String MOD_ID = "experiencebottler";
-  private static final Logger logger;
-
-  static {
-    logger = LogManager.getLogger(MOD_ID);
-  }
 
   private ExperienceBottlerMod() {}
-
-  public static Logger getLogger() {
-    return logger;
-  }
 
   public static Identifier identifier(String path) {
     return new Identifier(MOD_ID, path);

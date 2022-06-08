@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 EideeHi
+ * Copyright (c) 2021-2022 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,33 +49,33 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
   public ExperienceBottlerScreenHandler(
       int id, PlayerInventory inventory, ScreenHandlerContext context) {
     super(ScreenHandlerTypes.EXPERIENCE_BOTTLER, id);
-    this.player = inventory.player;
+    player = inventory.player;
     this.context = context;
-    this.input =
+    input =
         new SimpleInventory(1) {
           @Override
           public void markDirty() {
-            ExperienceBottlerScreenHandler.this.onContentChanged(this);
+            onContentChanged(this);
           }
         };
-    this.result =
+    result =
         new CraftingResultInventory() {
           @Override
           public void markDirty() {
-            ExperienceBottlerScreenHandler.this.onContentChanged(this);
+            onContentChanged(this);
           }
         };
 
-    this.addSlot(
-        new Slot(this.input, 0, 20, 44) {
+    addSlot(
+        new Slot(input, 0, 20, 44) {
           @Override
           public boolean canInsert(ItemStack stack) {
             return stack.getItem() == net.minecraft.item.Items.GLASS_BOTTLE;
           }
         });
 
-    this.addSlot(
-        new Slot(this.result, 1, 20, 85) {
+    addSlot(
+        new Slot(result, 1, 20, 85) {
           @Override
           public boolean canInsert(ItemStack stack) {
             return false;
@@ -83,12 +83,9 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
 
           @Override
           public boolean canTakeItems(PlayerEntity playerEntity) {
-            if (!ExperienceBottlerScreenHandler.this.player.isCreative()) {
-              int experience = BottledExperienceItem.readExperienceTag(this.getStack());
-              return experience > 0
-                  && experience
-                      <= ExperienceUtil.getTotalExperience(
-                          ExperienceBottlerScreenHandler.this.player);
+            if (!player.isCreative()) {
+              int experience = BottledExperienceItem.readExperienceTag(getStack());
+              return experience > 0 && experience <= ExperienceUtil.getTotalExperience(player);
             }
             return true;
           }
@@ -101,10 +98,10 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
               if (experience > 0) {
                 player.addExperience(-experience);
               }
-              ItemStack glassBottle = ExperienceBottlerScreenHandler.this.input.getStack(0).copy();
+              ItemStack glassBottle = input.getStack(0).copy();
               if (!glassBottle.isEmpty()) {
                 glassBottle.decrement(1);
-                ExperienceBottlerScreenHandler.this.input.setStack(0, glassBottle);
+                input.setStack(0, glassBottle);
               }
             }
           }
@@ -112,12 +109,12 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
 
     for (int i = 0; i < 3; ++i) {
       for (int j = 0; j < 9; ++j) {
-        this.addSlot(new Slot(inventory, 9 + j + (i * 9), 20 + (j * 18), 128 + (i * 18)));
+        addSlot(new Slot(inventory, 9 + j + (i * 9), 20 + (j * 18), 128 + (i * 18)));
       }
     }
 
     for (int i = 0; i < 9; ++i) {
-      this.addSlot(new Slot(inventory, i, 20 + (i * 18), 186));
+      addSlot(new Slot(inventory, i, 20 + (i * 18), 186));
     }
   }
 
@@ -126,62 +123,62 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
   }
 
   private void updateResult() {
-    boolean canResultCreate = this.bottlingExperience > 0 && !this.input.getStack(0).isEmpty();
+    boolean canResultCreate = bottlingExperience > 0 && !input.getStack(0).isEmpty();
     if (canResultCreate) {
-      canResultCreate = ExperienceUtil.getTotalExperience(this.player) >= this.bottlingExperience;
+      canResultCreate = ExperienceUtil.getTotalExperience(player) >= bottlingExperience;
       if (canResultCreate) {
         ItemStack result = new ItemStack(Items.BOTTLED_EXPERIENCE);
-        BottledExperienceItem.writeExperienceTag(result, this.bottlingExperience);
+        BottledExperienceItem.writeExperienceTag(result, bottlingExperience);
         this.result.setStack(0, result);
       }
     }
     if (!canResultCreate) {
-      this.result.setStack(0, ItemStack.EMPTY);
+      result.setStack(0, ItemStack.EMPTY);
     }
-    this.sendContentUpdates();
+    sendContentUpdates();
   }
 
   public void setBottlingExperience(int value) {
-    this.bottlingExperience = value;
-    this.updateResult();
+    bottlingExperience = value;
+    updateResult();
   }
 
   @Override
   public void close(PlayerEntity player) {
     super.close(player);
-    this.context.run((world, pos) -> this.dropInventory(player, this.input));
+    context.run((world, pos) -> dropInventory(player, input));
   }
 
   @Override
   public boolean canUse(PlayerEntity player) {
-    return canUse(this.context, player, Blocks.EXPERIENCE_BOTTLER);
+    return canUse(context, player, Blocks.EXPERIENCE_BOTTLER);
   }
 
   @Override
   public void onContentChanged(Inventory inventory) {
     super.onContentChanged(inventory);
-    if (inventory == this.input || inventory == this.result) {
-      this.updateResult();
+    if (inventory == input || inventory == result) {
+      updateResult();
     }
   }
 
   @Override
   public ItemStack transferSlot(PlayerEntity player, int index) {
     ItemStack stack = ItemStack.EMPTY;
-    Slot slot = this.slots.get(index);
+    Slot slot = slots.get(index);
     if (slot.hasStack()) {
       ItemStack stackInSlot = slot.getStack();
       stack = stackInSlot.copy();
       if (index == 1) {
-        if (!this.insertItem(stackInSlot, 2, 38, true)) {
+        if (!insertItem(stackInSlot, 2, 38, true)) {
           return ItemStack.EMPTY;
         }
         slot.onQuickTransfer(stackInSlot, stack);
       } else if (index == 0) {
-        if (!this.insertItem(stackInSlot, 2, 38, true)) {
+        if (!insertItem(stackInSlot, 2, 38, true)) {
           return ItemStack.EMPTY;
         }
-      } else if (!this.insertItem(stackInSlot, 0, 1, false)) {
+      } else if (!insertItem(stackInSlot, 0, 1, false)) {
         return ItemStack.EMPTY;
       }
       if (stackInSlot.isEmpty()) {

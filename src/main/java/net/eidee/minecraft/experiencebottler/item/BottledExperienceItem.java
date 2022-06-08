@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 EideeHi
+ * Copyright (c) 2021-2022 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -146,7 +146,7 @@ public class BottledExperienceItem extends Item {
         tooltip.add(Text.translatable("item.experiencebottler.bottled_experience.tooltip.0", value));
 
         if (world != null && world.isClient()) {
-          this.appendTooltipForClient(stack, world, tooltip, context);
+          appendTooltipForClient(stack, world, tooltip, context);
         }
       }
     }
@@ -173,7 +173,7 @@ public class BottledExperienceItem extends Item {
 
   @Override
   public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
-    if (this.isIn(group)) {
+    if (isIn(group)) {
       for (int experience : EXPERIENCE_LIST) {
         ItemStack stack = new ItemStack(this);
         writeExperienceTag(stack, experience);

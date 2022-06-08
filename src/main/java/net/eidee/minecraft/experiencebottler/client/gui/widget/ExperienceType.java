@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 EideeHi
+ * Copyright (c) 2021-2022 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@ public enum ExperienceType {
   LEVEL;
 
   public String getNarrationKey() {
-    return "narration.experiencebottler.experience_type." + (this.isPoint() ? "point" : "level");
+    return "narration.experiencebottler.experience_type." + (isPoint() ? "point" : "level");
   }
 
   public boolean isPoint() {

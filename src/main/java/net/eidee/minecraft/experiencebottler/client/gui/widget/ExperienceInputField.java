@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 EideeHi
+ * Copyright (c) 2021-2022 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,7 +55,7 @@ public class ExperienceInputField extends ClickableWidget {
     super(x, y, 90, 18, ScreenTexts.EMPTY);
     this.textRenderer = textRenderer;
     this.listener = listener;
-    this.experienceType = ExperienceType.POINT;
+    experienceType = ExperienceType.POINT;
   }
 
   private static String convertValue(String value, ExperienceType experienceType) {
@@ -85,26 +85,26 @@ public class ExperienceInputField extends ClickableWidget {
   }
 
   private int getTextColor() {
-    if (this.getValue().startsWith("-")) {
+    if (getValue().startsWith("-")) {
       return 0xE09090;
     } else {
-      return this.isFocused() ? 0xFFFFFF : 0xA0A0A0;
+      return isFocused() ? 0xFFFFFF : 0xA0A0A0;
     }
   }
 
   public ExperienceType getExperienceType() {
-    return this.experienceType;
+    return experienceType;
   }
 
   public void setExperienceType(ExperienceType experienceType) {
     if (this.experienceType != experienceType) {
       this.experienceType = experienceType;
-      this.setValue(convertValue(this.value, experienceType));
+      setValue(convertValue(value, experienceType));
     }
   }
 
   public String getValue() {
-    return this.value;
+    return value;
   }
 
   public void setValue(String value) {
@@ -114,7 +114,7 @@ public class ExperienceInputField extends ClickableWidget {
 
     String newValue = value;
     if (NUMBER.matcher(newValue).matches()) {
-      if (this.getExperienceType().isPoint()) {
+      if (getExperienceType().isPoint()) {
         long point = NumberUtils.toLong(newValue);
         if (point > Integer.MAX_VALUE) {
           newValue = Integer.toString(Integer.MAX_VALUE);
@@ -135,76 +135,74 @@ public class ExperienceInputField extends ClickableWidget {
 
     if (!this.value.equals(newValue)) {
       this.value = newValue;
-      this.listener.onValueChanged(this, newValue);
+      listener.onValueChanged(this, newValue);
     }
   }
 
   public boolean isEmpty() {
-    return this.value.isEmpty();
+    return value.isEmpty();
   }
 
   public String getValueAs(ExperienceType experienceType) {
-    return this.getExperienceType() == experienceType
-        ? this.getValue()
-        : convertValue(this.getValue(), experienceType);
+    return getExperienceType() == experienceType
+        ? getValue()
+        : convertValue(getValue(), experienceType);
   }
 
   public void setValueAs(String value, ExperienceType experienceType) {
-    this.setValue(
-        this.getExperienceType() == experienceType
-            ? value
-            : convertValue(value, this.getExperienceType()));
+    setValue(
+        getExperienceType() == experienceType ? value : convertValue(value, getExperienceType()));
   }
 
   public void tick() {
-    this.frame++;
+    frame++;
   }
 
   @Override
   public void setFocused(boolean focused) {
     super.setFocused(focused);
-    this.listener.onFocusChanged(this, focused);
+    listener.onFocusChanged(this, focused);
   }
 
   @Override
   public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-    String text = this.getValue();
+    String text = getValue();
     int marginX = 0;
-    if (this.active && this.visible && this.isFocused()) {
-      if (this.frame / 6 % 2 == 0) {
+    if (active && visible && isFocused()) {
+      if (frame / 6 % 2 == 0) {
         text += "_";
       } else {
-        marginX = this.textRenderer.getWidth("_");
+        marginX = textRenderer.getWidth("_");
       }
     } else {
-      marginX = this.textRenderer.getWidth("_");
+      marginX = textRenderer.getWidth("_");
     }
 
-    this.textRenderer.draw(
+    textRenderer.draw(
         matrices,
         text,
-        this.x + this.width - this.textRenderer.getWidth(text) - marginX - 3,
-        this.y + this.height - this.textRenderer.fontHeight - 3,
-        this.getTextColor());
+        x + width - textRenderer.getWidth(text) - marginX - 3,
+        y + height - textRenderer.fontHeight - 3,
+        getTextColor());
   }
 
   @Override
   protected void onFocusedChanged(boolean newFocused) {
     if (newFocused) {
-      this.frame = 0;
-      this.setValue("");
+      frame = 0;
+      setValue("");
     }
-    this.listener.onFocusChanged(this, newFocused);
+    listener.onFocusChanged(this, newFocused);
   }
 
   @Override
   public boolean mouseClicked(double mouseX, double mouseY, int button) {
-    if (this.active && this.visible) {
-      if (this.isValidClickButton(button)) {
-        boolean flag = this.clicked(mouseX, mouseY);
+    if (active && visible) {
+      if (isValidClickButton(button)) {
+        boolean flag = clicked(mouseX, mouseY);
         if (flag) {
-          this.changeFocus(false);
-          this.onClick(mouseX, mouseY);
+          changeFocus(false);
+          onClick(mouseX, mouseY);
           return true;
         }
       }
@@ -214,14 +212,14 @@ public class ExperienceInputField extends ClickableWidget {
 
   @Override
   public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-    if (this.active && this.visible && this.isFocused()) {
+    if (active && visible && isFocused()) {
       if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
-        String value = this.getValue();
+        String value = getValue();
         int length = value.length();
-        this.setValue(length > 0 ? value.substring(0, length - 1) : "");
+        setValue(length > 0 ? value.substring(0, length - 1) : "");
         return true;
       } else if (keyCode == GLFW.GLFW_KEY_DELETE) {
-        this.setValue("");
+        setValue("");
         return true;
       }
     }
@@ -230,13 +228,13 @@ public class ExperienceInputField extends ClickableWidget {
 
   @Override
   public boolean charTyped(char chr, int modifiers) {
-    if (this.active && this.visible && this.isFocused()) {
-      String value = this.getValue();
+    if (active && visible && isFocused()) {
+      String value = getValue();
       if (Character.isDigit(chr)) {
         if (chr == '0' && value.startsWith("0")) {
           return false;
         }
-        this.setValue(value + chr);
+        setValue(value + chr);
         return true;
       }
     }
@@ -250,10 +248,10 @@ public class ExperienceInputField extends ClickableWidget {
 
   @Override
   public void appendNarrations(NarrationMessageBuilder builder) {
-    builder.put(NarrationPart.TITLE, this.getNarrationMessage());
-    if (this.active) {
-      int experience = NumberUtils.toInt(this.getValue());
-      Text type = Text.translatable(this.getExperienceType().getNarrationKey());
+    builder.put(NarrationPart.TITLE, getNarrationMessage());
+    if (active) {
+      int experience = NumberUtils.toInt(getValue());
+      Text type = Text.translatable(getExperienceType().getNarrationKey());
       builder.put(
           NarrationPart.HINT,
           Text.translatable(

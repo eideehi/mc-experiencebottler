@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 EideeHi
+ * Copyright (c) 2021-2022 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -61,15 +61,15 @@ public class ExperienceTypeToggleButton extends PressableWidget {
     super(x, y, 18, 18, ScreenTexts.EMPTY);
     this.id = id;
     this.action = action;
-    this.experienceType = ExperienceType.POINT;
+    experienceType = ExperienceType.POINT;
   }
 
   public int getId() {
-    return this.id;
+    return id;
   }
 
   public ExperienceType getExperienceType() {
-    return this.experienceType;
+    return experienceType;
   }
 
   public void setExperienceType(ExperienceType experienceType) {
@@ -78,7 +78,7 @@ public class ExperienceTypeToggleButton extends PressableWidget {
 
   @Override
   public Text getMessage() {
-    return this.getExperienceType() == ExperienceType.POINT ? TEXT_POINT : TEXT_LEVEL;
+    return getExperienceType() == ExperienceType.POINT ? TEXT_POINT : TEXT_LEVEL;
   }
 
   @Override
@@ -86,52 +86,44 @@ public class ExperienceTypeToggleButton extends PressableWidget {
 
   @Override
   public void onPress() {
-    this.setExperienceType(this.getExperienceType().rotate());
-    this.action.accept(this);
+    setExperienceType(getExperienceType().rotate());
+    action.accept(this);
   }
 
   @Override
   public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
     RenderSystem.setShader(GameRenderer::getPositionTexShader);
     RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
-    RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, this.alpha);
+    RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
     RenderSystem.enableBlend();
     RenderSystem.defaultBlendFunc();
     RenderSystem.enableDepthTest();
 
-    int halfWidth = this.width / 2;
-    int halfHeight = this.height / 2;
-    int offsetY = 46 + (this.getYImage(this.isHovered()) * 20);
+    int halfWidth = width / 2;
+    int halfHeight = height / 2;
+    int offsetY = 46 + (getYImage(isHovered()) * 20);
 
-    this.drawTexture(matrices, this.x, this.y, 0, offsetY, halfWidth, halfHeight);
-    this.drawTexture(
-        matrices, this.x + halfWidth, this.y, 200 - halfWidth, offsetY, halfWidth, halfHeight);
-    this.drawTexture(
+    drawTexture(matrices, x, y, 0, offsetY, halfWidth, halfHeight);
+    drawTexture(matrices, x + halfWidth, y, 200 - halfWidth, offsetY, halfWidth, halfHeight);
+    drawTexture(matrices, x, y + halfHeight, 0, (offsetY + 20) - halfHeight, halfWidth, halfHeight);
+    drawTexture(
         matrices,
-        this.x,
-        this.y + halfHeight,
-        0,
-        (offsetY + 20) - halfHeight,
-        halfWidth,
-        halfHeight);
-    this.drawTexture(
-        matrices,
-        this.x + halfWidth,
-        this.y + halfHeight,
+        x + halfWidth,
+        y + halfHeight,
         200 - halfWidth,
         (offsetY + 20) - halfHeight,
         halfWidth,
         halfHeight);
 
     MinecraftClient minecraft = MinecraftClient.getInstance();
-    int textColor = this.active ? 0xFFFFFF : 0xA0A0A0;
+    int textColor = active ? 0xFFFFFF : 0xA0A0A0;
     ClickableWidget.drawCenteredText(
         matrices,
         minecraft.textRenderer,
-        this.getMessage(),
-        this.x + halfWidth,
-        this.y + (this.height - 8) / 2,
-        textColor | MathHelper.ceil(this.alpha * 255.0f) << 24);
+        getMessage(),
+        x + halfWidth,
+        y + (height - 8) / 2,
+        textColor | MathHelper.ceil(alpha * 255.0f) << 24);
   }
 
   @Override
@@ -141,9 +133,9 @@ public class ExperienceTypeToggleButton extends PressableWidget {
 
   @Override
   public void appendNarrations(NarrationMessageBuilder builder) {
-    builder.put(NarrationPart.TITLE, this.getNarrationMessage());
-    if (this.active) {
-      if (this.isFocused()) {
+    builder.put(NarrationPart.TITLE, getNarrationMessage());
+    if (active) {
+      if (isFocused()) {
         builder.put(
             NarrationPart.USAGE,
             Text.translatable(
@@ -155,7 +147,7 @@ public class ExperienceTypeToggleButton extends PressableWidget {
                 "narration.experiencebottler.experience_type_toggle_button.usage.hovered"));
       }
 
-      Text type = Text.translatable(this.getExperienceType().getNarrationKey());
+      Text type = Text.translatable(getExperienceType().getNarrationKey());
       builder.put(
           NarrationPart.HINT,
           Text.translatable(

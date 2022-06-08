@@ -92,7 +92,7 @@ public class ExperienceBottlerBlock extends HorizontalFacingBlock {
 
   public ExperienceBottlerBlock(Settings settings) {
     super(settings);
-    this.setDefaultState(this.getStateManager().getDefaultState().with(FACING, Direction.NORTH));
+    setDefaultState(getStateManager().getDefaultState().with(FACING, Direction.NORTH));
   }
 
   @Override
@@ -126,7 +126,7 @@ public class ExperienceBottlerBlock extends HorizontalFacingBlock {
   @Nullable
   @Override
   public BlockState getPlacementState(ItemPlacementContext ctx) {
-    return this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite());
+    return getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite());
   }
 
   @Nullable

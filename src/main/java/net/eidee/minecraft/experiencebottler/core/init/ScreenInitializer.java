@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 EideeHi
+ * Copyright (c) 2021-2022 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,6 @@ import net.eidee.minecraft.experiencebottler.core.constants.Identifiers;
 import net.eidee.minecraft.experiencebottler.screen.ScreenHandlerTypes;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.util.registry.Registry;
 
@@ -39,7 +38,10 @@ public class ScreenInitializer {
 
   /** Initializes the screens. */
   public static void init() {
-    Registry.register(Registry.SCREEN_HANDLER, Identifiers.EXPERIENCE_BOTTLER, ScreenHandlerTypes.EXPERIENCE_BOTTLER);
+    Registry.register(
+        Registry.SCREEN_HANDLER,
+        Identifiers.EXPERIENCE_BOTTLER,
+        ScreenHandlerTypes.EXPERIENCE_BOTTLER);
   }
 
   /** Initializes the screens at client-side. */
