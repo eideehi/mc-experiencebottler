@@ -4,8 +4,10 @@
 :uri-youtube-demo: https://youtu.be/ZtUIFA9R_CE
 :uri-crowdin: https://crowdin.com/project/eideehi-minecraft-mods
 :uri-license: link:LICENSE
+:uri-issues: https://github.com/eideehi/mc-experiencebottler/issues
 :uri-fabric: https://fabricmc.net/
 :uri-crowdin-translate: https://github.com/gbl/CrowdinTranslate
+:uri-discord: https://discord.gg/DDQqxkK7s6
 
 Add a block that can be used to bottle any quantity of experience points. The bottled experience points can be drunk like a potion, giving the experience points to user.
 
@@ -32,6 +34,12 @@ In addition, since {uri-crowdin-translate}[CrowdinTranslate] is built into the m
 |ja_jp    |EideeHi           |100%
 |fr_fr    |ɪѕнɪ_ѕαʍα         |100%
 |===
+
+== Contacts
+* {uri-issues}[Issues - GitHub] +
+  Only bug reports are accepted under Issues.
+* {uri-discord}[eidee.net - Discord server] +
+  Questions, suggestions, comments, etc. can be directed here.
 
 == Credits
 * Dependencies:
