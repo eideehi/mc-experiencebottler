@@ -1,6 +1,8 @@
 = Experience Bottler - Minecraft Mod for Fabric
 :image-uri-demo-thumbnail: https://app.box.com/shared/static/jdbl19h8s530e6rfotuj22k0lx7fez2e.png
 :image-uri-recipe-experience-bottler: https://app.box.com/shared/static/2belshm5padmppgegk43vpaw0i46j89l.png
+:image-uri-bug-report: https://app.box.com/shared/static/g2v3vbju4jazq7kycoigp60ltki2kw8i.png
+:image-uri-discord: https://app.box.com/shared/static/0s09ti60hvyyp5k98xyrnkfp683mrt9r.png
 :uri-youtube-demo: https://youtu.be/ZtUIFA9R_CE
 :uri-crowdin: https://crowdin.com/project/eideehi-minecraft-mods
 :uri-license: link:LICENSE
@@ -18,7 +20,7 @@ As with other mods, there is nothing special to do, just place the mod files in 
 Experience values can be bottled in any quantity from 1 to 2147483647 into an empty bottle by using the GUI. Up to 64 bottled experience values can be stacked. However, this requires that the quantity of bottled experience must be the same.
 
 A working demo has been uploaded to link:{uri-youtube-demo}[YouTube].
-image:{image-uri-demo-thumbnail}[link={uri-youtube-demo},title="YouTube"]
+image:{image-uri-demo-thumbnail}[link={uri-youtube-demo},alt="YouTube thumbnail"]
 
 == Recipes
 Experience Bottler::
@@ -36,10 +38,11 @@ In addition, since {uri-crowdin-translate}[CrowdinTranslate] is built into the m
 |===
 
 == Contacts
-* {uri-issues}[Issues - GitHub] +
-  Only bug reports are accepted under Issues.
-* {uri-discord}[eidee.net - Discord server] +
-  Questions, suggestions, comments, etc. can be directed here.
+image::{image-uri-bug-report}[link={uri-issues},alt="Bug report on Issues"]
+*Only bug reports are accepted under Issues.*
+
+image::{image-uri-discord}[link={uri-discord},alt="eidee.net - Discord Server"]
+*Questions, suggestions and comments are welcome on the Discord Server.*
 
 == Credits
 * Dependencies:
