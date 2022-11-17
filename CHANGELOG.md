@@ -1,6 +1,7 @@
 ## [1.19+build.2 / 2022-11-17](#1.19+build.2)
 * EideeHi: Fix a bug that caused the game to freeze
-* Remove CrowdinTranslate from dependencies
+* EideeHi: Remove CrowdinTranslate from dependencies
+* EideeHi: Add outline on hover to the experience input field in the GUI
 
 ## [1.19+build.1 / 2022-06-08](#1.19+build.1)
 * EideeHi: Migrate to Minecraft 1.19
