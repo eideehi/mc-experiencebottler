@@ -21,6 +21,9 @@ Experience values can be bottled in any quantity from 1 to 2147483647 into an em
 A working demo has been uploaded to link:{uri-youtube-demo}[YouTube].
 image:{image-uri-demo-thumbnail}[link={uri-youtube-demo},alt="YouTube thumbnail"]
 
+== About rare case bugs
+If a player's level is abnormally high, the experience calculation logic may not work correctly. This does not occur unless the player's level exceeds 21863, so it generally doesn't matter to most players, but keep it in the back of your mind.
+
 == Recipes
 Experience Bottler::
   image:{image-uri-recipe-experience-bottler}[Recipe - Experience Bottler]
