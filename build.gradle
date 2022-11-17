@@ -2,7 +2,7 @@ plugins {
     id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'maven-publish'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
-    id 'com.modrinth.minotaur' version '1.2.1'
+    id 'com.modrinth.minotaur' version '2.+'
 }
 
 version = project.mod_version
@@ -97,6 +97,8 @@ curseforge {
         id = project.curseforge_projectId
         releaseType = 'release'
         addGameVersion project.minecraft_version
+        addGameVersion '1.19.1'
+        addGameVersion '1.19.2'
         addGameVersion 'Fabric'
         changelogType = 'markdown'
         changelog = "[View changelog on GitHub](${project.changelog_url}#${project.version})"
@@ -114,23 +116,19 @@ curseforge {
     }
 }
 
-import com.modrinth.minotaur.TaskModrinthUpload
-task modrinth(type: TaskModrinthUpload) {
-    group = 'upload'
-    description = 'Upload the mod to Modrinth'
-
-    onlyIf {
-        project.findProperty('modrinth_token')
-    }
-
+import com.modrinth.minotaur.dependencies.ModDependency
+modrinth {
     token = project.findProperty('modrinth_token')
     projectId = project.modrinth_projectId
-    versionName = "${project.display_name} ${project.version}"
     versionNumber = project.version
-    changelog = "[View changelog on GitHub](${project.changelog_url}#${project.version})"
+    versionName = "${project.display_name} ${project.version}"
     uploadFile = remapJar
-    addGameVersion("${project.minecraft_version}")
-    addLoader('fabric')
+    changelog = "[View changelog on GitHub](${project.changelog_url}#${project.version})"
+    gameVersions = ["1.19", "1.19.1", "1.19.2"]
+    loaders = ["fabric"]
+    dependencies = [
+            new ModDependency("P7dR8mSH", "required")
+    ]
 }
 
 task upload(dependsOn: [tasks.curseforge, tasks.modrinth]) {
