@@ -25,6 +25,7 @@
 package net.eidee.minecraft.experiencebottler.block;
 
 import net.eidee.minecraft.experiencebottler.screen.ExperienceBottlerScreenHandler;
+import net.eidee.minecraft.experiencebottler.screen.ExperienceSource;
 import net.eidee.minecraft.experiencebottler.stat.Stats;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -96,8 +97,8 @@ public class ExperienceBottlerBlock extends HorizontalFacingBlock {
   }
 
   @Override
-  public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos,
-      ShapeContext context) {
+  public VoxelShape getOutlineShape(
+      BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
     return switch (state.get(FACING)) {
       case NORTH -> NORTH_SHAPE;
       case SOUTH -> SOUTH_SHAPE;
@@ -136,7 +137,9 @@ public class ExperienceBottlerBlock extends HorizontalFacingBlock {
     return new SimpleNamedScreenHandlerFactory(
         (syncId, inventory, player) ->
             new ExperienceBottlerScreenHandler(
-                syncId, inventory, ScreenHandlerContext.create(world, pos)),
+                syncId,
+                inventory,
+                ExperienceSource.fromPlayer(player, ScreenHandlerContext.create(world, pos))),
         CONTAINER_TITLE);
   }
 

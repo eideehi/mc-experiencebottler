@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2022 EideeHi
+ * Copyright (c) 2022 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +24,11 @@
 
 package net.eidee.minecraft.experiencebottler.screen;
 
-import net.eidee.minecraft.experiencebottler.block.Blocks;
+import javax.annotation.ParametersAreNonnullByDefault;
 import net.eidee.minecraft.experiencebottler.item.BottledExperienceItem;
 import net.eidee.minecraft.experiencebottler.item.Items;
-import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingResultInventory;
@@ -35,22 +36,25 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.text.Text;
+import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 
-/** The screen handler of the Experience Bottler block. */
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class ExperienceBottlerScreenHandler extends ScreenHandler {
-  private final PlayerEntity player;
-  private final ScreenHandlerContext context;
+  private final ExperienceSource experienceSource;
   private final Inventory input;
   private final Inventory result;
   private int bottlingExperience;
 
   public ExperienceBottlerScreenHandler(
-      int id, PlayerInventory inventory, ScreenHandlerContext context) {
-    super(ScreenHandlerTypes.EXPERIENCE_BOTTLER, id);
-    player = inventory.player;
-    this.context = context;
+      int syncId, PlayerInventory inventory, ExperienceSource experienceSource) {
+    super(ScreenHandlerTypes.EXPERIENCE_BOTTLER, syncId);
+    this.experienceSource = experienceSource;
+
+    experienceSource.onOpen(inventory.player);
+
     input =
         new SimpleInventory(1) {
           @Override
@@ -58,6 +62,7 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
             onContentChanged(this);
           }
         };
+
     result =
         new CraftingResultInventory() {
           @Override
@@ -75,7 +80,7 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
         });
 
     addSlot(
-        new Slot(result, 1, 20, 85) {
+        new Slot(result, 0, 20, 85) {
           @Override
           public boolean canInsert(ItemStack stack) {
             return false;
@@ -83,27 +88,35 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
 
           @Override
           public boolean canTakeItems(PlayerEntity playerEntity) {
-            if (!player.isCreative()) {
+            if (!playerEntity.isCreative()) {
               int experience = BottledExperienceItem.readExperienceTag(getStack());
-              return experience > 0 && experience <= ExperienceUtil.getTotalExperience(player);
+              return experience > 0 && experience <= experienceSource.getTotalExperience();
             }
             return true;
           }
 
           @Override
           public void onTakeItem(PlayerEntity player, ItemStack stack) {
-            BottledExperienceItem.writeBottledTag(stack, true);
             if (!player.isCreative()) {
-              int experience = BottledExperienceItem.readExperienceTag(stack);
-              if (experience > 0) {
-                player.addExperience(-experience);
-              }
               ItemStack glassBottle = input.getStack(0).copy();
               if (!glassBottle.isEmpty()) {
                 glassBottle.decrement(1);
                 input.setStack(0, glassBottle);
               }
+              int experience = BottledExperienceItem.readExperienceTag(stack);
+              if (experience <= experienceSource.getTotalExperience()) {
+                experienceSource.removeExperience(experience);
+              }
+              updateResult();
             }
+          }
+        });
+
+    addSlot(
+        new HiddenSlot(experienceSource, 0) {
+          @Override
+          public void markDirty() {
+            onContentChanged(experienceSource);
           }
         });
 
@@ -119,23 +132,30 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
   }
 
   public ExperienceBottlerScreenHandler(int syncId, PlayerInventory inventory) {
-    this(syncId, inventory, ScreenHandlerContext.EMPTY);
+    this(syncId, inventory, ExperienceSource.forClient());
   }
 
   private void updateResult() {
-    boolean canResultCreate = bottlingExperience > 0 && !input.getStack(0).isEmpty();
-    if (canResultCreate) {
-      canResultCreate = ExperienceUtil.getTotalExperience(player) >= bottlingExperience;
-      if (canResultCreate) {
-        ItemStack result = new ItemStack(Items.BOTTLED_EXPERIENCE);
-        BottledExperienceItem.writeExperienceTag(result, bottlingExperience);
-        this.result.setStack(0, result);
-      }
-    }
-    if (!canResultCreate) {
+    if (bottlingExperience > 0
+        && !input.getStack(0).isEmpty()
+        && experienceSource.getTotalExperience() >= bottlingExperience) {
+      ItemStack bottledExperience = new ItemStack(Items.BOTTLED_EXPERIENCE);
+      BottledExperienceItem.writeExperienceTag(bottledExperience, bottlingExperience);
+      result.setStack(0, bottledExperience);
+    } else {
       result.setStack(0, ItemStack.EMPTY);
     }
     sendContentUpdates();
+  }
+
+  @Environment(EnvType.CLIENT)
+  public Text getSourceName() {
+    return experienceSource.getSourceName();
+  }
+
+  @Environment(EnvType.CLIENT)
+  public long getSourceExperience() {
+    return experienceSource.getTotalExperience();
   }
 
   public void setBottlingExperience(int value) {
@@ -146,18 +166,19 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
   @Override
   public void close(PlayerEntity player) {
     super.close(player);
-    context.run((world, pos) -> dropInventory(player, input));
+    experienceSource.onClose(player);
+    dropInventory(player, input);
   }
 
   @Override
   public boolean canUse(PlayerEntity player) {
-    return canUse(context, player, Blocks.EXPERIENCE_BOTTLER);
+    return experienceSource.canPlayerUse(player);
   }
 
   @Override
   public void onContentChanged(Inventory inventory) {
     super.onContentChanged(inventory);
-    if (inventory == input || inventory == result) {
+    if (inventory == input || inventory == result || inventory == experienceSource) {
       updateResult();
     }
   }
@@ -169,15 +190,15 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
     if (slot.hasStack()) {
       ItemStack stackInSlot = slot.getStack();
       stack = stackInSlot.copy();
-      if (index == 1) {
-        if (!insertItem(stackInSlot, 2, 38, true)) {
+      if (slot.inventory == input) {
+        if (!insertItem(stackInSlot, 3, slots.size(), true)) {
+          return ItemStack.EMPTY;
+        }
+      } else if (slot.inventory == result) {
+        if (!insertItem(stackInSlot, 3, slots.size(), true)) {
           return ItemStack.EMPTY;
         }
         slot.onQuickTransfer(stackInSlot, stack);
-      } else if (index == 0) {
-        if (!insertItem(stackInSlot, 2, 38, true)) {
-          return ItemStack.EMPTY;
-        }
       } else if (!insertItem(stackInSlot, 0, 1, false)) {
         return ItemStack.EMPTY;
       }

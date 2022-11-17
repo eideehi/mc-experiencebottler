@@ -27,28 +27,30 @@ package net.eidee.minecraft.experiencebottler.item;
 import java.util.List;
 import net.eidee.minecraft.experiencebottler.ExperienceBottlerMod;
 import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
+import net.minecraft.util.ClickType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 
 /** The item of bottled experience points. */
@@ -70,20 +72,29 @@ public class BottledExperienceItem extends Item {
     return nbt != null ? nbt.getInt(TAG_EXPERIENCE) : 0;
   }
 
-  /** Get the bottled flag in the item stack. If no flag is set, it returns false. */
-  public static boolean readBottledTag(ItemStack stack) {
-    NbtCompound nbt = stack.getNbt();
-    return nbt != null && nbt.getBoolean(TAG_BOTTLED);
-  }
-
   /** Set the experience value in item stack. */
   public static void writeExperienceTag(ItemStack stack, int value) {
     stack.getOrCreateNbt().putInt(TAG_EXPERIENCE, value);
   }
 
-  /** Set the bottled flag in item stack. */
-  public static void writeBottledTag(ItemStack stack, boolean value) {
-    stack.getOrCreateNbt().putBoolean(TAG_BOTTLED, value);
+  public static List<Text> getAppendTooltip(ItemStack stack, @Nullable PlayerEntity player) {
+    List<Text> result = Lists.newArrayList();
+    if (stack.isEmpty()) {
+      return result;
+    }
+    int experience = readExperienceTag(stack);
+    if (experience < 0) {
+      return result;
+    }
+    Text arg = Text.literal(String.format("%,d", experience));
+    result.add(Text.translatable("item.experiencebottler.bottled_experience.tooltip.0", arg));
+    if (player != null) {
+      long playerExperience = ExperienceUtil.getTotalExperience(player);
+      int level = ExperienceUtil.getLevelFromTotalExperience(experience + playerExperience);
+      arg = Text.literal(String.format("%,d", level));
+      result.add(Text.translatable("item.experiencebottler.bottled_experience.tooltip.1", arg));
+    }
+    return result;
   }
 
   @Override
@@ -103,7 +114,7 @@ public class BottledExperienceItem extends Item {
       if (!world.isClient()) {
         int experience = readExperienceTag(stack);
         if (experience > 0) {
-          player.addExperience(experience);
+          ExperienceUtil.addExperience(player, experience);
         }
       }
 
@@ -138,31 +149,12 @@ public class BottledExperienceItem extends Item {
   }
 
   @Override
-  public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-    if (!stack.isEmpty()) {
-      int experience = readExperienceTag(stack);
-      if (experience > 0) {
-        Text value = Text.literal(String.format("%,d", experience));
-        tooltip.add(Text.translatable("item.experiencebottler.bottled_experience.tooltip.0", value));
-
-        if (world != null && world.isClient()) {
-          appendTooltipForClient(stack, world, tooltip, context);
-        }
-      }
-    }
-  }
-
-  @Environment(EnvType.CLIENT)
-  private void appendTooltipForClient(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-    int experience = readExperienceTag(stack);
-    if (experience > 0 && readBottledTag(stack)) {
-      PlayerEntity player = MinecraftClient.getInstance().player;
-      if (player != null) {
-        int playerExperience = ExperienceUtil.getTotalExperience(player);
-        int level = ExperienceUtil.getLevelFromTotalExperience(experience + playerExperience);
-        Text value = Text.literal(String.format("%,d", level));
-        tooltip.add(Text.translatable("item.experiencebottler.bottled_experience.tooltip.1", value));
-      }
+  public void appendTooltip(
+      ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+    if (world != null && world.isClient()) {
+      tooltip.addAll(getAppendTooltip(stack, MinecraftClient.getInstance().player));
+    } else {
+      tooltip.addAll(getAppendTooltip(stack, null));
     }
   }
 
@@ -177,9 +169,31 @@ public class BottledExperienceItem extends Item {
       for (int experience : EXPERIENCE_LIST) {
         ItemStack stack = new ItemStack(this);
         writeExperienceTag(stack, experience);
-        writeBottledTag(stack, true);
         stacks.add(stack);
       }
     }
+  }
+
+  @Override
+  public boolean onClicked(
+      ItemStack stack,
+      ItemStack otherStack,
+      Slot slot,
+      ClickType clickType,
+      PlayerEntity player,
+      StackReference cursorStackReference) {
+    if (stack.isOf(this)) {
+      NbtCompound nbt = stack.getNbt();
+      if (nbt != null && nbt.contains(TAG_BOTTLED)) {
+        nbt.remove(TAG_BOTTLED);
+      }
+    }
+    if (otherStack.isOf(this)) {
+      NbtCompound nbt = otherStack.getNbt();
+      if (nbt != null && nbt.contains(TAG_BOTTLED)) {
+        nbt.remove(TAG_BOTTLED);
+      }
+    }
+    return false;
   }
 }

@@ -11,7 +11,8 @@
 
   "gui.experiencebottler.experience_bottler.exp_display.point": "XP",
   "gui.experiencebottler.experience_bottler.exp_display.level": "Lv",
-  "gui.experiencebottler.label.player_experience": "Player Experience",
+  "gui.experiencebottler.label.experience_source.player": "Player",
+  "gui.experiencebottler.label.source_experience": "%s Experience",
   "gui.experiencebottler.label.bottling_experience": "Bottling Experience",
   "gui.experiencebottler.label.after_experience": "After Experience",
 
