@@ -1,21 +1,16 @@
 {
   "block.experiencebottler.experience_bottler": "Experience Bottler",
-
   "item.experiencebottler.bottled_experience": "Bottled Experience",
   "item.experiencebottler.bottled_experience.tooltip.0": "Experience Points: %s",
   "item.experiencebottler.bottled_experience.tooltip.1": "When used, the level will be %d",
-
   "stat.experiencebottler.interact_with_experience_bottler": "Interactions with Experience Bottler",
-
   "container.experiencebottler.experience_bottler": "Experience Bottler",
-
   "gui.experiencebottler.experience_bottler.exp_display.point": "XP",
   "gui.experiencebottler.experience_bottler.exp_display.level": "Lv",
   "gui.experiencebottler.label.experience_source.player": "Player",
   "gui.experiencebottler.label.source_experience": "%s Experience",
   "gui.experiencebottler.label.bottling_experience": "Bottling Experience",
   "gui.experiencebottler.label.after_experience": "After Experience",
-
   "narration.experiencebottler.experience_type.point": "Point",
   "narration.experiencebottler.experience_type.level": "Level",
   "narration.experiencebottler.experience_type_toggle_button": "Button: Toggle the display of experience",

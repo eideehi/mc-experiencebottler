@@ -1,0 +1,22 @@
+{
+  "block.experiencebottler.experience_bottler": "Embouteilleur d'Expérience",
+  "item.experiencebottler.bottled_experience": "Expérience en bouteille",
+  "item.experiencebottler.bottled_experience.tooltip.0": "Points d'Expérience : %s",
+  "item.experiencebottler.bottled_experience.tooltip.1": "Après utilisation, vous serez niveau %d",
+  "stat.experiencebottler.interact_with_experience_bottler": "Interactions avec un Embouteilleur d'Expérience",
+  "container.experiencebottler.experience_bottler": "Embouteilleur d'Expérience",
+  "gui.experiencebottler.experience_bottler.exp_display.point": "XP",
+  "gui.experiencebottler.experience_bottler.exp_display.level": "Niv",
+  "gui.experiencebottler.label.experience_source.player": "joueur",
+  "gui.experiencebottler.label.source_experience": "Expérience du %s",
+  "gui.experiencebottler.label.bottling_experience": "Expérience en bouteille",
+  "gui.experiencebottler.label.after_experience": "Niv. d'XP du joueur après",
+  "narration.experiencebottler.experience_type.point": "Point",
+  "narration.experiencebottler.experience_type.level": "Niveau",
+  "narration.experiencebottler.experience_type_toggle_button": "Bouton : Activer/désactiver l'affichage de l'expérience",
+  "narration.experiencebottler.experience_type_toggle_button.usage.focused": "Appuyez sur Entrée pour basculer",
+  "narration.experiencebottler.experience_type_toggle_button.usage.hovered": "Clic gauche pour basculer",
+  "narration.experiencebottler.experience_type_toggle_button.info.current_type": "Maintenant affiché en %s",
+  "narration.experiencebottler.experience_input_field": "Saisie de texte : Entrez l'expérience à embouteiller",
+  "narration.experiencebottler.experience_input_field.info.value": "Les valeurs actuelles sont %d %s"
+}

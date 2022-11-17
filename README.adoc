@@ -8,7 +8,6 @@
 :uri-license: link:LICENSE
 :uri-issues: https://github.com/eideehi/mc-experiencebottler/issues
 :uri-fabric: https://fabricmc.net/
-:uri-crowdin-translate: https://github.com/gbl/CrowdinTranslate
 :uri-discord: https://discord.gg/DDQqxkK7s6
 
 Add a block that can be used to bottle any quantity of experience points. The bottled experience points can be drunk like a potion, giving the experience points to user.
@@ -27,8 +26,7 @@ Experience Bottler::
   image:{image-uri-recipe-experience-bottler}[Recipe - Experience Bottler]
 
 == Languages
-The translation files for this mod have been uploaded to {uri-crowdin}[Crowdin].
-In addition, since {uri-crowdin-translate}[CrowdinTranslate] is built into the mod, Experience Bottler will regularly download the latest translation files from {uri-crowdin}[Crowdin]. This means that users do not need to update the mod for the translation files.
+The translation files for this mod have been uploaded to {uri-crowdin}[Crowdin] and anyone can participate in the translation process. (I am planning to close the project on {uri-crowdin}[Crowdin] in a few months, but not immediately)
 
 |===
 |Language |Translators       |Status
@@ -47,7 +45,6 @@ image::{image-uri-discord}[link={uri-discord},alt="eidee.net - Discord Server"]
 == Credits
 * Dependencies:
 ** {uri-fabric}[Fabric]
-** {uri-crowdin-translate}[CrowdinTranslate]
 * Translators:
 ** ɪѕнɪ_ѕαʍα (ishi_sama)
 

@@ -1,0 +1,22 @@
+{
+  "block.experiencebottler.experience_bottler": "経験値瓶詰め機",
+  "item.experiencebottler.bottled_experience": "瓶詰めされた経験値",
+  "item.experiencebottler.bottled_experience.tooltip.0": "経験値: %s",
+  "item.experiencebottler.bottled_experience.tooltip.1": "使用するとレベルは %d になります",
+  "stat.experiencebottler.interact_with_experience_bottler": "経験値瓶詰め機を使用した回数",
+  "container.experiencebottler.experience_bottler": "経験値瓶詰め機",
+  "gui.experiencebottler.experience_bottler.exp_display.point": "XP",
+  "gui.experiencebottler.experience_bottler.exp_display.level": "Lv",
+  "gui.experiencebottler.label.experience_source.player": "プレイヤー",
+  "gui.experiencebottler.label.source_experience": "%sの経験値",
+  "gui.experiencebottler.label.bottling_experience": "瓶詰めする経験値",
+  "gui.experiencebottler.label.after_experience": "瓶詰め後の経験値",
+  "narration.experiencebottler.experience_type.point": "ポイント",
+  "narration.experiencebottler.experience_type.level": "レベル",
+  "narration.experiencebottler.experience_type_toggle_button": "ボタン: 経験値の表示を切り替えます",
+  "narration.experiencebottler.experience_type_toggle_button.usage.focused": "エンターキーを押して切り替えます",
+  "narration.experiencebottler.experience_type_toggle_button.usage.hovered": "左クリックで切り替えます",
+  "narration.experiencebottler.experience_type_toggle_button.info.current_type": "現在は %s の形式で表示されています",
+  "narration.experiencebottler.experience_input_field": "テキスト入力: 瓶詰めする経験値を入力します",
+  "narration.experiencebottler.experience_input_field.info.value": "現在の入力値は %d %s です"
+}
