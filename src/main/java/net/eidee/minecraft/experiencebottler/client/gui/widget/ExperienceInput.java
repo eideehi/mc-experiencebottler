@@ -48,8 +48,10 @@ public class ExperienceInput extends ClickableWidget {
   private final TextRenderer textRenderer;
   private final Consumer<ExperienceInput> inputChangeListener;
 
-  private long value;
-  private String valueAsText = "0";
+  private long experiencePoint;
+  private long experienceLevel;
+  private long inputValue;
+  private String displayText = "0";
   private int[] colors = new int[] {0xFFFFFF, 0xA0A0A0, 0xE09090};
   private ExperienceType experienceType = ExperienceType.POINT;
   private int frame;
@@ -78,30 +80,69 @@ public class ExperienceInput extends ClickableWidget {
     };
   }
 
+  private void setDisplayText(long value) {
+    long absValue = Math.abs(value);
+    if (absValue > Integer.MAX_VALUE) {
+      String symbol = value < 0 ? "--" : "++";
+      String text = Long.toString(absValue);
+      displayText = symbol + (text.substring(text.length() - 9));
+    } else {
+      displayText = Long.toString(value);
+    }
+  }
+
   private int getTextColor() {
-    if (valueAsText.startsWith("-")) {
+    if (displayText.startsWith("-")) {
       return colors[2];
     } else {
       return active ? colors[0] : colors[1];
     }
   }
 
-  public long getValue() {
-    return value;
+  private void changeInputValue(long inputValue) {
+    if (this.inputValue != inputValue) {
+      if (experienceType.isPoint()) {
+        setExperiencePoint(inputValue);
+      } else {
+        setExperienceLevel(inputValue);
+      }
+      onInputValueChanged();
+    }
   }
 
-  public void setValue(long value) {
-    long oldValue = this.value;
-    this.value = value;
-    String minus = value < 0 ? "-" : "";
-    if (Math.abs(value) > Integer.MAX_VALUE) {
-      minus = value < 0 ? "--" : "++";
-      valueAsText = minus + Integer.MAX_VALUE;
+  private void onExperienceChanged() {
+    if (experienceType.isPoint()) {
+      inputValue = experiencePoint;
+      setDisplayText(experiencePoint);
     } else {
-      valueAsText = minus + Math.abs(value);
+      inputValue = experienceLevel;
+      setDisplayText(experienceLevel);
     }
-    if (oldValue != value) {
-      inputChangeListener.accept(this);
+  }
+
+  public long getExperiencePoint() {
+    return experiencePoint;
+  }
+
+  public void setExperiencePoint(long experiencePoint) {
+    long oldExperiencePoint = this.experiencePoint;
+    this.experiencePoint = experiencePoint;
+    if (experiencePoint != oldExperiencePoint) {
+      experienceLevel = convertExperience(experiencePoint, ExperienceType.LEVEL);
+      onExperienceChanged();
+    }
+  }
+
+  public long getExperienceLevel() {
+    return experienceLevel;
+  }
+
+  public void setExperienceLevel(long experienceLevel) {
+    long oldExperienceLevel = this.experienceLevel;
+    this.experienceLevel = experienceLevel;
+    if (experienceLevel != oldExperienceLevel) {
+      experiencePoint = convertExperience(experienceLevel, ExperienceType.POINT);
+      onExperienceChanged();
     }
   }
 
@@ -110,14 +151,13 @@ public class ExperienceInput extends ClickableWidget {
   }
 
   public void setExperienceType(ExperienceType experienceType) {
-    ExperienceType oldType = this.experienceType;
+    ExperienceType oldExperienceType = this.experienceType;
     this.experienceType = experienceType;
-    if (oldType != experienceType) {
-      if (active) {
-        setValue(convertExperience(value, experienceType));
+    if (experienceType != oldExperienceType) {
+      if (active && isFocused()) {
+        changeInputValue(convertExperience(inputValue, experienceType));
       } else {
-        long val = experienceType.isLevel() ? convertExperience(value, experienceType) : value;
-        valueAsText = Long.toString(val);
+        setDisplayText(experienceType.isPoint() ? experiencePoint : experienceLevel);
       }
     }
   }
@@ -138,16 +178,8 @@ public class ExperienceInput extends ClickableWidget {
     colors[2] = color;
   }
 
-  public long getExperiencePoint() {
-    return experienceType.isPoint() ? value : convertExperience(value, ExperienceType.POINT);
-  }
-
-  public void setExperiencePoint(long experiencePoint) {
-    if (experienceType.isPoint()) {
-      setValue(experiencePoint);
-    } else {
-      setValue(convertExperience(experiencePoint, ExperienceType.LEVEL));
-    }
+  public void onInputValueChanged() {
+    inputChangeListener.accept(this);
   }
 
   public void tick() {
@@ -176,7 +208,7 @@ public class ExperienceInput extends ClickableWidget {
       drawVerticalLine(matrices, right - 1, top, bottom, 0xFFFFFFFF);
     }
 
-    String text = valueAsText;
+    String text = displayText;
 
     int marginRight = textRenderer.getWidth("_");
     if (active && isFocused()) {
@@ -197,7 +229,7 @@ public class ExperienceInput extends ClickableWidget {
   @Override
   protected void onFocusedChanged(boolean newFocused) {
     if (newFocused) {
-      setValue(0);
+      changeInputValue(0);
       frame = 0;
     }
   }
@@ -221,10 +253,10 @@ public class ExperienceInput extends ClickableWidget {
       return false;
     }
     if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
-      setValue(value / 10);
+      changeInputValue(inputValue / 10);
       return true;
     } else if (keyCode == GLFW.GLFW_KEY_DELETE) {
-      setValue(0);
+      changeInputValue(0);
       return true;
     }
     return false;
@@ -235,10 +267,10 @@ public class ExperienceInput extends ClickableWidget {
     if (!active || !visible || !isFocused()) {
       return false;
     }
-    if (!Character.isDigit(chr) || (chr == '0' && value == 0)) {
+    if (!Character.isDigit(chr) || (chr == '0' && inputValue == 0)) {
       return false;
     }
-    setValue(adjustExperienceValue((value * 10) + Character.getNumericValue(chr)));
+    changeInputValue(adjustExperienceValue((inputValue * 10) + Character.getNumericValue(chr)));
     return true;
   }
 
@@ -265,6 +297,6 @@ public class ExperienceInput extends ClickableWidget {
     builder.put(
         NarrationPart.HINT,
         Text.translatable(
-            "narration.experiencebottler.experience_input_field.info.value", value, type));
+            "narration.experiencebottler.experience_input_field.info.value", inputValue, type));
   }
 }

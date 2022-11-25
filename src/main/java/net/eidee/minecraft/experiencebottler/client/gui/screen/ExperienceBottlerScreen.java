@@ -73,6 +73,7 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
   private Text afterBottlingExperienceLabel;
   private ExperienceInput afterBottlingExperience;
   private long lastSendExperience = -1;
+  private ExperienceInput lastFocusedInput;
 
   public ExperienceBottlerScreen(
       ExperienceBottlerScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -90,33 +91,37 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
 
   private void onInputValueChange(ExperienceInput input) {
     if (input == sourceExperience) {
-      if (afterBottlingExperience.isFocused()) {
-        return;
-      }
       long source = input.getExperiencePoint();
-      long bottled = experienceValueToBottle.getExperiencePoint();
-      afterBottlingExperience.setExperiencePoint(source - bottled);
+      if (experienceValueToBottle.isFocused()) {
+        afterBottlingExperience.setExperiencePoint(source - experienceValueToBottle.getExperiencePoint());
+      } else if (afterBottlingExperience.isFocused()) {
+        experienceValueToBottle.setExperiencePoint(source - afterBottlingExperience.getExperiencePoint());
+      } else {
+        if (lastFocusedInput == null || lastFocusedInput == experienceValueToBottle) {
+          afterBottlingExperience.setExperiencePoint(source - experienceValueToBottle.getExperiencePoint());
+        } else {
+          experienceValueToBottle.setExperiencePoint(source - afterBottlingExperience.getExperiencePoint());
+        }
+      }
     } else if (input == experienceValueToBottle) {
       if (input.isFocused()) {
         long source = sourceExperience.getExperiencePoint();
         long bottled = input.getExperiencePoint();
         afterBottlingExperience.setExperiencePoint(source - bottled);
       }
-
-      int experience =
-          (int) Math.min(experienceValueToBottle.getExperiencePoint(), Integer.MAX_VALUE);
-      if (experience != lastSendExperience) {
-        lastSendExperience = experience;
-        getScreenHandler().setBottlingExperience(experience);
-        BottlingExperiencePacket.send(experience);
-      }
     } else if (input == afterBottlingExperience) {
-      if (!input.isFocused()) {
-        return;
+      if (input.isFocused()) {
+        long source = sourceExperience.getExperiencePoint();
+        long after = input.getExperiencePoint();
+        experienceValueToBottle.setExperiencePoint(Math.min(source - after, Integer.MAX_VALUE));
       }
-      long source = sourceExperience.getExperiencePoint();
-      long after = input.getExperiencePoint();
-      experienceValueToBottle.setExperiencePoint(Math.min(source - after, Integer.MAX_VALUE));
+    }
+    int experience =
+        (int) Math.min(experienceValueToBottle.getExperiencePoint(), Integer.MAX_VALUE);
+    if (experience != lastSendExperience) {
+      lastSendExperience = experience;
+      getScreenHandler().setBottlingExperience(experience);
+      BottlingExperiencePacket.send(experience);
     }
   }
 
@@ -174,10 +179,12 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
       return;
     }
     if (focused == experienceValueToBottle) {
+      lastFocusedInput = experienceValueToBottle;
       if (afterBottlingExperience.isFocused()) {
         afterBottlingExperience.changeFocus(false);
       }
     } else if (focused == afterBottlingExperience) {
+      lastFocusedInput = afterBottlingExperience;
       if (experienceValueToBottle.isFocused()) {
         experienceValueToBottle.changeFocus(false);
       }
@@ -268,7 +275,7 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
         return;
       }
       if (!experienceValueToBottle.isFocused() && !afterBottlingExperience.isFocused()) {
-        if (experienceValueToBottle.getValue() == 0 && experienceValueToBottle.changeFocus(false)) {
+        if (experienceValueToBottle.getExperiencePoint() == 0 && experienceValueToBottle.changeFocus(false)) {
           setFocused(experienceValueToBottle);
         }
       }
@@ -277,6 +284,7 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
           Text.translatable(
               "gui.experiencebottler.label.source_experience", getScreenHandler().getSourceName());
       sourceExperience.setExperiencePoint(getScreenHandler().getSourceExperience());
+      sourceExperience.onInputValueChanged();
     }
   }
 
