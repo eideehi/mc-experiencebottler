@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 EideeHi
+ * Copyright (c) 2021-2022 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,16 +25,17 @@
 package net.eidee.minecraft.experiencebottler.core.init;
 
 import net.eidee.minecraft.experiencebottler.stat.Stats;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.stat.StatFormatter;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 /** Experience Bottler's stat initializer. */
 public class StatInitializer {
   private StatInitializer() {}
 
   private static void register(Identifier identifier, StatFormatter formatter) {
-    Registry.register(Registry.CUSTOM_STAT, identifier, identifier);
+    Registry.register(Registries.CUSTOM_STAT, identifier, identifier);
     net.minecraft.stat.Stats.CUSTOM.getOrCreateStat(identifier, formatter);
   }
 

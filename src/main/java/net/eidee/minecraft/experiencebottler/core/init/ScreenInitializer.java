@@ -30,7 +30,8 @@ import net.eidee.minecraft.experiencebottler.screen.ScreenHandlerTypes;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 /** Experience Bottler's screen initializer. */
 public class ScreenInitializer {
@@ -39,7 +40,7 @@ public class ScreenInitializer {
   /** Initializes the screens. */
   static void init() {
     Registry.register(
-        Registry.SCREEN_HANDLER,
+        Registries.SCREEN_HANDLER,
         Identifiers.EXPERIENCE_BOTTLER,
         ScreenHandlerTypes.EXPERIENCE_BOTTLER);
   }

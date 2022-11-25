@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 EideeHi
+ * Copyright (c) 2021-2022 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,22 +24,53 @@
 
 package net.eidee.minecraft.experiencebottler.core.init;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import net.eidee.minecraft.experiencebottler.core.constants.Identifiers;
+import net.eidee.minecraft.experiencebottler.item.BottledExperienceItem;
 import net.eidee.minecraft.experiencebottler.item.Items;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemGroups;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
+import org.jetbrains.annotations.Nullable;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 /** Experience Bottler's item initializer. */
 public class ItemInitializer {
   private ItemInitializer() {}
 
-  private static void register(Item item, Identifier id) {
-    Registry.register(Registry.ITEM, id, item);
+  private static void register(
+      Item item,
+      ItemGroup itemGroup,
+      @Nullable ItemGroupEvents.ModifyEntries modifyEntries,
+      Identifier id) {
+    Registry.register(Registries.ITEM, id, item);
+    if (modifyEntries != null) {
+      ItemGroupEvents.modifyEntriesEvent(itemGroup).register(modifyEntries);
+    } else {
+      ItemGroupEvents.modifyEntriesEvent(itemGroup).register(entries -> entries.add(item));
+    }
   }
 
   /** Initializes the items. */
   static void init() {
-    register(Items.BOTTLED_EXPERIENCE, Identifiers.BOTTLED_EXPERIENCE);
+    register(
+        Items.BOTTLED_EXPERIENCE,
+        ItemGroups.FOOD_AND_DRINK,
+        entries -> {
+          BottledExperienceItem.EXPERIENCE_LIST.forEach(
+              experience -> {
+                ItemStack stack = new ItemStack(Items.BOTTLED_EXPERIENCE);
+                BottledExperienceItem.writeExperienceTag(stack, experience);
+                entries.add(stack);
+              });
+        },
+        Identifiers.BOTTLED_EXPERIENCE);
   }
 }

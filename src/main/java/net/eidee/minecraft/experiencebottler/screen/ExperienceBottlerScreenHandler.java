@@ -184,9 +184,9 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
   }
 
   @Override
-  public ItemStack transferSlot(PlayerEntity player, int index) {
+  public ItemStack quickMove(PlayerEntity player, int slotIndex) {
     ItemStack stack = ItemStack.EMPTY;
-    Slot slot = slots.get(index);
+    Slot slot = slots.get(slotIndex);
     if (slot.hasStack()) {
       ItemStack stackInSlot = slot.getStack();
       stack = stackInSlot.copy();

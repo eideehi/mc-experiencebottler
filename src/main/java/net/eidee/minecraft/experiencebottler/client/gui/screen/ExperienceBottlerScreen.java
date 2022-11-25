@@ -200,7 +200,7 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
   protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
     renderBackground(matrices);
 
-    RenderSystem.setShader(GameRenderer::getPositionTexShader);
+    RenderSystem.setShader(GameRenderer::getPositionTexProgram);
     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     RenderSystem.setShaderTexture(0, BACKGROUND);
 
@@ -237,7 +237,7 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
         List<Text> tooltip =
             copy.getTooltip(
                 client.player,
-                client.options.advancedItemTooltips ? Default.ADVANCED : Default.NORMAL);
+                client.options.advancedItemTooltips ? Default.ADVANCED : Default.BASIC);
         tooltip.addAll(BottledExperienceItem.getAppendTooltip(stack, null));
         renderTooltip(matrices, tooltip, x, y);
       }

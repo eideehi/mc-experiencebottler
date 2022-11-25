@@ -160,22 +160,28 @@ public class ExperienceInput extends ClickableWidget {
       return;
     }
 
+    int left = getX();
+    int right = left + getWidth();
+    int top = getY();
+    int bottom = top + getHeight();
+
     if (!isFocused() && isMouseOver(mouseX, mouseY)) {
-      fill(matrices, x + 1, y + 1, x + width - 1, y + height - 1, 0x40FFFFFF);
+      fill(matrices, left + 1, top + 1, right - 1, bottom - 1, 0x40FFFFFF);
     }
+
     if (isFocused()) {
-      drawHorizontalLine(matrices, x, x + width - 1, y, 0xFFFFFFFF);
-      drawHorizontalLine(matrices, x, x + width - 1, y + height - 1, 0xFFFFFFFF);
-      drawVerticalLine(matrices, x, y, y + height, 0xFFFFFFFF);
-      drawVerticalLine(matrices, x + width - 1, y, y + height, 0xFFFFFFFF);
+      drawHorizontalLine(matrices, left, right - 1, top, 0xFFFFFFFF);
+      drawHorizontalLine(matrices, left, right - 1, bottom - 1, 0xFFFFFFFF);
+      drawVerticalLine(matrices, left, top, bottom, 0xFFFFFFFF);
+      drawVerticalLine(matrices, right - 1, top, bottom, 0xFFFFFFFF);
     }
 
     String text = valueAsText;
 
-    int marginX = textRenderer.getWidth("_");
+    int marginRight = textRenderer.getWidth("_");
     if (active && isFocused()) {
       if (frame / 6 % 2 == 0) {
-        marginX = 0;
+        marginRight = 0;
         text += "_";
       }
     }
@@ -183,14 +189,9 @@ public class ExperienceInput extends ClickableWidget {
     textRenderer.draw(
         matrices,
         text,
-        x + width - textRenderer.getWidth(text) - marginX - 3,
-        y + height - textRenderer.fontHeight - 3,
+        right - textRenderer.getWidth(text) - marginRight - 3,
+        bottom - textRenderer.fontHeight - 3,
         getTextColor());
-  }
-
-  @Override
-  public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
-    super.renderTooltip(matrices, mouseX, mouseY);
   }
 
   @Override
@@ -255,7 +256,7 @@ public class ExperienceInput extends ClickableWidget {
   }
 
   @Override
-  public void appendNarrations(NarrationMessageBuilder builder) {
+  protected void appendClickableNarrations(NarrationMessageBuilder builder) {
     builder.put(NarrationPart.TITLE, getNarrationMessage());
     if (!active) {
       return;

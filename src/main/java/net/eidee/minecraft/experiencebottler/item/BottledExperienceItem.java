@@ -25,6 +25,7 @@
 package net.eidee.minecraft.experiencebottler.item;
 
 import java.util.List;
+import java.util.stream.IntStream;
 import net.eidee.minecraft.experiencebottler.ExperienceBottlerMod;
 import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
 import net.minecraft.advancement.criterion.Criteria;
@@ -34,7 +35,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
@@ -47,7 +47,6 @@ import net.minecraft.util.ClickType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.apache.commons.compress.utils.Lists;
@@ -55,8 +54,9 @@ import org.jetbrains.annotations.Nullable;
 
 /** The item of bottled experience points. */
 public class BottledExperienceItem extends Item {
+  public static final IntStream EXPERIENCE_LIST =
+      IntStream.of(100, 500, 1000, 5000, 10000, 50000, 100000, 500000);
   private static final int MAX_USE_TIME = 32;
-  private static final int[] EXPERIENCE_LIST = {100, 500, 1000, 5000, 10000, 50000, 100000, 500000};
   private static final String TAG_EXPERIENCE = ExperienceBottlerMod.MOD_ID + ":experience";
   private static final String TAG_BOTTLED = ExperienceBottlerMod.MOD_ID + ":bottled";
 
@@ -161,17 +161,6 @@ public class BottledExperienceItem extends Item {
   @Override
   public boolean hasGlint(ItemStack stack) {
     return true;
-  }
-
-  @Override
-  public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
-    if (isIn(group)) {
-      for (int experience : EXPERIENCE_LIST) {
-        ItemStack stack = new ItemStack(this);
-        writeExperienceTag(stack, experience);
-        stacks.add(stack);
-      }
-    }
   }
 
   @Override

@@ -92,28 +92,29 @@ public class ExperienceTypeToggleButton extends PressableWidget {
 
   @Override
   public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-    RenderSystem.setShader(GameRenderer::getPositionTexShader);
+    RenderSystem.setShader(GameRenderer::getPositionTexProgram);
     RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
     RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
     RenderSystem.enableBlend();
     RenderSystem.defaultBlendFunc();
     RenderSystem.enableDepthTest();
 
-    int halfWidth = width / 2;
-    int halfHeight = height / 2;
+    final int width = getWidth();
+    final int height = getHeight();
+    final int halfWidth = width / 2;
+    final int halfHeight = height / 2;
+
+    final int left = getX();
+    final int top = getY();
+    final int xCenter = left + halfWidth;
+    final int yCenter = top + halfHeight;
+
     int offsetY = 46 + (getYImage(isHovered()) * 20);
 
-    drawTexture(matrices, x, y, 0, offsetY, halfWidth, halfHeight);
-    drawTexture(matrices, x + halfWidth, y, 200 - halfWidth, offsetY, halfWidth, halfHeight);
-    drawTexture(matrices, x, y + halfHeight, 0, (offsetY + 20) - halfHeight, halfWidth, halfHeight);
-    drawTexture(
-        matrices,
-        x + halfWidth,
-        y + halfHeight,
-        200 - halfWidth,
-        (offsetY + 20) - halfHeight,
-        halfWidth,
-        halfHeight);
+    drawTexture(matrices, left, top, 0, offsetY, halfWidth, halfHeight);
+    drawTexture(matrices, xCenter, top, 200 - halfWidth, offsetY, halfWidth, halfHeight);
+    drawTexture(matrices, left, yCenter, 0, (offsetY + 20) - halfHeight, halfWidth, halfHeight);
+    drawTexture(matrices, xCenter, yCenter, 200 - halfWidth, (offsetY + 20) - halfHeight, halfWidth, halfHeight);
 
     MinecraftClient minecraft = MinecraftClient.getInstance();
     int textColor = active ? 0xFFFFFF : 0xA0A0A0;
@@ -121,8 +122,8 @@ public class ExperienceTypeToggleButton extends PressableWidget {
         matrices,
         minecraft.textRenderer,
         getMessage(),
-        x + halfWidth,
-        y + (height - 8) / 2,
+        xCenter,
+        top + (height - 8) / 2,
         textColor | MathHelper.ceil(alpha * 255.0f) << 24);
   }
 
@@ -132,7 +133,7 @@ public class ExperienceTypeToggleButton extends PressableWidget {
   }
 
   @Override
-  public void appendNarrations(NarrationMessageBuilder builder) {
+  protected void appendClickableNarrations(NarrationMessageBuilder builder) {
     builder.put(NarrationPart.TITLE, getNarrationMessage());
     if (active) {
       if (isFocused()) {
