@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.stream.IntStream;
 import net.eidee.minecraft.experiencebottler.ExperienceBottlerMod;
 import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
@@ -97,6 +99,11 @@ public class BottledExperienceItem extends Item {
     return result;
   }
 
+  @Environment(EnvType.CLIENT)
+  private void appendTooltipClient(ItemStack stack, List<Text> tooltip) {
+    tooltip.addAll(getAppendTooltip(stack, MinecraftClient.getInstance().player));
+  }
+
   @Override
   public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
     return ItemUsage.consumeHeldItem(world, user, hand);
@@ -152,7 +159,7 @@ public class BottledExperienceItem extends Item {
   public void appendTooltip(
       ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
     if (world != null && world.isClient()) {
-      tooltip.addAll(getAppendTooltip(stack, MinecraftClient.getInstance().player));
+      appendTooltipClient(stack, tooltip);
     } else {
       tooltip.addAll(getAppendTooltip(stack, null));
     }
