@@ -1,3 +1,7 @@
+## [1.19.3+build.1 / 2022-12-08](#1.19.3+build.1)
+* EideeHi: Migrate to Minecraft 1.19.3
+* EideeHi: Improved GUI behavior
+
 ## [1.19+build.2 / 2022-11-17](#1.19+build.2)
 * EideeHi: Fix a bug that caused the game to freeze
 * EideeHi: Remove CrowdinTranslate from dependencies
