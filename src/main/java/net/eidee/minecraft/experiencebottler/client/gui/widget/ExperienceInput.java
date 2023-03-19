@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 EideeHi
+ * Copyright (c) 2022-2023 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -227,8 +227,9 @@ public class ExperienceInput extends ClickableWidget {
   }
 
   @Override
-  protected void onFocusedChanged(boolean newFocused) {
-    if (newFocused) {
+  public void setFocused(boolean focused) {
+    super.setFocused(focused);
+    if (focused) {
       changeInputValue(0);
       frame = 0;
     }
@@ -239,10 +240,8 @@ public class ExperienceInput extends ClickableWidget {
     boolean result = super.mouseClicked(mouseX, mouseY, button);
     if (result && !isFocused()) {
       setFocused(true);
-      onFocusedChanged(isFocused());
     } else if (!result && isFocused()) {
       setFocused(false);
-      onFocusedChanged(isFocused());
     }
     return result;
   }

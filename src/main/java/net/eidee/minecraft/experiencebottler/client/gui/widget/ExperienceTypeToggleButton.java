@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2022 EideeHi
+ * Copyright (c) 2021-2023 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,9 +29,9 @@ import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -62,6 +62,16 @@ public class ExperienceTypeToggleButton extends PressableWidget {
     this.id = id;
     this.action = action;
     experienceType = ExperienceType.POINT;
+  }
+
+  private int getTextureY() {
+    int i = 1;
+    if (!this.active) {
+      i = 0;
+    } else if (this.isHovered()) {
+      i = 2;
+    }
+    return 46 + (i * 20);
   }
 
   public int getId() {
@@ -109,7 +119,7 @@ public class ExperienceTypeToggleButton extends PressableWidget {
     final int xCenter = left + halfWidth;
     final int yCenter = top + halfHeight;
 
-    int offsetY = 46 + (getYImage(isHovered()) * 20);
+    int offsetY = getTextureY();
 
     drawTexture(matrices, left, top, 0, offsetY, halfWidth, halfHeight);
     drawTexture(matrices, xCenter, top, 200 - halfWidth, offsetY, halfWidth, halfHeight);
@@ -118,12 +128,13 @@ public class ExperienceTypeToggleButton extends PressableWidget {
 
     MinecraftClient minecraft = MinecraftClient.getInstance();
     int textColor = active ? 0xFFFFFF : 0xA0A0A0;
-    ClickableWidget.drawCenteredText(
+    TextRenderer textRenderer = minecraft.textRenderer;
+    Text message = getMessage();
+    textRenderer.draw(
         matrices,
-        minecraft.textRenderer,
-        getMessage(),
-        xCenter,
-        top + (height - 8) / 2,
+        message,
+        xCenter - (textRenderer.getWidth(message) / 2f),
+        top + (height - 8) / 2f,
         textColor | MathHelper.ceil(alpha * 255.0f) << 24);
   }
 

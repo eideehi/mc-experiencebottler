@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 EideeHi
+ * Copyright (c) 2022-2023 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -181,12 +181,12 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
     if (focused == experienceValueToBottle) {
       lastFocusedInput = experienceValueToBottle;
       if (afterBottlingExperience.isFocused()) {
-        afterBottlingExperience.changeFocus(false);
+        afterBottlingExperience.setFocused(false);
       }
     } else if (focused == afterBottlingExperience) {
       lastFocusedInput = afterBottlingExperience;
       if (experienceValueToBottle.isFocused()) {
-        experienceValueToBottle.changeFocus(false);
+        experienceValueToBottle.setFocused(false);
       }
     }
   }
@@ -255,11 +255,11 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
   public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
     if (keyCode == GLFW.GLFW_KEY_ENTER) {
       if (experienceValueToBottle.isFocused()) {
-        experienceValueToBottle.changeFocus(false);
+        experienceValueToBottle.setFocused(false);
         setFocused(null);
         return true;
       } else if (afterBottlingExperience.isFocused()) {
-        afterBottlingExperience.changeFocus(false);
+        afterBottlingExperience.setFocused(false);
         setFocused(null);
         return true;
       }
@@ -275,7 +275,8 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
         return;
       }
       if (!experienceValueToBottle.isFocused() && !afterBottlingExperience.isFocused()) {
-        if (experienceValueToBottle.getExperiencePoint() == 0 && experienceValueToBottle.changeFocus(false)) {
+        if (experienceValueToBottle.getExperiencePoint() == 0) {
+          experienceValueToBottle.setFocused(true);
           setFocused(experienceValueToBottle);
         }
       }
