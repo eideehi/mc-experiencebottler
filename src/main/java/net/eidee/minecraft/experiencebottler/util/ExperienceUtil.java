@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 EideeHi
+ * Copyright (c) 2021-2023 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 
 package net.eidee.minecraft.experiencebottler.util;
 
+import java.util.Arrays;
 import java.util.stream.LongStream;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
@@ -31,8 +32,16 @@ import net.minecraft.util.math.MathHelper;
 /** Utility class for experience. */
 public class ExperienceUtil {
   public static final int TOTAL_EXP_LV_30 = 1395;
-  public static final int TOTAL_EXP_LV_31 = 1507;
-  public static final int TOTAL_EXP_LV_1000 = 4339720;
+
+  private static final long[] TOTAL_EXP_CACHE;
+
+  static {
+    TOTAL_EXP_CACHE = new long[256];
+    for (int i = 1; i < TOTAL_EXP_CACHE.length; i++) {
+      TOTAL_EXP_CACHE[i] =
+          LongStream.range(0, i).map(ExperienceUtil::getNextLevelExperience).sum();
+    }
+  }
 
   private ExperienceUtil() {}
 
@@ -54,42 +63,36 @@ public class ExperienceUtil {
 
   /** Calculates and returns the level corresponding to the specified total experience. */
   public static int getLevelFromTotalExperience(long experience) {
-    int level = 0;
-    if (experience < TOTAL_EXP_LV_31) {
-      long amount = experience;
-      while (amount >= 0) {
-        long experienceForLevel = getNextLevelExperience(level);
-        if (amount < experienceForLevel) {
-          break;
-        }
-        level++;
-        amount -= experienceForLevel;
-      }
-      return level;
+    if (experience <= TOTAL_EXP_CACHE[255]) {
+      int index = Arrays.binarySearch(TOTAL_EXP_CACHE, experience);
+      return index >= 0 ? index : -index - 2;
     }
 
-    boolean isOverLv10000 = experience >= TOTAL_EXP_LV_1000;
-    level = 31;
-    while (true) {
-      if (calcTotalExperienceGteLv31(level) >= experience) {
-        if (calcTotalExperienceGteLv31(level - 1) > experience) {
-          level--;
-          continue;
-        }
-        break;
-      }
-      if (isOverLv10000) {
-        level += 1000;
+    int level = 1000;
+    long total = calcTotalExperienceGteLv31(level);
+
+    while (total < experience) {
+      level *= 2;
+      total = calcTotalExperienceGteLv31(level);
+    }
+
+    int left = level / 2;
+    int right = level;
+
+    while (left <= right) {
+      int mid = (left + right) / 2;
+      total = calcTotalExperienceGteLv31(mid);
+
+      if (total == experience) {
+        return mid;
+      } else if (total < experience) {
+        left = mid + 1;
       } else {
-        level++;
+        right = mid - 1;
       }
     }
 
-    if (getTotalExperienceToReachLevel(level, 0) > experience) {
-      level--;
-    }
-
-    return level;
+    return right;
   }
 
   /**
@@ -99,12 +102,15 @@ public class ExperienceUtil {
    * @param progress Progress to the next level
    */
   public static long getTotalExperienceToReachLevel(long level, float progress) {
-    if (level > 30) {
-      long total = calcTotalExperienceGteLv31(level);
-      return total + Math.round(getNextLevelExperience(level) * progress);
+    if (level < 0) {
+      return 0;
     }
-    long total = LongStream.range(0, level).map(ExperienceUtil::getNextLevelExperience).sum();
-    return total + Math.round(getNextLevelExperience(level) * progress);
+    if (level < 255) {
+      int index = (int) level;
+      return TOTAL_EXP_CACHE[index] + Math.round(TOTAL_EXP_CACHE[index + 1] * progress);
+    }
+    long total = calcTotalExperienceGteLv31(level);
+    return progress > 0f ? total + Math.round(getNextLevelExperience(level) * progress) : total;
   }
 
   /** Return the current total experience of the player. */
