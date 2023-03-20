@@ -1,3 +1,7 @@
+## [1.19.4+build.1 / 2023-03-19](#1.19.4+build.1)
+* EideeHi: Migrate to Minecraft 1.19.4
+* EideeHi: Improved experience calculation logic
+
 ## [1.19.3+build.1 / 2022-12-08](#1.19.3+build.1)
 * EideeHi: Migrate to Minecraft 1.19.3
 * EideeHi: Improved GUI behavior

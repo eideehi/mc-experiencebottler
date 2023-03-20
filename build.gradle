@@ -125,7 +125,7 @@ modrinth {
     versionName = "${project.display_name} ${project.version}"
     uploadFile = remapJar
     changelog = "[View changelog on GitHub](${project.changelog_url}#${project.version})"
-    gameVersions = ["1.19.3"]
+    gameVersions = ["1.19.4"]
     loaders = ["fabric"]
     dependencies = [
             new ModDependency("P7dR8mSH", "required")
