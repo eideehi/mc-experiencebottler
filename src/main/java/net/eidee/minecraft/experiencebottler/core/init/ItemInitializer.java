@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2022 EideeHi
+ * Copyright (c) 2021-2023 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,6 +35,7 @@ import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 import org.jetbrains.annotations.Nullable;
@@ -47,7 +48,7 @@ public class ItemInitializer {
 
   private static void register(
       Item item,
-      ItemGroup itemGroup,
+      RegistryKey<ItemGroup> itemGroup,
       @Nullable ItemGroupEvents.ModifyEntries modifyEntries,
       Identifier id) {
     Registry.register(Registries.ITEM, id, item);

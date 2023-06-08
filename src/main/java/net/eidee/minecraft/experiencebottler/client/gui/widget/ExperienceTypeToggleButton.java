@@ -30,11 +30,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -101,10 +101,9 @@ public class ExperienceTypeToggleButton extends PressableWidget {
   }
 
   @Override
-  public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+  public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
     RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-    RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
-    RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
+    context.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
     RenderSystem.enableBlend();
     RenderSystem.defaultBlendFunc();
     RenderSystem.enableDepthTest();
@@ -121,21 +120,31 @@ public class ExperienceTypeToggleButton extends PressableWidget {
 
     int offsetY = getTextureY();
 
-    drawTexture(matrices, left, top, 0, offsetY, halfWidth, halfHeight);
-    drawTexture(matrices, xCenter, top, 200 - halfWidth, offsetY, halfWidth, halfHeight);
-    drawTexture(matrices, left, yCenter, 0, (offsetY + 20) - halfHeight, halfWidth, halfHeight);
-    drawTexture(matrices, xCenter, yCenter, 200 - halfWidth, (offsetY + 20) - halfHeight, halfWidth, halfHeight);
+    context.drawTexture(WIDGETS_TEXTURE, left, top, 0, offsetY, halfWidth, halfHeight);
+    context.drawTexture(
+        WIDGETS_TEXTURE, xCenter, top, 200 - halfWidth, offsetY, halfWidth, halfHeight);
+    context.drawTexture(
+        WIDGETS_TEXTURE, left, yCenter, 0, (offsetY + 20) - halfHeight, halfWidth, halfHeight);
+    context.drawTexture(
+        WIDGETS_TEXTURE,
+        xCenter,
+        yCenter,
+        200 - halfWidth,
+        (offsetY + 20) - halfHeight,
+        halfWidth,
+        halfHeight);
 
     MinecraftClient minecraft = MinecraftClient.getInstance();
     int textColor = active ? 0xFFFFFF : 0xA0A0A0;
     TextRenderer textRenderer = minecraft.textRenderer;
     Text message = getMessage();
-    textRenderer.draw(
-        matrices,
+    context.drawText(
+        textRenderer,
         message,
-        xCenter - (textRenderer.getWidth(message) / 2f),
-        top + (height - 8) / 2f,
-        textColor | MathHelper.ceil(alpha * 255.0f) << 24);
+        xCenter - (textRenderer.getWidth(message) / 2),
+        top + (height - 8) / 2,
+        textColor | MathHelper.ceil(alpha * 255.0f) << 24,
+        false);
   }
 
   @Override

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 EideeHi
+ * Copyright (c) 2021-2023 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,6 @@ package net.eidee.minecraft.experiencebottler.block;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
-import net.minecraft.block.Material;
 import net.minecraft.sound.BlockSoundGroup;
 
 /** Defines the blocks of the Experience Bottler. */
@@ -37,7 +36,8 @@ public class Blocks {
   static {
     EXPERIENCE_BOTTLER =
         new ExperienceBottlerBlock(
-            FabricBlockSettings.of(Material.METAL, MapColor.IRON_GRAY)
+            FabricBlockSettings.create()
+                .mapColor(MapColor.IRON_GRAY)
                 .requiresTool()
                 .strength(4.0F, 5.0F)
                 .sounds(BlockSoundGroup.METAL)

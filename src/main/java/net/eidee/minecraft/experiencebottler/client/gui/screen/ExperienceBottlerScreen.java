@@ -39,11 +39,10 @@ import net.eidee.minecraft.experiencebottler.network.packet.BottlingExperiencePa
 import net.eidee.minecraft.experiencebottler.screen.ExperienceBottlerScreenHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.item.TooltipContext.Default;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemStack.TooltipSection;
@@ -93,14 +92,18 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
     if (input == sourceExperience) {
       long source = input.getExperiencePoint();
       if (experienceValueToBottle.isFocused()) {
-        afterBottlingExperience.setExperiencePoint(source - experienceValueToBottle.getExperiencePoint());
+        afterBottlingExperience.setExperiencePoint(
+            source - experienceValueToBottle.getExperiencePoint());
       } else if (afterBottlingExperience.isFocused()) {
-        experienceValueToBottle.setExperiencePoint(source - afterBottlingExperience.getExperiencePoint());
+        experienceValueToBottle.setExperiencePoint(
+            source - afterBottlingExperience.getExperiencePoint());
       } else {
         if (lastFocusedInput == null || lastFocusedInput == experienceValueToBottle) {
-          afterBottlingExperience.setExperiencePoint(source - experienceValueToBottle.getExperiencePoint());
+          afterBottlingExperience.setExperiencePoint(
+              source - experienceValueToBottle.getExperiencePoint());
         } else {
-          experienceValueToBottle.setExperiencePoint(source - afterBottlingExperience.getExperiencePoint());
+          experienceValueToBottle.setExperiencePoint(
+              source - afterBottlingExperience.getExperiencePoint());
         }
       }
     } else if (input == experienceValueToBottle) {
@@ -198,55 +201,51 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
   }
 
   @Override
-  public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-    super.render(matrices, mouseX, mouseY, delta);
-    drawMouseoverTooltip(matrices, mouseX, mouseY);
+  public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    super.render(context, mouseX, mouseY, delta);
+    drawMouseoverTooltip(context, mouseX, mouseY);
   }
 
   @Override
-  protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-    renderBackground(matrices);
+  protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+    renderBackground(context);
 
     RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-    RenderSystem.setShaderTexture(0, BACKGROUND);
+    context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-    drawTexture(matrices, x, y, 0, 0, backgroundWidth, backgroundHeight);
+    context.drawTexture(BACKGROUND, x, y, 0, 0, backgroundWidth, backgroundHeight);
   }
 
   @Override
-  protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-    super.drawForeground(matrices, mouseX, mouseY);
+  protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
+    super.drawForeground(context, mouseX, mouseY);
 
     final int labelX = 68;
     int labelY = 20;
-    textRenderer.draw(matrices, sourceExperienceLabel, labelX, labelY, 0x404040);
+    context.drawText(textRenderer, sourceExperienceLabel, labelX, labelY, 0x404040, false);
 
     labelY += 32;
-    textRenderer.draw(matrices, experienceValueToBottleLabel, labelX, labelY, 0x404040);
+    context.drawText(textRenderer, experienceValueToBottleLabel, labelX, labelY, 0x404040, false);
 
     labelY += 32;
-    textRenderer.draw(matrices, afterBottlingExperienceLabel, labelX, labelY, 0x404040);
+    context.drawText(textRenderer, afterBottlingExperienceLabel, labelX, labelY, 0x404040, false);
   }
 
   @Override
-  protected void drawMouseoverTooltip(MatrixStack matrices, int x, int y) {
+  protected void drawMouseoverTooltip(DrawContext context, int x, int y) {
     if (getScreenHandler().getCursorStack().isEmpty()
         && focusedSlot != null
         && focusedSlot.hasStack()) {
       ItemStack stack = focusedSlot.getStack();
       if (focusedSlot.inventory instanceof PlayerInventory
           || !stack.isOf(Items.BOTTLED_EXPERIENCE)) {
-        renderTooltip(matrices, stack, x, y);
+        context.drawTooltip(textRenderer, getTooltipFromItem(stack), stack.getTooltipData(), x, y);
       } else if (client != null) {
         ItemStack copy = stack.copy();
         copy.addHideFlag(TooltipSection.ADDITIONAL);
-        List<Text> tooltip =
-            copy.getTooltip(
-                client.player,
-                client.options.advancedItemTooltips ? Default.ADVANCED : Default.BASIC);
+        List<Text> tooltip = getTooltipFromItem(copy);
         tooltip.addAll(BottledExperienceItem.getAppendTooltip(stack, null));
-        renderTooltip(matrices, tooltip, x, y);
+        context.drawTooltip(textRenderer, tooltip, stack.getTooltipData(), x, y);
       }
     }
   }

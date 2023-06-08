@@ -30,11 +30,11 @@ import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.sound.SoundManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
@@ -187,7 +187,7 @@ public class ExperienceInput extends ClickableWidget {
   }
 
   @Override
-  public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+  public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
     if (!visible) {
       return;
     }
@@ -198,14 +198,14 @@ public class ExperienceInput extends ClickableWidget {
     int bottom = top + getHeight();
 
     if (!isFocused() && isMouseOver(mouseX, mouseY)) {
-      fill(matrices, left + 1, top + 1, right - 1, bottom - 1, 0x40FFFFFF);
+      context.fill(left + 1, top + 1, right - 1, bottom - 1, 0x40FFFFFF);
     }
 
     if (isFocused()) {
-      drawHorizontalLine(matrices, left, right - 1, top, 0xFFFFFFFF);
-      drawHorizontalLine(matrices, left, right - 1, bottom - 1, 0xFFFFFFFF);
-      drawVerticalLine(matrices, left, top, bottom, 0xFFFFFFFF);
-      drawVerticalLine(matrices, right - 1, top, bottom, 0xFFFFFFFF);
+      context.drawHorizontalLine(left, right - 1, top, 0xFFFFFFFF);
+      context.drawHorizontalLine(left, right - 1, bottom - 1, 0xFFFFFFFF);
+      context.drawVerticalLine(left, top, bottom, 0xFFFFFFFF);
+      context.drawVerticalLine(right - 1, top, bottom, 0xFFFFFFFF);
     }
 
     String text = displayText;
@@ -218,12 +218,13 @@ public class ExperienceInput extends ClickableWidget {
       }
     }
 
-    textRenderer.draw(
-        matrices,
+    context.drawText(
+        textRenderer,
         text,
         right - textRenderer.getWidth(text) - marginRight - 3,
         bottom - textRenderer.fontHeight - 3,
-        getTextColor());
+        getTextColor(),
+        false);
   }
 
   @Override
