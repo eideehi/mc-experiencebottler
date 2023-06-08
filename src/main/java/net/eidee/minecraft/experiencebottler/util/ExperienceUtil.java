@@ -68,7 +68,7 @@ public class ExperienceUtil {
       return index >= 0 ? index : -index - 2;
     }
 
-    int level = 1000;
+    int level = 512;
     long total = calcTotalExperienceGteLv31(level);
 
     while (total < experience) {
