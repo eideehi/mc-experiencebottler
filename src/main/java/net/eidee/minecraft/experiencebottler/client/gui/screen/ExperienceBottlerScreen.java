@@ -39,6 +39,7 @@ import net.eidee.minecraft.experiencebottler.network.packet.BottlingExperiencePa
 import net.eidee.minecraft.experiencebottler.screen.ExperienceBottlerScreenHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -124,7 +125,7 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
     if (experience != lastSendExperience) {
       lastSendExperience = experience;
       getScreenHandler().setBottlingExperience(experience);
-      BottlingExperiencePacket.send(experience);
+      ClientPlayNetworking.send(new BottlingExperiencePacket(experience));
     }
   }
 
