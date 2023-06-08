@@ -4,7 +4,6 @@
 :image-uri-bug-report: https://app.box.com/shared/static/g2v3vbju4jazq7kycoigp60ltki2kw8i.png
 :image-uri-discord: https://app.box.com/shared/static/0s09ti60hvyyp5k98xyrnkfp683mrt9r.png
 :uri-youtube-demo: https://youtu.be/ZtUIFA9R_CE
-:uri-crowdin: https://crowdin.com/project/eideehi-minecraft-mods
 :uri-license: link:LICENSE
 :uri-issues: https://github.com/eideehi/mc-experiencebottler/issues
 :uri-fabric: https://fabricmc.net/
@@ -29,8 +28,6 @@ Experience Bottler::
   image:{image-uri-recipe-experience-bottler}[Recipe - Experience Bottler]
 
 == Languages
-The translation files for this mod have been uploaded to {uri-crowdin}[Crowdin] and anyone can participate in the translation process. (I am planning to close the project on {uri-crowdin}[Crowdin] in a few months, but not immediately)
-
 |===
 |Language |Translators       |Status
 |en_us    |Translation Tools |100%

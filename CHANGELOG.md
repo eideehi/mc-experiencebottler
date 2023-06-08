@@ -1,3 +1,7 @@
+## [1.20+build.1 / 2023-06-08](#1.20+build.1)
+* EideeHi: Migrate to Minecraft 1.19.4
+* EideeHi: Fix bug in calculation for levels 256-500
+
 ## [1.19.4+build.1 / 2023-03-19](#1.19.4+build.1)
 * EideeHi: Migrate to Minecraft 1.19.4
 * EideeHi: Improved experience calculation logic
