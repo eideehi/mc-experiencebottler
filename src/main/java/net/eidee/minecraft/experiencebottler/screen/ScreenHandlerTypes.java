@@ -24,7 +24,7 @@
 
 package net.eidee.minecraft.experiencebottler.screen;
 
-import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenHandlerType;
 
 /** Defines the screen handlers of the Experience Bottler. */
@@ -32,7 +32,8 @@ public class ScreenHandlerTypes {
   public static final ScreenHandlerType<ExperienceBottlerScreenHandler> EXPERIENCE_BOTTLER;
 
   static {
-    EXPERIENCE_BOTTLER = new ScreenHandlerType<>(ExperienceBottlerScreenHandler::new, FeatureSet.empty());
+    EXPERIENCE_BOTTLER =
+        new ScreenHandlerType<>(ExperienceBottlerScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
   }
 
   private ScreenHandlerTypes() {}
