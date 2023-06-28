@@ -1,5 +1,9 @@
+## [1.20.1+build.1 / 2023-06-28](#1.20.1+build.1)
+* EideeHi: Migrate to Minecraft 1.20.1
+* EideeHi: Fix bug in calculation for levels 0-256
+
 ## [1.20+build.1 / 2023-06-08](#1.20+build.1)
-* EideeHi: Migrate to Minecraft 1.19.4
+* EideeHi: Migrate to Minecraft 1.20
 * EideeHi: Fix bug in calculation for levels 256-500
 
 ## [1.19.4+build.1 / 2023-03-19](#1.19.4+build.1)
