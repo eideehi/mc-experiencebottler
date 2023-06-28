@@ -107,7 +107,7 @@ public class ExperienceUtil {
     }
     if (level < 255) {
       int index = (int) level;
-      return TOTAL_EXP_CACHE[index] + Math.round(TOTAL_EXP_CACHE[index + 1] * progress);
+      return TOTAL_EXP_CACHE[index] + Math.round(getNextLevelExperience(index) * progress);
     }
     long total = calcTotalExperienceGteLv31(level);
     return progress > 0f ? total + Math.round(getNextLevelExperience(level) * progress) : total;
