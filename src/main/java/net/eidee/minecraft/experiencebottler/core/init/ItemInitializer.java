@@ -65,12 +65,11 @@ public class ItemInitializer {
         Items.BOTTLED_EXPERIENCE,
         ItemGroups.FOOD_AND_DRINK,
         entries -> {
-          BottledExperienceItem.EXPERIENCE_LIST.forEach(
-              experience -> {
-                ItemStack stack = new ItemStack(Items.BOTTLED_EXPERIENCE);
-                BottledExperienceItem.writeExperienceTag(stack, experience);
-                entries.add(stack);
-              });
+          for (int experience : BottledExperienceItem.EXPERIENCE_LIST) {
+            ItemStack stack = new ItemStack(Items.BOTTLED_EXPERIENCE);
+            BottledExperienceItem.writeExperienceTag(stack, experience);
+            entries.add(stack);
+          }
         },
         Identifiers.BOTTLED_EXPERIENCE);
   }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2022 EideeHi
+ * Copyright (c) 2021-2023 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@
 package net.eidee.minecraft.experiencebottler.item;
 
 import java.util.List;
-import java.util.stream.IntStream;
 import net.eidee.minecraft.experiencebottler.ExperienceBottlerMod;
 import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
 import net.fabricmc.api.EnvType;
@@ -56,8 +55,8 @@ import org.jetbrains.annotations.Nullable;
 
 /** The item of bottled experience points. */
 public class BottledExperienceItem extends Item {
-  public static final IntStream EXPERIENCE_LIST =
-      IntStream.of(100, 500, 1000, 5000, 10000, 50000, 100000, 500000);
+  public static final int[] EXPERIENCE_LIST =
+      new int[] {100, 500, 1000, 5000, 10000, 50000, 100000, 500000};
   private static final int MAX_USE_TIME = 32;
   private static final String TAG_EXPERIENCE = ExperienceBottlerMod.MOD_ID + ":experience";
   private static final String TAG_BOTTLED = ExperienceBottlerMod.MOD_ID + ":bottled";
