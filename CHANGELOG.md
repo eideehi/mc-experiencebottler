@@ -1,3 +1,6 @@
+## [1.20.1+build.2 / 2023-08-27](#1.20.1+build.2)
+* EideeHi: Fix a bug crashes when opening creative inventory
+
 ## [1.20.1+build.1 / 2023-06-28](#1.20.1+build.1)
 * EideeHi: Migrate to Minecraft 1.20.1
 * EideeHi: Fix bug in calculation for levels 0-256
