@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2023 EideeHi
+ * Copyright (c) 2021-2024 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,11 @@
 
 package net.eidee.minecraft.experiencebottler.block;
 
+import com.mojang.serialization.MapCodec;
 import net.eidee.minecraft.experiencebottler.screen.ExperienceBottlerScreenHandler;
 import net.eidee.minecraft.experiencebottler.screen.ExperienceSource;
 import net.eidee.minecraft.experiencebottler.stat.Stats;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.block.ShapeContext;
+import net.minecraft.block.*;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -40,7 +38,6 @@ import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.state.StateManager.Builder;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -59,6 +56,7 @@ public class ExperienceBottlerBlock extends HorizontalFacingBlock {
   private static final VoxelShape SOUTH_SHAPE;
   private static final VoxelShape EAST_SHAPE;
   private static final VoxelShape WEST_SHAPE;
+  private static final MapCodec<ExperienceBottlerBlock> CODEC;
 
   static {
     CONTAINER_TITLE = Text.translatable("container.experiencebottler.experience_bottler");
@@ -89,11 +87,17 @@ public class ExperienceBottlerBlock extends HorizontalFacingBlock {
             Block.createCuboidShape(10, 2, 0, 16, 13, 16),
             Block.createCuboidShape(0, 2, 0, 10, 6, 3),
             Block.createCuboidShape(0, 2, 13, 10, 6, 16));
+    CODEC = AbstractBlock.createCodec(ExperienceBottlerBlock::new);
   }
 
   public ExperienceBottlerBlock(Settings settings) {
     super(settings);
     setDefaultState(getStateManager().getDefaultState().with(FACING, Direction.NORTH));
+  }
+
+  @Override
+  protected MapCodec<? extends HorizontalFacingBlock> getCodec() {
+    return CODEC;
   }
 
   @Override
@@ -119,8 +123,7 @@ public class ExperienceBottlerBlock extends HorizontalFacingBlock {
   }
 
   @Override
-  public boolean canPathfindThrough(
-      BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+  protected boolean canPathfindThrough(BlockState state, NavigationType type) {
     return false;
   }
 
@@ -144,13 +147,8 @@ public class ExperienceBottlerBlock extends HorizontalFacingBlock {
   }
 
   @Override
-  public ActionResult onUse(
-      BlockState state,
-      World world,
-      BlockPos pos,
-      PlayerEntity player,
-      Hand hand,
-      BlockHitResult hit) {
+  protected ActionResult onUse(
+      BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
     if (world.isClient) {
       return ActionResult.SUCCESS;
     }

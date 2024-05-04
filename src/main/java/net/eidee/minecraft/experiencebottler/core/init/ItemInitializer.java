@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2023 EideeHi
+ * Copyright (c) 2021-2024 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,11 +24,14 @@
 
 package net.eidee.minecraft.experiencebottler.core.init;
 
+import static net.eidee.minecraft.experiencebottler.ExperienceBottlerMod.identifier;
+
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.eidee.minecraft.experiencebottler.core.constants.Identifiers;
 import net.eidee.minecraft.experiencebottler.item.BottledExperienceItem;
 import net.eidee.minecraft.experiencebottler.item.Items;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.minecraft.component.DataComponentType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
@@ -40,13 +43,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 import org.jetbrains.annotations.Nullable;
 
+/** Experience Bottler's item initializer. */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-/** Experience Bottler's item initializer. */
 public class ItemInitializer {
   private ItemInitializer() {}
 
-  private static void register(
+  private static void registerItem(
       Item item,
       RegistryKey<ItemGroup> itemGroup,
       @Nullable ItemGroupEvents.ModifyEntries modifyEntries,
@@ -59,9 +62,15 @@ public class ItemInitializer {
     }
   }
 
+  private static void registerDataComponent(String id, DataComponentType<?> type) {
+    Registry.register(Registries.DATA_COMPONENT_TYPE, identifier(id), type);
+  }
+
   /** Initializes the items. */
   static void init() {
-    register(
+    registerDataComponent("experience", BottledExperienceItem.EXPERIENCE);
+
+    registerItem(
         Items.BOTTLED_EXPERIENCE,
         ItemGroups.FOOD_AND_DRINK,
         entries -> {

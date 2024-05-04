@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022-2023 EideeHi
+ * Copyright (c) 2022-2024 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -187,7 +187,7 @@ public class ExperienceInput extends ClickableWidget {
   }
 
   @Override
-  public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+  protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
     if (!visible) {
       return;
     }

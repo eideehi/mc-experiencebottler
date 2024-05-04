@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2023 EideeHi
+ * Copyright (c) 2021-2024 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package net.eidee.minecraft.experiencebottler.core.init;
 
 import net.eidee.minecraft.experiencebottler.network.packet.BottlingExperiencePacket;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 /** Experience Bottler's network initializer. */
@@ -33,7 +34,9 @@ public class NetworkInitializer {
 
   /** Initializes the networks. */
   static void init() {
+    PayloadTypeRegistry.playC2S()
+        .register(BottlingExperiencePacket.ID, BottlingExperiencePacket.CODEC);
     ServerPlayNetworking.registerGlobalReceiver(
-        BottlingExperiencePacket.TYPE, BottlingExperiencePacket::receive);
+        BottlingExperiencePacket.ID, BottlingExperiencePacket::receive);
   }
 }

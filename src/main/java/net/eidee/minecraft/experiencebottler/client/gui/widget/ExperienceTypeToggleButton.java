@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2023 EideeHi
+ * Copyright (c) 2021-2024 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.PressableWidget;
@@ -38,44 +39,34 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 /** A button widget to switch between displaying experience as either levels or points. */
 @Environment(EnvType.CLIENT)
 public class ExperienceTypeToggleButton extends PressableWidget {
+  private static final ButtonTextures TEXTURES;
   private static final Text TEXT_POINT;
   private static final Text TEXT_LEVEL;
 
   static {
     TEXT_POINT = Text.translatable("gui.experiencebottler.experience_bottler.exp_display.point");
     TEXT_LEVEL = Text.translatable("gui.experiencebottler.experience_bottler.exp_display.level");
+    TEXTURES =
+        new ButtonTextures(
+            new Identifier("widget/button"),
+            new Identifier("widget/button_disabled"),
+            new Identifier("widget/button_highlighted"));
   }
 
-  private final int id;
   private final Consumer<ExperienceTypeToggleButton> action;
 
   private ExperienceType experienceType;
 
-  public ExperienceTypeToggleButton(
-      int id, int x, int y, Consumer<ExperienceTypeToggleButton> action) {
+  public ExperienceTypeToggleButton(int x, int y, Consumer<ExperienceTypeToggleButton> action) {
     super(x, y, 18, 18, ScreenTexts.EMPTY);
-    this.id = id;
     this.action = action;
     experienceType = ExperienceType.POINT;
-  }
-
-  private int getTextureY() {
-    int i = 1;
-    if (!this.active) {
-      i = 0;
-    } else if (this.isHovered()) {
-      i = 2;
-    }
-    return 46 + (i * 20);
-  }
-
-  public int getId() {
-    return id;
   }
 
   public ExperienceType getExperienceType() {
@@ -101,7 +92,7 @@ public class ExperienceTypeToggleButton extends PressableWidget {
   }
 
   @Override
-  public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+  protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
     RenderSystem.setShader(GameRenderer::getPositionTexProgram);
     context.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
     RenderSystem.enableBlend();
@@ -110,29 +101,12 @@ public class ExperienceTypeToggleButton extends PressableWidget {
 
     final int width = getWidth();
     final int height = getHeight();
-    final int halfWidth = width / 2;
-    final int halfHeight = height / 2;
-
     final int left = getX();
     final int top = getY();
-    final int xCenter = left + halfWidth;
-    final int yCenter = top + halfHeight;
 
-    int offsetY = getTextureY();
+    context.drawGuiTexture(TEXTURES.get(active, isHovered()), left, top, width, height);
 
-    context.drawTexture(WIDGETS_TEXTURE, left, top, 0, offsetY, halfWidth, halfHeight);
-    context.drawTexture(
-        WIDGETS_TEXTURE, xCenter, top, 200 - halfWidth, offsetY, halfWidth, halfHeight);
-    context.drawTexture(
-        WIDGETS_TEXTURE, left, yCenter, 0, (offsetY + 20) - halfHeight, halfWidth, halfHeight);
-    context.drawTexture(
-        WIDGETS_TEXTURE,
-        xCenter,
-        yCenter,
-        200 - halfWidth,
-        (offsetY + 20) - halfHeight,
-        halfWidth,
-        halfHeight);
+    final int xCenter = left + width / 2;
 
     MinecraftClient minecraft = MinecraftClient.getInstance();
     int textColor = active ? 0xFFFFFF : 0xA0A0A0;

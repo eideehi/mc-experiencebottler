@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2022 EideeHi
+ * Copyright (c) 2021-2024 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@
 
 package net.eidee.minecraft.experiencebottler.item;
 
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.Item;
 import net.minecraft.util.Rarity;
 
@@ -33,8 +32,7 @@ public class Items {
   public static final Item BOTTLED_EXPERIENCE;
 
   static {
-    BOTTLED_EXPERIENCE =
-        new BottledExperienceItem(new FabricItemSettings().rarity(Rarity.UNCOMMON));
+    BOTTLED_EXPERIENCE = new BottledExperienceItem(new Item.Settings().rarity(Rarity.UNCOMMON));
   }
 
   private Items() {}

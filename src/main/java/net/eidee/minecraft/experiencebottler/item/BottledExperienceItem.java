@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2023 EideeHi
+ * Copyright (c) 2021-2024 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,27 +24,25 @@
 
 package net.eidee.minecraft.experiencebottler.item;
 
+import com.mojang.serialization.Codec;
 import java.util.List;
-import net.eidee.minecraft.experiencebottler.ExperienceBottlerMod;
 import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
+import net.minecraft.component.DataComponentType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
-import net.minecraft.util.ClickType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
@@ -57,9 +55,16 @@ import org.jetbrains.annotations.Nullable;
 public class BottledExperienceItem extends Item {
   public static final int[] EXPERIENCE_LIST =
       new int[] {100, 500, 1000, 5000, 10000, 50000, 100000, 500000};
+  public static final DataComponentType<Integer> EXPERIENCE;
   private static final int MAX_USE_TIME = 32;
-  private static final String TAG_EXPERIENCE = ExperienceBottlerMod.MOD_ID + ":experience";
-  private static final String TAG_BOTTLED = ExperienceBottlerMod.MOD_ID + ":bottled";
+
+  static {
+    EXPERIENCE =
+        DataComponentType.<Integer>builder()
+            .codec(Codec.INT)
+            .packetCodec(PacketCodecs.VAR_INT)
+            .build();
+  }
 
   public BottledExperienceItem(Settings settings) {
     super(settings);
@@ -69,13 +74,12 @@ public class BottledExperienceItem extends Item {
    * Get the experience value set in the item stack. If no experience value is set, it returns 0.
    */
   public static int readExperienceTag(ItemStack stack) {
-    NbtCompound nbt = stack.getNbt();
-    return nbt != null ? nbt.getInt(TAG_EXPERIENCE) : 0;
+    return stack.getComponents().getOrDefault(EXPERIENCE, 0);
   }
 
   /** Set the experience value in item stack. */
   public static void writeExperienceTag(ItemStack stack, int value) {
-    stack.getOrCreateNbt().putInt(TAG_EXPERIENCE, value);
+    stack.set(EXPERIENCE, value);
   }
 
   public static List<Text> getAppendTooltip(ItemStack stack, @Nullable PlayerEntity player) {
@@ -156,8 +160,10 @@ public class BottledExperienceItem extends Item {
 
   @Override
   public void appendTooltip(
-      ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-    if (world != null && world.isClient()) {
+      ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+    // FIXME: If there is a better side detection method, it will be modified.
+    String threadName = Thread.currentThread().getName();
+    if (threadName.equals("Render thread")) {
       appendTooltipClient(stack, tooltip);
     } else {
       tooltip.addAll(getAppendTooltip(stack, null));
@@ -167,28 +173,5 @@ public class BottledExperienceItem extends Item {
   @Override
   public boolean hasGlint(ItemStack stack) {
     return true;
-  }
-
-  @Override
-  public boolean onClicked(
-      ItemStack stack,
-      ItemStack otherStack,
-      Slot slot,
-      ClickType clickType,
-      PlayerEntity player,
-      StackReference cursorStackReference) {
-    if (stack.isOf(this)) {
-      NbtCompound nbt = stack.getNbt();
-      if (nbt != null && nbt.contains(TAG_BOTTLED)) {
-        nbt.remove(TAG_BOTTLED);
-      }
-    }
-    if (otherStack.isOf(this)) {
-      NbtCompound nbt = otherStack.getNbt();
-      if (nbt != null && nbt.contains(TAG_BOTTLED)) {
-        nbt.remove(TAG_BOTTLED);
-      }
-    }
-    return false;
   }
 }

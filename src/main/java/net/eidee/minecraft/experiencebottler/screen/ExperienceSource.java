@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 EideeHi
+ * Copyright (c) 2022-2024 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,11 +24,11 @@
 
 package net.eidee.minecraft.experiencebottler.screen;
 
-import static net.eidee.minecraft.experiencebottler.ExperienceBottlerMod.MOD_ID;
-
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.eidee.minecraft.experiencebottler.block.Blocks;
 import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -46,14 +46,8 @@ public abstract class ExperienceSource implements Inventory {
     this.stack = stack;
   }
 
-  public abstract Text getSourceName();
-
-  public abstract long getTotalExperience();
-
-  public abstract void removeExperience(int experience);
-
   public static ExperienceSource forClient() {
-    return new ExperienceSource(ItemStack.EMPTY) {
+    return new ExperienceSource(new ItemStack(net.minecraft.block.Blocks.GLASS)) {
       private String sourceName = "";
       private long totalExperience;
 
@@ -74,7 +68,11 @@ public abstract class ExperienceSource implements Inventory {
 
       @Override
       public void markDirty() {
-        NbtCompound nbt = getStack(0).getSubNbt(MOD_ID);
+        NbtCompound nbt =
+            getStack(0)
+                .getComponents()
+                .getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT)
+                .copyNbt();
         if (nbt != null) {
           sourceName = nbt.getString("SourceName");
           totalExperience = nbt.getLong("TotalExperience");
@@ -108,9 +106,13 @@ public abstract class ExperienceSource implements Inventory {
 
       @Override
       public void markDirty() {
-        NbtCompound nbt = getStack(0).getOrCreateSubNbt(MOD_ID);
-        nbt.putString("SourceName", getSourceName().getString());
-        nbt.putLong("TotalExperience", getTotalExperience());
+        NbtComponent.set(
+            DataComponentTypes.CUSTOM_DATA,
+            getStack(0),
+            (nbt) -> {
+              nbt.putString("SourceName", getSourceName().getString());
+              nbt.putLong("TotalExperience", getTotalExperience());
+            });
       }
 
       @Override
@@ -126,6 +128,12 @@ public abstract class ExperienceSource implements Inventory {
       }
     };
   }
+
+  public abstract Text getSourceName();
+
+  public abstract long getTotalExperience();
+
+  public abstract void removeExperience(int experience);
 
   @Override
   public int size() {
@@ -186,6 +194,12 @@ public abstract class ExperienceSource implements Inventory {
 
   @Override
   public String toString() {
-    return !stack.isEmpty() && stack.hasNbt() ? stack.getOrCreateNbt().asString() : "{}";
+    if (!stack.isEmpty()) {
+      NbtComponent component = stack.getComponents().get(DataComponentTypes.CUSTOM_DATA);
+      if (component != null) {
+        return component.copyNbt().toString();
+      }
+    }
+    return "{}";
   }
 }

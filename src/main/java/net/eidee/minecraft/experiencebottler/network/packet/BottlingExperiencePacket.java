@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2023 EideeHi
+ * Copyright (c) 2021-2024 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,58 +24,45 @@
 
 package net.eidee.minecraft.experiencebottler.network.packet;
 
+import io.netty.buffer.ByteBuf;
 import net.eidee.minecraft.experiencebottler.ExperienceBottlerMod;
 import net.eidee.minecraft.experiencebottler.screen.ExperienceBottlerScreenHandler;
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.packet.CustomPayload;
 
 /**
  * This class handles the packets that reflect the experience values entered by the user in the
  * client to the server.
  */
-public class BottlingExperiencePacket implements FabricPacket {
-  public static final PacketType<BottlingExperiencePacket> TYPE;
+public record BottlingExperiencePacket(int experience) implements CustomPayload {
+  public static final CustomPayload.Id<BottlingExperiencePacket> ID;
+  public static final PacketCodec<ByteBuf, BottlingExperiencePacket> CODEC;
 
   static {
-    TYPE =
-        PacketType.create(
-            ExperienceBottlerMod.identifier("bottling_experience"), BottlingExperiencePacket::new);
-  }
-
-  public final int experience;
-
-  public BottlingExperiencePacket(int experience) {
-    this.experience = experience;
-  }
-
-  public BottlingExperiencePacket(PacketByteBuf buf) {
-    this(buf.readInt());
+    ID = new Id<>(ExperienceBottlerMod.identifier("bottling_experience"));
+    CODEC =
+        PacketCodecs.VAR_INT.xmap(
+            BottlingExperiencePacket::new, BottlingExperiencePacket::experience);
   }
 
   /**
    * Reflect the experience value sent by the client.
    *
-   * @param packet The packet sent by the client.
-   * @param player The player who sent the data
-   * @param responseSender Where to send the response.
+   * @param payload The experience value sent by the client.
+   * @param context The context of the packet.
    */
   public static void receive(
-      BottlingExperiencePacket packet, ServerPlayerEntity player, PacketSender responseSender) {
-    if (player.currentScreenHandler instanceof ExperienceBottlerScreenHandler screenHandler) {
-      screenHandler.setBottlingExperience(packet.experience);
+      BottlingExperiencePacket payload, ServerPlayNetworking.Context context) {
+    if (context.player().currentScreenHandler
+        instanceof ExperienceBottlerScreenHandler screenHandler) {
+      screenHandler.setBottlingExperience(payload.experience());
     }
   }
 
   @Override
-  public void write(PacketByteBuf buf) {
-    buf.writeInt(experience);
-  }
-
-  @Override
-  public PacketType<?> getType() {
-    return TYPE;
+  public Id<? extends CustomPayload> getId() {
+    return ID;
   }
 }

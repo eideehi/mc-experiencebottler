@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022-2023 EideeHi
+ * Copyright (c) 2022-2024 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,13 +44,14 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemStack.TooltipSection;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Unit;
 import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -141,7 +142,7 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
     sourceExperience.setDisabledTextColor(0x404040);
     addDrawableChild(
         new ExperienceTypeToggleButton(
-            0, x + 163, y + 31, onExperienceTypeChanged(sourceExperience::setExperienceType)));
+            x + 163, y + 31, onExperienceTypeChanged(sourceExperience::setExperienceType)));
 
     experienceValueToBottleLabel =
         Text.translatable("gui.experiencebottler.label.bottling_experience");
@@ -150,10 +151,7 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
             new ExperienceInput(textRenderer, x + 67, y + 63, this::onInputValueChange));
     addDrawableChild(
         new ExperienceTypeToggleButton(
-            0,
-            x + 163,
-            y + 63,
-            onExperienceTypeChanged(experienceValueToBottle::setExperienceType)));
+            x + 163, y + 63, onExperienceTypeChanged(experienceValueToBottle::setExperienceType)));
 
     afterBottlingExperienceLabel =
         Text.translatable("gui.experiencebottler.label.after_experience");
@@ -162,10 +160,7 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
             new ExperienceInput(textRenderer, x + 67, y + 95, this::onInputValueChange));
     addDrawableChild(
         new ExperienceTypeToggleButton(
-            0,
-            x + 163,
-            y + 95,
-            onExperienceTypeChanged(afterBottlingExperience::setExperienceType)));
+            x + 163, y + 95, onExperienceTypeChanged(afterBottlingExperience::setExperienceType)));
 
     getScreenHandler().addListener(this);
   }
@@ -209,8 +204,6 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
 
   @Override
   protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-    renderBackground(context);
-
     RenderSystem.setShader(GameRenderer::getPositionTexProgram);
     context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
@@ -243,7 +236,7 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
         context.drawTooltip(textRenderer, getTooltipFromItem(stack), stack.getTooltipData(), x, y);
       } else if (client != null) {
         ItemStack copy = stack.copy();
-        copy.addHideFlag(TooltipSection.ADDITIONAL);
+        copy.set(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE);
         List<Text> tooltip = getTooltipFromItem(copy);
         tooltip.addAll(BottledExperienceItem.getAppendTooltip(stack, null));
         context.drawTooltip(textRenderer, tooltip, stack.getTooltipData(), x, y);
