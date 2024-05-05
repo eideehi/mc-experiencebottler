@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2023 EideeHi
+ * Copyright (c) 2021-2024 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@
 package net.eidee.minecraft.experiencebottler.util;
 
 import java.util.Arrays;
-import java.util.stream.LongStream;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
 
@@ -37,9 +36,10 @@ public class ExperienceUtil {
 
   static {
     TOTAL_EXP_CACHE = new long[256];
-    for (int i = 1; i < TOTAL_EXP_CACHE.length; i++) {
-      TOTAL_EXP_CACHE[i] =
-          LongStream.range(0, i).map(ExperienceUtil::getNextLevelExperience).sum();
+    TOTAL_EXP_CACHE[0] = 0;
+    for (int level = 1; level < TOTAL_EXP_CACHE.length; level++) {
+      int prev = level - 1;
+      TOTAL_EXP_CACHE[level] = TOTAL_EXP_CACHE[prev] + getNextLevelExperience(prev);
     }
   }
 
@@ -52,7 +52,12 @@ public class ExperienceUtil {
     return result;
   }
 
-  /** Calculates and returns the experience required from the specified level to the next level. */
+  /**
+   * Calculates and returns the experience required from the specified level to the next level.
+   *
+   * @param level The current level of the player.
+   * @return The experience required to reach the next level from the current level.
+   */
   public static long getNextLevelExperience(long level) {
     if (level >= 30) {
       return 112 + (level - 30) * 9;
@@ -61,7 +66,12 @@ public class ExperienceUtil {
     }
   }
 
-  /** Calculates and returns the level corresponding to the specified total experience. */
+  /**
+   * Calculates and returns the level corresponding to the specified total experience.
+   *
+   * @param experience The total experience points.
+   * @return The level corresponding to the total experience.
+   */
   public static int getLevelFromTotalExperience(long experience) {
     if (experience <= TOTAL_EXP_CACHE[255]) {
       int index = Arrays.binarySearch(TOTAL_EXP_CACHE, experience);
@@ -69,11 +79,8 @@ public class ExperienceUtil {
     }
 
     int level = 512;
-    long total = calcTotalExperienceGteLv31(level);
-
-    while (total < experience) {
+    while (calcTotalExperienceGteLv31(level) < experience) {
       level *= 2;
-      total = calcTotalExperienceGteLv31(level);
     }
 
     int left = level / 2;
@@ -81,7 +88,7 @@ public class ExperienceUtil {
 
     while (left <= right) {
       int mid = (left + right) / 2;
-      total = calcTotalExperienceGteLv31(mid);
+      long total = calcTotalExperienceGteLv31(mid);
 
       if (total == experience) {
         return mid;
@@ -168,7 +175,8 @@ public class ExperienceUtil {
 
     player.totalExperience = (int) MathHelper.clamp(newExperience, 0, Integer.MAX_VALUE);
     if (player.totalExperience == prevTotalExperience) {
-      // If totalExperience is not changed, synchronization packets will not be sent to the client, so change it here.
+      // If totalExperience is not changed, synchronization packets will not be sent to the client,
+      // so change it here.
       player.totalExperience--;
     }
   }
