@@ -1,3 +1,7 @@
+## [1.20.6+build.1 / 2024-05-05](#1.20.6+build.1)
+* EideeHi: Migrate to Minecraft 1.20.6
+* EideeHi: Minor tweak in ExperienceUtil
+
 ## [1.20.1+build.2 / 2023-08-27](#1.20.1+build.2)
 * EideeHi: Fix a bug crashes when opening creative inventory
 
