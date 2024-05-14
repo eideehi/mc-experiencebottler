@@ -47,6 +47,8 @@ image::{image-uri-discord}[link={uri-discord},alt="eidee.net - Discord Server"]
 ** {uri-fabric}[Fabric]
 * Translators:
 ** ɪѕнɪ_ѕαʍα (ishi_sama)
+* Contributors:
+** Kyle Foley (kFo)
 
 == License
 Experience Bottler is developed and released under the MIT license. For the full text of the license, please see the {uri-license}[LICENSE] file.

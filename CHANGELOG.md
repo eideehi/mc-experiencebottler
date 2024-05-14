@@ -1,3 +1,7 @@
+## [1.20.6+build.2 / 2024-05-15](#1.20.6+build.2)
+* Kyle Foley: Fix Experience Bottler recipe is not craftable
+* Eideehi: Fix Experience Bottler not displaying in recipe book
+
 ## [1.20.6+build.1 / 2024-05-05](#1.20.6+build.1)
 * EideeHi: Migrate to Minecraft 1.20.6
 * EideeHi: Minor tweak in ExperienceUtil
