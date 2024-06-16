@@ -54,9 +54,9 @@ public class ExperienceTypeToggleButton extends PressableWidget {
     TEXT_LEVEL = Text.translatable("gui.experiencebottler.experience_bottler.exp_display.level");
     TEXTURES =
         new ButtonTextures(
-            new Identifier("widget/button"),
-            new Identifier("widget/button_disabled"),
-            new Identifier("widget/button_highlighted"));
+            Identifier.of("widget/button"),
+            Identifier.of("widget/button_disabled"),
+            Identifier.of("widget/button_highlighted"));
   }
 
   private final Consumer<ExperienceTypeToggleButton> action;

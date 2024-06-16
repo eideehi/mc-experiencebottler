@@ -31,7 +31,7 @@ import net.eidee.minecraft.experiencebottler.core.constants.Identifiers;
 import net.eidee.minecraft.experiencebottler.item.BottledExperienceItem;
 import net.eidee.minecraft.experiencebottler.item.Items;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
@@ -62,7 +62,7 @@ public class ItemInitializer {
     }
   }
 
-  private static void registerDataComponent(String id, DataComponentType<?> type) {
+  private static void registerDataComponent(String id, ComponentType<?> type) {
     Registry.register(Registries.DATA_COMPONENT_TYPE, identifier(id), type);
   }
 

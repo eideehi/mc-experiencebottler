@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2022 EideeHi
+ * Copyright (c) 2021-2024 EideeHi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,6 @@ public class ExperienceBottlerMod {
   private ExperienceBottlerMod() {}
 
   public static Identifier identifier(String path) {
-    return new Identifier(MOD_ID, path);
+    return Identifier.of(MOD_ID, path);
   }
 }

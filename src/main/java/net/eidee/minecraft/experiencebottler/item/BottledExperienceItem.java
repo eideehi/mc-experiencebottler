@@ -31,14 +31,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipType;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
@@ -55,18 +55,18 @@ import org.jetbrains.annotations.Nullable;
 public class BottledExperienceItem extends Item {
   public static final int[] EXPERIENCE_LIST =
       new int[] {100, 500, 1000, 5000, 10000, 50000, 100000, 500000};
-  public static final DataComponentType<Integer> EXPERIENCE;
+  public static final ComponentType<Integer> EXPERIENCE;
   private static final int MAX_USE_TIME = 32;
 
   static {
     EXPERIENCE =
-        DataComponentType.<Integer>builder()
+            ComponentType.<Integer>builder()
             .codec(Codec.INT)
             .packetCodec(PacketCodecs.VAR_INT)
             .build();
   }
 
-  public BottledExperienceItem(Settings settings) {
+  public BottledExperienceItem(net.minecraft.item.Item.Settings settings) {
     super(settings);
   }
 
@@ -154,13 +154,12 @@ public class BottledExperienceItem extends Item {
   }
 
   @Override
-  public int getMaxUseTime(ItemStack stack) {
+  public int getMaxUseTime(ItemStack stack, LivingEntity user) {
     return MAX_USE_TIME;
   }
 
   @Override
-  public void appendTooltip(
-      ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+  public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
     // FIXME: If there is a better side detection method, it will be modified.
     String threadName = Thread.currentThread().getName();
     if (threadName.equals("Render thread")) {
