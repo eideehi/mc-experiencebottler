@@ -45,8 +45,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        [!NOTE]
-        With few exceptions, bug fixes for older versions will not be carried out. While we do not prohibit bug reports for older versions as a means to share information with other users, please note that such reports will be labeled "older version" and closed without any fixes being made.
+        > [!NOTE]
+        > With few exceptions, bug fixes for older versions will not be carried out. While we do not prohibit bug reports for older versions as a means to share information with other users, please note that such reports will be labeled "older version" and closed without any fixes being made.
 
   - type: dropdown
     id: standalone-bug
@@ -65,8 +65,8 @@ body:
       label: List of mods to reproduce bug
       description: |
         Please list the mods you are using if you deem it necessary.
-        [!NOTE]
-        It is generally not necessary to provide this information, but we may ask for it if the cause cannot be determined from the logs alone.
+        > [!NOTE]
+        > It is generally not necessary to provide this information, but we may ask for it if the cause cannot be determined from the logs alone.
       placeholder: |
         Awesome Weapon v1.2.3
         Awesome NPC v4.5.6
@@ -101,8 +101,8 @@ body:
       label: Logs, screenshots, videos, etc.
       description: |
         You can optionally attach logs, screenshots, or videos by dragging and dropping them. For types of files that can be attached, please refer to "[Attaching files - GitHub](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/attaching-files)."
-        [!IMPORTANT]
-        Attaching files is optional, but please try to submit logs whenever possible. Without logs, investigating the bug becomes very difficult.
+        > [!IMPORTANT]
+        > Attaching files is optional, but please try to submit logs whenever possible. Without logs, investigating the bug becomes very difficult.
 
   - type: markdown
     attributes:
