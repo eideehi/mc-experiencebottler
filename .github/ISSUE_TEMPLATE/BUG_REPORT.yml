@@ -6,15 +6,15 @@ body:
     attributes:
       value: |
         ## Introduction
-        The "Issues" in this repository serve as a pure bug tracker. Questions and suggestions should be posted on the [Discord server](https://discord.gg/DDQqxkK7s6). Please note that if you post something other than a bug report to Issues, it will be ignored and closed as is.
+        This "Issues" section is used purely as a bug tracker. Please post questions or requests on the [Discord server](https://discord.gg/DDQqxkK7s6). If anything other than bug reports is posted in the Issues section, it will generally be ignored and closed without further notice.
 
   - type: checkboxes
     id: searched-existing-issues
     attributes:
-      label: Is there an existing issue for this?
-      description: Search and verify that there is no existing Issue for the bug that has occurred.
+      label: Is there an existing issue with the same content?
+      description: Search to check if there is an existing issue regarding the bug that occurred.
       options:
-        - label: I have searched the existing issues
+        - label: I searched the existing issues.
           required: true
 
   - type: dropdown
@@ -22,6 +22,7 @@ body:
     attributes:
       label: Mod version
       options:
+        - 1.21+build.1
         - 1.20.6+build.2
         - 1.20.6+build.1
         - 1.20.1+build.2
@@ -44,29 +45,28 @@ body:
   - type: markdown
     attributes:
       value: |
-        **NOTE**:
-        With a few exceptions, bug fixes are always made against the most recent version. Bug reports against older versions are not prohibited as a means of sharing information with other users, but please note that submitted bug reports will be closed with the label "older version" and no fixes will be made for the bug.
+        [!NOTE]
+        With few exceptions, bug fixes for older versions will not be carried out. While we do not prohibit bug reports for older versions as a means to share information with other users, please note that such reports will be labeled "older version" and closed without any fixes being made.
 
   - type: dropdown
     id: standalone-bug
     attributes:
-      label: Is this a bug caused by this mod alone?
-      description: Please check if the bug can be reproduced with the minimal mod structure this mod launches.
+      label: Can the bug be reproduced with this mod alone?
+      description: Please check if the bug occurs with only this mod and its dependencies installed.
       options:
-        - The bug was reproduced with this mod alone
-        - This mod alone did not reproduce the bug
+        - The bug occurred with this mod alone.
+        - The bug did not occur with this mod alone.
     validations:
       required: true
 
-  - type: markdown
-    attributes:
-      value: If you answered "This mod alone did not reproduce the bug" in the previous section, be sure to answer the next section.
-
   - type: textarea
-    id: mods-for-reproduce-bug
+    id: mods-when-bug-occurred
     attributes:
       label: List of mods to reproduce bug
-      description: Tell me a list of the minimum mods needed to reproduce this bug.
+      description: |
+        Please list the mods you are using if you deem it necessary.
+        [!NOTE]
+        It is generally not necessary to provide this information, but we may ask for it if the cause cannot be determined from the logs alone.
       placeholder: |
         Awesome Weapon v1.2.3
         Awesome NPC v4.5.6
@@ -76,8 +76,8 @@ body:
     id: bug-detail
     attributes:
       label: What happened?
-      description: Also tell us, what did you expect to happen?
-      placeholder: Tell us what you see!
+      description: Alternatively, please describe what did not happen.
+      placeholder: I expected that AAA would become CCC when I did BBB, but it was DDD instead.
     validations:
       required: true
 
@@ -85,10 +85,12 @@ body:
     id: steps-for-reproduce-bug
     attributes:
       label: Steps to reproduce the bug
-      description: How do you trigger this bug? Please walk us through it step by step.
+      description: How can this bug be reproduced? Please describe in detail, step by step.
       placeholder: |
-        1. ****** ** ****** ****
-        2. ** **** ****** ****
+        1. Set the configuration to AAA.
+        2. Load the save data.
+        3. Execute BBB.
+        4. After 30 seconds, DDD occurs.
         ...
     validations:
       required: true
@@ -96,9 +98,11 @@ body:
   - type: textarea
     id: file-attachments
     attributes:
-      label: Logs and screenshots
+      label: Logs, screenshots, videos, etc.
       description: |
-        Optionally, logs and screenshots can be attached. See "[Attaching files - GitHub](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/attaching-files)" for more information about attachable files.
+        You can optionally attach logs, screenshots, or videos by dragging and dropping them. For types of files that can be attached, please refer to "[Attaching files - GitHub](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/attaching-files)."
+        [!IMPORTANT]
+        Attaching files is optional, but please try to submit logs whenever possible. Without logs, investigating the bug becomes very difficult.
 
   - type: markdown
     attributes:
