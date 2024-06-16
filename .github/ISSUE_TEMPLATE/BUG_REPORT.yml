@@ -8,6 +8,11 @@ body:
         ## Introduction
         This "Issues" section is used purely as a bug tracker. Please post questions or requests on the [Discord server](https://discord.gg/DDQqxkK7s6). If anything other than bug reports is posted in the Issues section, it will generally be ignored and closed without further notice.
 
+        ## Request regarding bug reports
+        Please provide as much information as possible in your bug report. Bug reports with too little information may be given lower priority or closed without addressing them (except for simple bugs).
+
+        ## Forms
+
   - type: checkboxes
     id: searched-existing-issues
     attributes:
@@ -54,6 +59,7 @@ body:
       label: Can the bug be reproduced with this mod alone?
       description: Please check if the bug occurs with only this mod and its dependencies installed.
       options:
+        - I have not checked if the bug occurs with only this mod. Alternatively, it is difficult to check.
         - The bug occurred with this mod alone.
         - The bug did not occur with this mod alone.
     validations:
