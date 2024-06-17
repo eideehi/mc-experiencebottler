@@ -27,6 +27,7 @@ body:
     attributes:
       label: Mod version
       options:
+        - 1.21+build.2
         - 1.21+build.1
         - 1.20.6+build.2
         - 1.20.6+build.1

@@ -1,3 +1,6 @@
+## [1.21+build.2 [2024-06-18]](#1.21+build.2)
+* EideeHi: Add Spanish translation (provided by Bruno Collazo)
+
 ## [1.21+build.1 [2024-06-16]](#1.21+build.1)
 * EideeHi: Migrate to Minecraft 1.21
 
