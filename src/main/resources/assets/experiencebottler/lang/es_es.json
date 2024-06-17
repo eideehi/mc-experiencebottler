@@ -1,0 +1,22 @@
+{
+  "block.experiencebottler.experience_bottler": "Envasador de Experiencia",
+  "item.experiencebottler.bottled_experience": "Experiencia Embotellada",
+  "item.experiencebottler.bottled_experience.tooltip.0": "Puntos de Experiencia: %s",
+  "item.experiencebottler.bottled_experience.tooltip.1": "Cuando se usa, el nivel será %d",
+  "stat.experiencebottler.interact_with_experience_bottler": "Interacciones con el Envasador de Experiencia",
+  "container.experiencebottler.experience_bottler": "Envasador de Experiencia",
+  "gui.experiencebottler.experience_bottler.exp_display.point": "XP",
+  "gui.experiencebottler.experience_bottler.exp_display.level": "Nv",
+  "gui.experiencebottler.label.experience_source.player": "Jugador",
+  "gui.experiencebottler.label.source_experience": "%s Experiencia",
+  "gui.experiencebottler.label.bottling_experience": "Envasando Experiencia",
+  "gui.experiencebottler.label.after_experience": "Experiencia Posterior",
+  "narration.experiencebottler.experience_type.point": "Punto",
+  "narration.experiencebottler.experience_type.level": "Nivel",
+  "narration.experiencebottler.experience_type_toggle_button": "Botón: Alternar la visualización de experiencia",
+  "narration.experiencebottler.experience_type_toggle_button.usage.focused": "Presiona Enter para alternar",
+  "narration.experiencebottler.experience_type_toggle_button.usage.hovered": "Haz clic izquierdo para alternar",
+  "narration.experiencebottler.experience_type_toggle_button.info.current_type": "Ahora se muestra como %s",
+  "narration.experiencebottler.experience_input_field": "Campo de Texto: Introduce la experiencia a embotellar",
+  "narration.experiencebottler.experience_input_field.info.value": "Los valores actuales son %d %s"
+}
