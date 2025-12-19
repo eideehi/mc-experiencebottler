@@ -74,8 +74,8 @@ public abstract class ExperienceSource implements Inventory {
                 .getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT)
                 .copyNbt();
         if (nbt != null) {
-          sourceName = nbt.getString("SourceName");
-          totalExperience = nbt.getLong("TotalExperience");
+          sourceName = nbt.getString("SourceName").orElse("");
+          totalExperience = nbt.getLong("TotalExperience").orElse(0L);
         }
       }
 
@@ -182,12 +182,10 @@ public abstract class ExperienceSource implements Inventory {
     markDirty();
   }
 
-  @Override
   public void onOpen(PlayerEntity player) {
     markDirty();
   }
 
-  @Override
   public void onClose(PlayerEntity player) {
     clear();
   }

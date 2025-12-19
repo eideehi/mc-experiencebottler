@@ -24,19 +24,18 @@
 
 package net.eidee.minecraft.experiencebottler.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.client.gui.widget.PressableWidget;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -44,7 +43,7 @@ import net.minecraft.util.math.MathHelper;
 
 /** A button widget to switch between displaying experience as either levels or points. */
 @Environment(EnvType.CLIENT)
-public class ExperienceTypeToggleButton extends PressableWidget {
+public class ExperienceTypeToggleButton extends ButtonWidget {
   private static final ButtonTextures TEXTURES;
   private static final Text TEXT_POINT;
   private static final Text TEXT_LEVEL;
@@ -64,7 +63,11 @@ public class ExperienceTypeToggleButton extends PressableWidget {
   private ExperienceType experienceType;
 
   public ExperienceTypeToggleButton(int x, int y, Consumer<ExperienceTypeToggleButton> action) {
-    super(x, y, 18, 18, ScreenTexts.EMPTY);
+    super(x, y, 18, 18, ScreenTexts.EMPTY, button -> {
+        ExperienceTypeToggleButton self = (ExperienceTypeToggleButton) button;
+        self.setExperienceType(self.getExperienceType().rotate());
+        action.accept(self);
+    }, DEFAULT_NARRATION_SUPPLIER);
     this.action = action;
     experienceType = ExperienceType.POINT;
   }
@@ -85,26 +88,22 @@ public class ExperienceTypeToggleButton extends PressableWidget {
   @Override
   public void setMessage(Text message) {}
 
+/*
   @Override
   public void onPress() {
     setExperienceType(getExperienceType().rotate());
     action.accept(this);
   }
+*/
 
   @Override
   protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-    RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-    context.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
-    RenderSystem.enableBlend();
-    RenderSystem.defaultBlendFunc();
-    RenderSystem.enableDepthTest();
-
     final int width = getWidth();
     final int height = getHeight();
     final int left = getX();
     final int top = getY();
 
-    context.drawGuiTexture(TEXTURES.get(active, isHovered()), left, top, width, height);
+    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, TEXTURES.get(active, isHovered()), left, top, width, height);
 
     final int xCenter = left + width / 2;
 
@@ -127,7 +126,7 @@ public class ExperienceTypeToggleButton extends PressableWidget {
   }
 
   @Override
-  protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+  public void appendClickableNarrations(NarrationMessageBuilder builder) {
     builder.put(NarrationPart.TITLE, getNarrationMessage());
     if (active) {
       if (isFocused()) {

@@ -24,9 +24,12 @@
 
 package net.eidee.minecraft.experiencebottler.block;
 
+import net.eidee.minecraft.experiencebottler.core.constants.Identifiers;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.BlockSoundGroup;
 
 /** Defines the blocks of the Experience Bottler. */
@@ -41,7 +44,8 @@ public class Blocks {
                 .requiresTool()
                 .strength(4.0F, 5.0F)
                 .sounds(BlockSoundGroup.METAL)
-                .nonOpaque());
+                .nonOpaque()
+                .registryKey(RegistryKey.of(RegistryKeys.BLOCK, Identifiers.EXPERIENCE_BOTTLER)));
   }
 
   private Blocks() {}
