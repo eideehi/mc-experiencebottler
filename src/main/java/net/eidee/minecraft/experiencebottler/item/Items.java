@@ -24,7 +24,10 @@
 
 package net.eidee.minecraft.experiencebottler.item;
 
+import net.eidee.minecraft.experiencebottler.core.constants.Identifiers;
 import net.minecraft.item.Item;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Rarity;
 
 /** Defines the items of the Experience Bottler. */
@@ -32,7 +35,11 @@ public class Items {
   public static final Item BOTTLED_EXPERIENCE;
 
   static {
-    BOTTLED_EXPERIENCE = new BottledExperienceItem(new Item.Settings().rarity(Rarity.UNCOMMON));
+    BOTTLED_EXPERIENCE =
+        new BottledExperienceItem(
+            new Item.Settings()
+                .rarity(Rarity.UNCOMMON)
+                .registryKey(RegistryKey.of(RegistryKeys.ITEM, Identifiers.BOTTLED_EXPERIENCE)));
   }
 
   private Items() {}

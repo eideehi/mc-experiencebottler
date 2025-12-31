@@ -1,7 +1,7 @@
 plugins {
-    id 'fabric-loom' version '1.6-SNAPSHOT'
+    id 'fabric-loom' version '1.14.7'
     id 'maven-publish'
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id 'net.darkhax.curseforgegradle' version '1.1.28'
     id 'com.modrinth.minotaur' version '2.+'
 }
 
@@ -54,6 +54,11 @@ tasks.withType(JavaCompile).configureEach {
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
         it.options.release = targetJavaVersion
     }
+    it.options.compilerArgs.add("-Xlint:deprecation")
+}
+
+base {
+	archivesName = project.archives_base_name
 }
 
 java {
@@ -61,7 +66,6 @@ java {
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
-    archivesBaseName = project.archives_base_name
     // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
     // if it is present.
     // If you remove this line, sources will not be generated.
@@ -70,7 +74,7 @@ java {
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
+        rename { "${it}_${project.archives_base_name}" }
     }
 }
 
@@ -91,27 +95,17 @@ publishing {
     }
 }
 
-curseforge {
-    apiKey = project.findProperty('curseforge_apikey') ?: '0'
-    project {
-        id = project.curseforge_projectId
-        releaseType = 'release'
-        addGameVersion project.minecraft_version
-        addGameVersion 'Fabric'
-        changelogType = 'markdown'
-        changelog = "[View changelog on GitHub](${project.changelog_url}#${project.version})"
-
-        mainArtifact(remapJar) {
-            displayName = "${project.display_name} ${project.version}"
-
-            relations {
-                requiredDependency 'fabric-api'
-            }
-        }
-    }
-    options {
-        forgeGradleIntegration = false
-    }
+task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    apiToken = project.findProperty('curseforge_apikey') ?: '0'
+    
+    def mainFile = upload(project.curseforge_projectId, remapJar)
+    mainFile.releaseType = 'release'
+    mainFile.addGameVersion(project.minecraft_version)
+    mainFile.addGameVersion('Fabric')
+    mainFile.changelogType = 'markdown'
+    mainFile.changelog = "[View changelog on GitHub](${project.changelog_url}#${project.version})"
+    mainFile.displayName = "${project.display_name} ${project.version}"
+    mainFile.addRequirement('fabric-api')
 }
 
 import com.modrinth.minotaur.dependencies.ModDependency
@@ -129,7 +123,13 @@ modrinth {
     ]
 }
 
-task upload(dependsOn: [tasks.curseforge, tasks.modrinth]) {
+task upload(dependsOn: [tasks.publishCurseForge, tasks.modrinth]) {
     group = 'upload'
     description = 'Upload the new version of the file to CurseForge and Modrinth'
+}
+
+tasks.register('printClasspath') {
+    doLast {
+        configurations.compileClasspath.each { println it }
+    }
 }

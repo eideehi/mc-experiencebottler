@@ -34,6 +34,8 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -52,7 +54,7 @@ public class ExperienceInput extends ClickableWidget {
   private long experienceLevel;
   private long inputValue;
   private String displayText = "0";
-  private int[] colors = new int[] {0xFFFFFF, 0xA0A0A0, 0xE09090};
+  private int[] colors = new int[] {0xFFFFFFFF, 0xFFA0A0A0, 0xFFE09090};
   private ExperienceType experienceType = ExperienceType.POINT;
   private int frame;
 
@@ -236,6 +238,7 @@ public class ExperienceInput extends ClickableWidget {
     }
   }
 
+/*
   @Override
   public boolean mouseClicked(double mouseX, double mouseY, int button) {
     boolean result = super.mouseClicked(mouseX, mouseY, button);
@@ -246,12 +249,14 @@ public class ExperienceInput extends ClickableWidget {
     }
     return result;
   }
+*/
 
   @Override
-  public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+  public boolean keyPressed(KeyInput input) {
     if (!active || !visible || !isFocused()) {
       return false;
     }
+    int keyCode = input.key();
     if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
       changeInputValue(inputValue / 10);
       return true;
@@ -263,10 +268,11 @@ public class ExperienceInput extends ClickableWidget {
   }
 
   @Override
-  public boolean charTyped(char chr, int modifiers) {
+  public boolean charTyped(CharInput charInput) {
     if (!active || !visible || !isFocused()) {
       return false;
     }
+    char chr = (char) charInput.codepoint();
     if (!Character.isDigit(chr) || (chr == '0' && inputValue == 0)) {
       return false;
     }
@@ -274,13 +280,8 @@ public class ExperienceInput extends ClickableWidget {
     return true;
   }
 
-  @Override
+  // @Override
   public void playDownSound(SoundManager soundManager) {}
-
-  @Override
-  public boolean isNarratable() {
-    return visible;
-  }
 
   @Override
   protected MutableText getNarrationMessage() {

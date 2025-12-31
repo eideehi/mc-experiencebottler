@@ -51,6 +51,7 @@ image::{image-uri-discord}[link={uri-discord},alt="eidee.net - Discord Server"]
 ** Bruno Collazo (BrunoCollazo)
 * Contributors:
 ** Kyle Foley (kFo)
+** Ashwin (tester248)
 
 == License
 Experience Bottler is developed and released under the MIT license. For the full text of the license, please see the {uri-license}[LICENSE] file.

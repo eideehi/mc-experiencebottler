@@ -39,17 +39,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
+import net.minecraft.util.ActionResult;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
+import java.util.function.Consumer;
 
 /** The item of bottled experience points. */
 public class BottledExperienceItem extends Item {
@@ -103,16 +105,15 @@ public class BottledExperienceItem extends Item {
   }
 
   @Environment(EnvType.CLIENT)
-  private void appendTooltipClient(ItemStack stack, List<Text> tooltip) {
-    tooltip.addAll(getAppendTooltip(stack, MinecraftClient.getInstance().player));
+  private void appendTooltipClient(ItemStack stack, Consumer<Text> tooltip) {
+    getAppendTooltip(stack, MinecraftClient.getInstance().player).forEach(tooltip::accept);
   }
 
   @Override
-  public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+  public ActionResult use(World world, PlayerEntity user, Hand hand) {
     return ItemUsage.consumeHeldItem(world, user, hand);
   }
 
-  @Override
   public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
     PlayerEntity player = user instanceof PlayerEntity ? (PlayerEntity) user : null;
 
@@ -148,24 +149,26 @@ public class BottledExperienceItem extends Item {
     return stack;
   }
 
-  @Override
+  // @Override
   public UseAction getUseAction(ItemStack stack) {
     return UseAction.DRINK;
   }
 
-  @Override
+  // @Override
   public int getMaxUseTime(ItemStack stack, LivingEntity user) {
     return MAX_USE_TIME;
   }
 
   @Override
-  public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+  @SuppressWarnings("deprecation")
+  public void appendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent component, Consumer<Text> tooltip, TooltipType type) {
     // FIXME: If there is a better side detection method, it will be modified.
     String threadName = Thread.currentThread().getName();
     if (threadName.equals("Render thread")) {
       appendTooltipClient(stack, tooltip);
     } else {
-      tooltip.addAll(getAppendTooltip(stack, null));
+      // tooltip.addAll(getAppendTooltip(stack, null));
+      getAppendTooltip(stack, null).forEach(tooltip::accept);
     }
   }
 

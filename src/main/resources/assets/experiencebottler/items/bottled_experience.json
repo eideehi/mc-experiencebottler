@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "experiencebottler:item/bottled_experience"
+  }
+}

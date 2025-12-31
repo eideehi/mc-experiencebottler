@@ -29,9 +29,10 @@ import net.eidee.minecraft.experiencebottler.block.Blocks;
 import net.eidee.minecraft.experiencebottler.core.constants.Identifiers;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Block;
+import net.minecraft.client.render.BlockRenderLayer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -40,6 +41,7 @@ import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 import org.jetbrains.annotations.Nullable;
@@ -69,7 +71,10 @@ public class BlockInitializer {
   static void init() {
     register(
         Blocks.EXPERIENCE_BOTTLER,
-        new BlockItem(Blocks.EXPERIENCE_BOTTLER, new Item.Settings()),
+        new BlockItem(
+            Blocks.EXPERIENCE_BOTTLER,
+            new Item.Settings()
+                .registryKey(RegistryKey.of(RegistryKeys.ITEM, Identifiers.EXPERIENCE_BOTTLER))),
         ItemGroups.FUNCTIONAL,
         null,
         Identifiers.EXPERIENCE_BOTTLER);
@@ -78,6 +83,6 @@ public class BlockInitializer {
   /** Initializes the blocks at client-side. */
   @Environment(EnvType.CLIENT)
   static void initClient() {
-    BlockRenderLayerMap.INSTANCE.putBlock(Blocks.EXPERIENCE_BOTTLER, RenderLayer.getCutout());
+    BlockRenderLayerMap.putBlock(Blocks.EXPERIENCE_BOTTLER, BlockRenderLayer.CUTOUT);
   }
 }
