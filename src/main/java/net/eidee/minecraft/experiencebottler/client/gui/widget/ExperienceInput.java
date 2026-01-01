@@ -30,6 +30,7 @@ import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
@@ -238,10 +239,9 @@ public class ExperienceInput extends ClickableWidget {
     }
   }
 
-/*
   @Override
-  public boolean mouseClicked(double mouseX, double mouseY, int button) {
-    boolean result = super.mouseClicked(mouseX, mouseY, button);
+  public boolean mouseClicked(Click click, boolean doubled) {
+    boolean result = super.mouseClicked(click, doubled);
     if (result && !isFocused()) {
       setFocused(true);
     } else if (!result && isFocused()) {
@@ -249,7 +249,6 @@ public class ExperienceInput extends ClickableWidget {
     }
     return result;
   }
-*/
 
   @Override
   public boolean keyPressed(KeyInput input) {
@@ -280,7 +279,7 @@ public class ExperienceInput extends ClickableWidget {
     return true;
   }
 
-  // @Override
+  @Override
   public void playDownSound(SoundManager soundManager) {}
 
   @Override

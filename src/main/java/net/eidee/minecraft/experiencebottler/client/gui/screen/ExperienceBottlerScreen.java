@@ -26,33 +26,28 @@ package net.eidee.minecraft.experiencebottler.client.gui.screen;
 
 import static net.eidee.minecraft.experiencebottler.ExperienceBottlerMod.identifier;
 
-import net.minecraft.client.gl.RenderPipelines;
-import java.util.List;
 import java.util.function.Consumer;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.eidee.minecraft.experiencebottler.client.gui.widget.ExperienceInput;
 import net.eidee.minecraft.experiencebottler.client.gui.widget.ExperienceType;
 import net.eidee.minecraft.experiencebottler.client.gui.widget.ExperienceTypeToggleButton;
-import net.eidee.minecraft.experiencebottler.item.BottledExperienceItem;
-import net.eidee.minecraft.experiencebottler.item.Items;
 import net.eidee.minecraft.experiencebottler.network.packet.BottlingExperiencePacket;
 import net.eidee.minecraft.experiencebottler.screen.ExperienceBottlerScreenHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.input.KeyInput;
-
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Unit;
 import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -205,7 +200,17 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
 
   @Override
   protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-    context.drawTexture(RenderPipelines.GUI_TEXTURED, BACKGROUND, x, y, 0.0F, 0.0F, backgroundWidth, backgroundHeight, 256, 256);
+    context.drawTexture(
+        RenderPipelines.GUI_TEXTURED,
+        BACKGROUND,
+        x,
+        y,
+        0.0F,
+        0.0F,
+        backgroundWidth,
+        backgroundHeight,
+        256,
+        256);
   }
 
   @Override
@@ -224,39 +229,28 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
   }
 
   @Override
-  protected void drawMouseoverTooltip(DrawContext context, int x, int y) {
-    if (getScreenHandler().getCursorStack().isEmpty()
-        && focusedSlot != null
-        && focusedSlot.hasStack()) {
-      ItemStack stack = focusedSlot.getStack();
-      if (focusedSlot.inventory instanceof PlayerInventory
-          || !stack.isOf(Items.BOTTLED_EXPERIENCE)) {
-        context.drawTooltip(textRenderer, getTooltipFromItem(stack), stack.getTooltipData(), x, y);
-      } else if (client != null) {
-        ItemStack copy = stack.copy();
-        // copy.set(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE);
-        List<Text> tooltip = getTooltipFromItem(copy);
-        tooltip.addAll(BottledExperienceItem.getAppendTooltip(stack, null));
-        context.drawTooltip(textRenderer, tooltip, stack.getTooltipData(), x, y);
-      }
+  public boolean mouseClicked(Click click, boolean doubled) {
+    boolean result = super.mouseClicked(click, doubled);
+    double mouseX = click.x();
+    double mouseY = click.y();
+    if (experienceValueToBottle.isFocused() && !experienceValueToBottle.isMouseOver(mouseX, mouseY)) {
+      experienceValueToBottle.setFocused(false);
+      setFocused(null);
+    } else if (afterBottlingExperience.isFocused() && !afterBottlingExperience.isMouseOver(mouseX, mouseY)) {
+      afterBottlingExperience.setFocused(false);
+      setFocused(null);
     }
+    return result;
   }
 
   @Override
   public boolean keyPressed(KeyInput input) {
     int keyCode = input.key();
-    if (keyCode == GLFW.GLFW_KEY_ENTER) {
-      if (experienceValueToBottle.isFocused()) {
-        experienceValueToBottle.setFocused(false);
-        setFocused(null);
-        return true;
-      } else if (afterBottlingExperience.isFocused()) {
-        afterBottlingExperience.setFocused(false);
-        setFocused(null);
-        return true;
-      }
-    }
-    if (keyCode == GLFW.GLFW_KEY_ESCAPE || (client != null && client.options.inventoryKey.matchesKey(input))) {
+    boolean tryInputDeactivate =
+        keyCode == GLFW.GLFW_KEY_ENTER
+            || keyCode == GLFW.GLFW_KEY_ESCAPE
+            || (client != null && client.options.inventoryKey.matchesKey(input));
+    if (tryInputDeactivate) {
       if (experienceValueToBottle.isFocused()) {
         experienceValueToBottle.setFocused(false);
         setFocused(null);

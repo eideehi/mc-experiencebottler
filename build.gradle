@@ -54,7 +54,6 @@ tasks.withType(JavaCompile).configureEach {
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
         it.options.release = targetJavaVersion
     }
-    it.options.compilerArgs.add("-Xlint:deprecation")
 }
 
 base {
@@ -97,7 +96,7 @@ publishing {
 
 task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
     apiToken = project.findProperty('curseforge_apikey') ?: '0'
-    
+
     def mainFile = upload(project.curseforge_projectId, remapJar)
     mainFile.releaseType = 'release'
     mainFile.addGameVersion(project.minecraft_version)

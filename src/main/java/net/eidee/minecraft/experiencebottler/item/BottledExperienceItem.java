@@ -24,89 +24,31 @@
 
 package net.eidee.minecraft.experiencebottler.item;
 
-import com.mojang.serialization.Codec;
-import java.util.List;
+import net.eidee.minecraft.experiencebottler.component.type.BottledExperienceComponent;
 import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.component.ComponentType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.component.type.TooltipDisplayComponent;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
 import net.minecraft.util.ActionResult;
-import net.minecraft.item.consume.UseAction;
+import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import org.apache.commons.compress.utils.Lists;
-import org.jetbrains.annotations.Nullable;
-import java.util.function.Consumer;
 
 /** The item of bottled experience points. */
 public class BottledExperienceItem extends Item {
   public static final int[] EXPERIENCE_LIST =
       new int[] {100, 500, 1000, 5000, 10000, 50000, 100000, 500000};
-  public static final ComponentType<Integer> EXPERIENCE;
   private static final int MAX_USE_TIME = 32;
-
-  static {
-    EXPERIENCE =
-            ComponentType.<Integer>builder()
-            .codec(Codec.INT)
-            .packetCodec(PacketCodecs.VAR_INT)
-            .build();
-  }
 
   public BottledExperienceItem(net.minecraft.item.Item.Settings settings) {
     super(settings);
-  }
-
-  /**
-   * Get the experience value set in the item stack. If no experience value is set, it returns 0.
-   */
-  public static int readExperienceTag(ItemStack stack) {
-    return stack.getComponents().getOrDefault(EXPERIENCE, 0);
-  }
-
-  /** Set the experience value in item stack. */
-  public static void writeExperienceTag(ItemStack stack, int value) {
-    stack.set(EXPERIENCE, value);
-  }
-
-  public static List<Text> getAppendTooltip(ItemStack stack, @Nullable PlayerEntity player) {
-    List<Text> result = Lists.newArrayList();
-    if (stack.isEmpty()) {
-      return result;
-    }
-    int experience = readExperienceTag(stack);
-    if (experience < 0) {
-      return result;
-    }
-    Text arg = Text.literal(String.format("%,d", experience));
-    result.add(Text.translatable("item.experiencebottler.bottled_experience.tooltip.0", arg));
-    if (player != null) {
-      long playerExperience = ExperienceUtil.getTotalExperience(player);
-      int level = ExperienceUtil.getLevelFromTotalExperience(experience + playerExperience);
-      arg = Text.literal(String.format("%,d", level));
-      result.add(Text.translatable("item.experiencebottler.bottled_experience.tooltip.1", arg));
-    }
-    return result;
-  }
-
-  @Environment(EnvType.CLIENT)
-  private void appendTooltipClient(ItemStack stack, Consumer<Text> tooltip) {
-    getAppendTooltip(stack, MinecraftClient.getInstance().player).forEach(tooltip::accept);
   }
 
   @Override
@@ -123,7 +65,7 @@ public class BottledExperienceItem extends Item {
 
     if (player != null) {
       if (!world.isClient()) {
-        int experience = readExperienceTag(stack);
+        int experience = BottledExperienceComponent.getExperienceValue(stack);
         if (experience > 0) {
           ExperienceUtil.addExperience(player, experience);
         }
@@ -149,27 +91,14 @@ public class BottledExperienceItem extends Item {
     return stack;
   }
 
-  // @Override
+  @Override
   public UseAction getUseAction(ItemStack stack) {
     return UseAction.DRINK;
   }
 
-  // @Override
+  @Override
   public int getMaxUseTime(ItemStack stack, LivingEntity user) {
     return MAX_USE_TIME;
-  }
-
-  @Override
-  @SuppressWarnings("deprecation")
-  public void appendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent component, Consumer<Text> tooltip, TooltipType type) {
-    // FIXME: If there is a better side detection method, it will be modified.
-    String threadName = Thread.currentThread().getName();
-    if (threadName.equals("Render thread")) {
-      appendTooltipClient(stack, tooltip);
-    } else {
-      // tooltip.addAll(getAppendTooltip(stack, null));
-      getAppendTooltip(stack, null).forEach(tooltip::accept);
-    }
   }
 
   @Override

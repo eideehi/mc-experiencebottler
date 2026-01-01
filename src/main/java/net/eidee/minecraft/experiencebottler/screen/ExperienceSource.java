@@ -29,6 +29,7 @@ import net.eidee.minecraft.experiencebottler.block.Blocks;
 import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.ContainerUser;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -73,10 +74,8 @@ public abstract class ExperienceSource implements Inventory {
                 .getComponents()
                 .getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT)
                 .copyNbt();
-        if (nbt != null) {
-          sourceName = nbt.getString("SourceName").orElse("");
-          totalExperience = nbt.getLong("TotalExperience").orElse(0L);
-        }
+        sourceName = nbt.getString("SourceName").orElse("");
+        totalExperience = nbt.getLong("TotalExperience").orElse(0L);
       }
 
       @Override
@@ -182,11 +181,13 @@ public abstract class ExperienceSource implements Inventory {
     markDirty();
   }
 
-  public void onOpen(PlayerEntity player) {
+  @Override
+  public void onOpen(ContainerUser user) {
     markDirty();
   }
 
-  public void onClose(PlayerEntity player) {
+  @Override
+  public void onClose(ContainerUser user) {
     clear();
   }
 

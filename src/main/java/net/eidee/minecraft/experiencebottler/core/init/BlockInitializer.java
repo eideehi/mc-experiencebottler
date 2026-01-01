@@ -74,7 +74,8 @@ public class BlockInitializer {
         new BlockItem(
             Blocks.EXPERIENCE_BOTTLER,
             new Item.Settings()
-                .registryKey(RegistryKey.of(RegistryKeys.ITEM, Identifiers.EXPERIENCE_BOTTLER))),
+                .registryKey(RegistryKey.of(RegistryKeys.ITEM, Identifiers.EXPERIENCE_BOTTLER))
+                .useBlockPrefixedTranslationKey()),
         ItemGroups.FUNCTIONAL,
         null,
         Identifiers.EXPERIENCE_BOTTLER);

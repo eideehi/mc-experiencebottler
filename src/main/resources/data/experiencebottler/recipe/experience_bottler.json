@@ -6,14 +6,11 @@
     "III"
   ],
   "key": {
-    "I": {
-      "item": "minecraft:iron_ingot"
-    },
-    "B": {
-      "item": "minecraft:glass_bottle"
-    }
+    "I": "minecraft:iron_ingot",
+    "B": "minecraft:glass_bottle"
   },
   "result": {
+    "count": 1,
     "id": "experiencebottler:experience_bottler"
   }
 }

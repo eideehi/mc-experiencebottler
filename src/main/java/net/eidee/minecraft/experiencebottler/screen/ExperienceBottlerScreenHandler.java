@@ -25,7 +25,7 @@
 package net.eidee.minecraft.experiencebottler.screen;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import net.eidee.minecraft.experiencebottler.item.BottledExperienceItem;
+import net.eidee.minecraft.experiencebottler.component.type.BottledExperienceComponent;
 import net.eidee.minecraft.experiencebottler.item.Items;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -89,7 +89,7 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
           @Override
           public boolean canTakeItems(PlayerEntity playerEntity) {
             if (!playerEntity.isCreative()) {
-              int experience = BottledExperienceItem.readExperienceTag(getStack());
+              int experience = BottledExperienceComponent.getExperienceValue(getStack());
               return experience > 0 && experience <= experienceSource.getTotalExperience();
             }
             return true;
@@ -103,7 +103,7 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
                 glassBottle.decrement(1);
                 input.setStack(0, glassBottle);
               }
-              int experience = BottledExperienceItem.readExperienceTag(stack);
+              int experience = BottledExperienceComponent.getExperienceValue(stack);
               if (experience <= experienceSource.getTotalExperience()) {
                 experienceSource.removeExperience(experience);
               }
@@ -140,7 +140,7 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
         && !input.getStack(0).isEmpty()
         && experienceSource.getTotalExperience() >= bottlingExperience) {
       ItemStack bottledExperience = new ItemStack(Items.BOTTLED_EXPERIENCE);
-      BottledExperienceItem.writeExperienceTag(bottledExperience, bottlingExperience);
+      BottledExperienceComponent.setExperienceValue(bottledExperience, bottlingExperience);
       result.setStack(0, bottledExperience);
     } else {
       result.setStack(0, ItemStack.EMPTY);

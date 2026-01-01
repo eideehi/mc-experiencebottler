@@ -27,9 +27,12 @@ package net.eidee.minecraft.experiencebottler.core.init;
 import static net.eidee.minecraft.experiencebottler.ExperienceBottlerMod.identifier;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.eidee.minecraft.experiencebottler.component.DataComponentTypes;
+import net.eidee.minecraft.experiencebottler.component.type.BottledExperienceComponent;
 import net.eidee.minecraft.experiencebottler.core.constants.Identifiers;
 import net.eidee.minecraft.experiencebottler.item.BottledExperienceItem;
 import net.eidee.minecraft.experiencebottler.item.Items;
+import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.component.ComponentType;
 import net.minecraft.item.Item;
@@ -68,7 +71,8 @@ public class ItemInitializer {
 
   /** Initializes the items. */
   static void init() {
-    registerDataComponent("experience", BottledExperienceItem.EXPERIENCE);
+    registerDataComponent("experience", DataComponentTypes.BOTTLED_EXPERIENCE);
+    ComponentTooltipAppenderRegistry.addLast(DataComponentTypes.BOTTLED_EXPERIENCE);
 
     registerItem(
         Items.BOTTLED_EXPERIENCE,
@@ -76,7 +80,7 @@ public class ItemInitializer {
         entries -> {
           for (int experience : BottledExperienceItem.EXPERIENCE_LIST) {
             ItemStack stack = new ItemStack(Items.BOTTLED_EXPERIENCE);
-            BottledExperienceItem.writeExperienceTag(stack, experience);
+            BottledExperienceComponent.setExperienceValue(stack, experience);
             entries.add(stack);
           }
         },

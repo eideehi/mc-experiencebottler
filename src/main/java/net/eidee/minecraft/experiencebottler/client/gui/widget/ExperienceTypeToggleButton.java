@@ -65,11 +65,15 @@ public class ExperienceTypeToggleButton extends ButtonWidget {
   public ExperienceTypeToggleButton(int x, int y, Consumer<ExperienceTypeToggleButton> action) {
     super(x, y, 18, 18, ScreenTexts.EMPTY, button -> {
         ExperienceTypeToggleButton self = (ExperienceTypeToggleButton) button;
-        self.setExperienceType(self.getExperienceType().rotate());
-        action.accept(self);
+        self.onPress();
     }, DEFAULT_NARRATION_SUPPLIER);
     this.action = action;
     experienceType = ExperienceType.POINT;
+  }
+
+  private void onPress() {
+    setExperienceType(getExperienceType().rotate());
+    action.accept(this);
   }
 
   public ExperienceType getExperienceType() {
@@ -87,14 +91,6 @@ public class ExperienceTypeToggleButton extends ButtonWidget {
 
   @Override
   public void setMessage(Text message) {}
-
-/*
-  @Override
-  public void onPress() {
-    setExperienceType(getExperienceType().rotate());
-    action.accept(this);
-  }
-*/
 
   @Override
   protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
