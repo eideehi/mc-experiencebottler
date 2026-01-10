@@ -1,8 +1,10 @@
-## [1.21.10+build.1 [2025-12-31]](#1.21.10+build.1)
+## [1.21.10+build.1 [2026-01-11]](#1.21.10+build.1)
 * tester248: Migrate to Minecraft 1.21.10
 * tester248: Update rendering APIs for 1.21.10 compatibility
 * tester248: Add new item model format for 1.21.10
 * tester248: Fix keyboard input for new input API
+* EideeHi: Adapt to API changes (1.21-1.21.10)
+* EideeHi: Refactor experience calculation methods for improved performance
 
 ## [1.21+build.2 [2024-06-18]](#1.21+build.2)
 * EideeHi: Add Spanish translation (provided by Bruno Collazo)

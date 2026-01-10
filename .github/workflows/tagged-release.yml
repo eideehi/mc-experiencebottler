@@ -3,7 +3,7 @@ name: Upload on version tag
 on:
   push:
     tags:
-      - '*+build.*'
+      - '*'
 
 jobs:
   build-and-upload:
