@@ -94,8 +94,25 @@ publishing {
     }
 }
 
+def resolveToken(String envKey, String propKey) {
+    def envVal = System.getenv(envKey)
+    if (envVal != null && envVal.toString().trim()) {
+        return envVal.toString().trim()
+    }
+
+    def propVal = project.findProperty(propKey)
+    if (propVal != null && propVal.toString().trim()) {
+        return propVal.toString().trim()
+    }
+
+    throw new GradleException("Missing credential: set env var ${envKey} or Gradle property ${propKey}")
+}
+
 task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
-    apiToken = project.findProperty('curseforge_apikey') ?: '0'
+    apiToken = ''
+    doFirst {
+        apiToken = resolveToken('CURSEFORGE_APIKEY', 'curseforge_apikey')
+    }
 
     def mainFile = upload(project.curseforge_projectId, remapJar)
     mainFile.releaseType = 'release'
@@ -109,7 +126,7 @@ task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge)
 
 import com.modrinth.minotaur.dependencies.ModDependency
 modrinth {
-    token = project.findProperty('modrinth_token')
+    token = ''
     projectId = project.modrinth_projectId
     versionNumber = project.version
     versionName = "${project.display_name} ${project.version}"
@@ -122,7 +139,13 @@ modrinth {
     ]
 }
 
-task upload(dependsOn: [tasks.publishCurseForge, tasks.modrinth]) {
+tasks.named('modrinth').configure {
+    doFirst {
+        modrinth.token = resolveToken('MODRINTH_TOKEN', 'modrinth_token')
+    }
+}
+
+task upload(dependsOn: [tasks.build, tasks.publishCurseForge, tasks.modrinth]) {
     group = 'upload'
     description = 'Upload the new version of the file to CurseForge and Modrinth'
 }
