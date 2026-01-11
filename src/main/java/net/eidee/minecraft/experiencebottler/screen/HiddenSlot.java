@@ -25,11 +25,11 @@
 package net.eidee.minecraft.experiencebottler.screen;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.eidee.minecraft.experiencebottler.annotation.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault

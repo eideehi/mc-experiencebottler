@@ -25,6 +25,7 @@
 package net.eidee.minecraft.experiencebottler.screen;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.eidee.minecraft.experiencebottler.annotation.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.experiencebottler.block.Blocks;
 import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
 import net.minecraft.component.DataComponentTypes;
@@ -36,7 +37,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.text.Text;
-import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault

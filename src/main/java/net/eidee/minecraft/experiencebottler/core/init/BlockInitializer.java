@@ -25,6 +25,7 @@
 package net.eidee.minecraft.experiencebottler.core.init;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.eidee.minecraft.experiencebottler.annotation.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.experiencebottler.block.Blocks;
 import net.eidee.minecraft.experiencebottler.core.constants.Identifiers;
 import net.fabricmc.api.EnvType;
@@ -33,7 +34,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Block;
 import net.minecraft.client.render.BlockRenderLayer;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -43,7 +43,6 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 import org.jetbrains.annotations.Nullable;
 
 /** Experience Bottler's block initializer. */

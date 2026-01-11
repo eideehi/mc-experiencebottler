@@ -26,6 +26,7 @@ package net.eidee.minecraft.experiencebottler.client.gui.widget;
 
 import java.util.function.Consumer;
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.eidee.minecraft.experiencebottler.annotation.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -40,7 +41,6 @@ import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 import org.lwjgl.glfw.GLFW;
 
 @ParametersAreNonnullByDefault

@@ -25,6 +25,7 @@
 package net.eidee.minecraft.experiencebottler.screen;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.eidee.minecraft.experiencebottler.annotation.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.experiencebottler.component.type.BottledExperienceComponent;
 import net.eidee.minecraft.experiencebottler.item.Items;
 import net.fabricmc.api.EnvType;
@@ -38,7 +39,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
-import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault

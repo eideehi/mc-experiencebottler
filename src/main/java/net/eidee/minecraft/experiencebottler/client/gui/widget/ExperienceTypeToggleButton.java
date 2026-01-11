@@ -30,12 +30,14 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.screen.ScreenTexts;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -43,7 +45,7 @@ import net.minecraft.util.math.MathHelper;
 
 /** A button widget to switch between displaying experience as either levels or points. */
 @Environment(EnvType.CLIENT)
-public class ExperienceTypeToggleButton extends ButtonWidget {
+public class ExperienceTypeToggleButton extends ClickableWidget.InactivityIndicatingWidget {
   private static final ButtonTextures TEXTURES;
   private static final Text TEXT_POINT;
   private static final Text TEXT_LEVEL;
@@ -63,10 +65,7 @@ public class ExperienceTypeToggleButton extends ButtonWidget {
   private ExperienceType experienceType;
 
   public ExperienceTypeToggleButton(int x, int y, Consumer<ExperienceTypeToggleButton> action) {
-    super(x, y, 18, 18, ScreenTexts.EMPTY, button -> {
-        ExperienceTypeToggleButton self = (ExperienceTypeToggleButton) button;
-        self.onPress();
-    }, DEFAULT_NARRATION_SUPPLIER);
+    super(x, y, 18, 18, ScreenTexts.EMPTY);
     this.action = action;
     experienceType = ExperienceType.POINT;
   }
@@ -93,13 +92,34 @@ public class ExperienceTypeToggleButton extends ButtonWidget {
   public void setMessage(Text message) {}
 
   @Override
+  public void onClick(Click click, boolean doubled) {
+    onPress();
+  }
+
+  @Override
+  public boolean keyPressed(KeyInput input) {
+    if (!isInteractable()) {
+      return false;
+    } else if (input.isEnterOrSpace()) {
+      playDownSound(MinecraftClient.getInstance().getSoundManager());
+      onPress();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Override
   protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    setCursor(context);
+
     final int width = getWidth();
     final int height = getHeight();
     final int left = getX();
     final int top = getY();
 
-    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, TEXTURES.get(active, isHovered()), left, top, width, height);
+    context.drawGuiTexture(
+        RenderPipelines.GUI_TEXTURED, TEXTURES.get(active, isHovered()), left, top, width, height);
 
     final int xCenter = left + width / 2;
 

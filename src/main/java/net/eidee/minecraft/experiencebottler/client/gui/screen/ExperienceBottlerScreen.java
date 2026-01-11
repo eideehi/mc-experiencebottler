@@ -28,6 +28,7 @@ import static net.eidee.minecraft.experiencebottler.ExperienceBottlerMod.identif
 
 import java.util.function.Consumer;
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.eidee.minecraft.experiencebottler.annotation.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.experiencebottler.client.gui.widget.ExperienceInput;
 import net.eidee.minecraft.experiencebottler.client.gui.widget.ExperienceType;
 import net.eidee.minecraft.experiencebottler.client.gui.widget.ExperienceTypeToggleButton;
@@ -48,7 +49,6 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 

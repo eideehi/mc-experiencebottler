@@ -27,6 +27,7 @@ package net.eidee.minecraft.experiencebottler.core.init;
 import static net.eidee.minecraft.experiencebottler.ExperienceBottlerMod.identifier;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.eidee.minecraft.experiencebottler.annotation.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.experiencebottler.component.DataComponentTypes;
 import net.eidee.minecraft.experiencebottler.component.type.BottledExperienceComponent;
 import net.eidee.minecraft.experiencebottler.core.constants.Identifiers;
@@ -43,7 +44,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 import org.jetbrains.annotations.Nullable;
 
 /** Experience Bottler's item initializer. */
