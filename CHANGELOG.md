@@ -1,3 +1,6 @@
+## [1.21.11+build.1 [2026-01-11]](#1.21.11+build.1)
+* EideeHi: Migrate to Minecraft 1.21.11
+
 ## [1.21.10+build.1 [2026-01-11]](#1.21.10+build.1)
 * tester248: Migrate to Minecraft 1.21.10
 * tester248: Update rendering APIs for 1.21.10 compatibility
