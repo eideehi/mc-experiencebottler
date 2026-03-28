@@ -2,12 +2,10 @@
 :image-uri-demo-thumbnail: https://app.box.com/shared/static/jdbl19h8s530e6rfotuj22k0lx7fez2e.png
 :image-uri-recipe-experience-bottler: https://app.box.com/shared/static/2belshm5padmppgegk43vpaw0i46j89l.png
 :image-uri-bug-report: https://app.box.com/shared/static/g2v3vbju4jazq7kycoigp60ltki2kw8i.png
-:image-uri-discord: https://app.box.com/shared/static/0s09ti60hvyyp5k98xyrnkfp683mrt9r.png
 :uri-youtube-demo: https://youtu.be/ZtUIFA9R_CE
 :uri-license: link:LICENSE
 :uri-issues: https://github.com/eideehi/mc-experiencebottler/issues
 :uri-fabric: https://fabricmc.net/
-:uri-discord: https://discord.gg/DDQqxkK7s6
 
 Add a block that can be used to bottle any quantity of experience points. The bottled experience points can be drunk like a potion, giving the experience points to user.
 
@@ -39,9 +37,6 @@ Experience Bottler::
 == Contacts
 image::{image-uri-bug-report}[link={uri-issues},alt="Bug report on Issues"]
 *Only bug reports are accepted under Issues.*
-
-image::{image-uri-discord}[link={uri-discord},alt="eidee.net - Discord Server"]
-*Questions, suggestions and comments are welcome on the Discord Server.*
 
 == Credits
 * Dependencies:

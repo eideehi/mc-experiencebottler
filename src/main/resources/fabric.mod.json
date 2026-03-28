@@ -27,12 +27,5 @@
     "fabricloader": ">=${loader_version}",
     "fabric-api": ">=${fabric_version}",
     "minecraft": "26.1.x"
-  },
-  "custom": {
-    "modmenu": {
-      "links": {
-        "modmenu.discord": "https://discord.gg/DDQqxkK7s6"
-      }
-    }
   }
 }
