@@ -28,21 +28,17 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import net.eidee.minecraft.experiencebottler.annotation.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.experiencebottler.block.Blocks;
 import net.eidee.minecraft.experiencebottler.core.constants.Identifiers;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.minecraft.block.Block;
-import net.minecraft.client.render.BlockRenderLayer;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 /** Experience Bottler's block initializer. */
@@ -54,15 +50,15 @@ public class BlockInitializer {
   private static void register(
       Block block,
       BlockItem item,
-      RegistryKey<ItemGroup> itemGroup,
-      @Nullable ItemGroupEvents.ModifyEntries modifyEntries,
+      ResourceKey<CreativeModeTab> itemGroup,
+      @Nullable CreativeModeTabEvents.ModifyOutput modifyEntries,
       Identifier identifier) {
-    Registry.register(Registries.BLOCK, identifier, block);
-    Registry.register(Registries.ITEM, identifier, item);
+    Registry.register(BuiltInRegistries.BLOCK, identifier, block);
+    Registry.register(BuiltInRegistries.ITEM, identifier, item);
     if (modifyEntries != null) {
-      ItemGroupEvents.modifyEntriesEvent(itemGroup).register(modifyEntries);
+      CreativeModeTabEvents.modifyOutputEvent(itemGroup).register(modifyEntries);
     } else {
-      ItemGroupEvents.modifyEntriesEvent(itemGroup).register(entries -> entries.add(item));
+      CreativeModeTabEvents.modifyOutputEvent(itemGroup).register(entries -> entries.accept(item));
     }
   }
 
@@ -72,17 +68,11 @@ public class BlockInitializer {
         Blocks.EXPERIENCE_BOTTLER,
         new BlockItem(
             Blocks.EXPERIENCE_BOTTLER,
-            new Item.Settings()
-                .registryKey(RegistryKey.of(RegistryKeys.ITEM, Identifiers.EXPERIENCE_BOTTLER))
-                .useBlockPrefixedTranslationKey()),
-        ItemGroups.FUNCTIONAL,
+            new Item.Properties()
+                .setId(ResourceKey.create(Registries.ITEM, Identifiers.EXPERIENCE_BOTTLER))
+                .useBlockDescriptionPrefix()),
+        CreativeModeTabs.FUNCTIONAL_BLOCKS,
         null,
         Identifiers.EXPERIENCE_BOTTLER);
-  }
-
-  /** Initializes the blocks at client-side. */
-  @Environment(EnvType.CLIENT)
-  static void initClient() {
-    BlockRenderLayerMap.putBlock(Blocks.EXPERIENCE_BOTTLER, BlockRenderLayer.CUTOUT);
   }
 }

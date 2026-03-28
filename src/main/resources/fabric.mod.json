@@ -24,10 +24,9 @@
     ]
   },
   "depends": {
-    "fabric": "*",
     "fabricloader": ">=${loader_version}",
     "fabric-api": ">=${fabric_version}",
-    "minecraft": ">=${minecraft_version}"
+    "minecraft": "26.1.x"
   },
   "custom": {
     "modmenu": {

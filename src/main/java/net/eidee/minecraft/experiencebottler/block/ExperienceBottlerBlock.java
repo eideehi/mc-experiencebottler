@@ -28,28 +28,33 @@ import com.mojang.serialization.MapCodec;
 import net.eidee.minecraft.experiencebottler.screen.ExperienceBottlerScreenHandler;
 import net.eidee.minecraft.experiencebottler.screen.ExperienceSource;
 import net.eidee.minecraft.experiencebottler.stat.Stats;
-import net.minecraft.block.*;
-import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
-import net.minecraft.state.StateManager.Builder;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Unit;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition.Builder;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 /** The block for bottling the player's experience points. */
-public class ExperienceBottlerBlock extends HorizontalFacingBlock {
-  private static final Text CONTAINER_TITLE;
+public class ExperienceBottlerBlock extends HorizontalDirectionalBlock {
+  private static final Component CONTAINER_TITLE;
   private static final VoxelShape TOP_SHAPE;
   private static final VoxelShape BOTTOM_SHAPE;
   private static final VoxelShape NORTH_SHAPE;
@@ -59,101 +64,113 @@ public class ExperienceBottlerBlock extends HorizontalFacingBlock {
   private static final MapCodec<ExperienceBottlerBlock> CODEC;
 
   static {
-    CONTAINER_TITLE = Text.translatable("container.experiencebottler.experience_bottler");
-    TOP_SHAPE = Block.createCuboidShape(0, 13, 0, 16, 16, 16);
-    BOTTOM_SHAPE = Block.createCuboidShape(0, 0, 0, 16, 2, 16);
-    VoxelShape baseShape = VoxelShapes.union(TOP_SHAPE, BOTTOM_SHAPE);
+    CONTAINER_TITLE = Component.translatable("container.experiencebottler.experience_bottler");
+    TOP_SHAPE = Block.box(0, 13, 0, 16, 16, 16);
+    BOTTOM_SHAPE = Block.box(0, 0, 0, 16, 2, 16);
+    VoxelShape baseShape = Shapes.or(TOP_SHAPE, BOTTOM_SHAPE);
     NORTH_SHAPE =
-        VoxelShapes.union(
+        Shapes.or(
             baseShape,
-            Block.createCuboidShape(0, 2, 10, 16, 13, 16),
-            Block.createCuboidShape(0, 2, 0, 3, 6, 10),
-            Block.createCuboidShape(13, 2, 0, 16, 6, 10));
+            Block.box(0, 2, 10, 16, 13, 16),
+            Block.box(0, 2, 0, 3, 6, 10),
+            Block.box(13, 2, 0, 16, 6, 10));
     SOUTH_SHAPE =
-        VoxelShapes.union(
+        Shapes.or(
             baseShape,
-            Block.createCuboidShape(0, 2, 0, 16, 13, 6),
-            Block.createCuboidShape(0, 2, 6, 3, 6, 16),
-            Block.createCuboidShape(13, 2, 6, 16, 6, 16));
+            Block.box(0, 2, 0, 16, 13, 6),
+            Block.box(0, 2, 6, 3, 6, 16),
+            Block.box(13, 2, 6, 16, 6, 16));
     EAST_SHAPE =
-        VoxelShapes.union(
+        Shapes.or(
             baseShape,
-            Block.createCuboidShape(0, 2, 0, 6, 13, 16),
-            Block.createCuboidShape(6, 2, 0, 16, 6, 3),
-            Block.createCuboidShape(6, 2, 13, 16, 6, 16));
+            Block.box(0, 2, 0, 6, 13, 16),
+            Block.box(6, 2, 0, 16, 6, 3),
+            Block.box(6, 2, 13, 16, 6, 16));
     WEST_SHAPE =
-        VoxelShapes.union(
+        Shapes.or(
             baseShape,
-            Block.createCuboidShape(10, 2, 0, 16, 13, 16),
-            Block.createCuboidShape(0, 2, 0, 10, 6, 3),
-            Block.createCuboidShape(0, 2, 13, 10, 6, 16));
-    CODEC = AbstractBlock.createCodec(ExperienceBottlerBlock::new);
+            Block.box(10, 2, 0, 16, 13, 16),
+            Block.box(0, 2, 0, 10, 6, 3),
+            Block.box(0, 2, 13, 10, 6, 16));
+    CODEC = BlockBehaviour.simpleCodec(ExperienceBottlerBlock::new);
   }
 
-  public ExperienceBottlerBlock(Settings settings) {
+  public ExperienceBottlerBlock(BlockBehaviour.Properties settings) {
     super(settings);
-    setDefaultState(getStateManager().getDefaultState().with(FACING, Direction.NORTH));
+    registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
   }
 
   @Override
-  protected MapCodec<? extends HorizontalFacingBlock> getCodec() {
+  protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
     return CODEC;
   }
 
   @Override
-  public VoxelShape getOutlineShape(
-      BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-    return switch (state.get(FACING)) {
+  protected VoxelShape getShape(
+      BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+    return switch (state.getValue(FACING)) {
       case NORTH -> NORTH_SHAPE;
       case SOUTH -> SOUTH_SHAPE;
       case EAST -> EAST_SHAPE;
       case WEST -> WEST_SHAPE;
-      default -> VoxelShapes.fullCube();
+      default -> Shapes.block();
     };
   }
 
   @Override
-  public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
-    return VoxelShapes.fullCube();
+  protected VoxelShape getInteractionShape(BlockState state, BlockGetter world, BlockPos pos) {
+    return Shapes.block();
   }
 
   @Override
-  protected void appendProperties(Builder<Block, BlockState> builder) {
+  protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
     builder.add(FACING);
   }
 
   @Override
-  protected boolean canPathfindThrough(BlockState state, NavigationType type) {
+  protected boolean isPathfindable(BlockState state, PathComputationType type) {
     return false;
   }
 
   @Nullable
   @Override
-  public BlockState getPlacementState(ItemPlacementContext ctx) {
-    return getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+  public BlockState getStateForPlacement(BlockPlaceContext ctx) {
+    return defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
   }
 
   @Nullable
   @Override
-  public NamedScreenHandlerFactory createScreenHandlerFactory(
-      BlockState state, World world, BlockPos pos) {
-    return new SimpleNamedScreenHandlerFactory(
-        (syncId, inventory, player) ->
-            new ExperienceBottlerScreenHandler(
-                syncId,
-                inventory,
-                ExperienceSource.fromPlayer(player, ScreenHandlerContext.create(world, pos))),
-        CONTAINER_TITLE);
+  protected MenuProvider getMenuProvider(BlockState state, Level world, BlockPos pos) {
+    return new ExtendedMenuProvider<>() {
+      @Override
+      public Unit getScreenOpeningData(net.minecraft.server.level.ServerPlayer player) {
+        return Unit.INSTANCE;
+      }
+
+      @Override
+      public Component getDisplayName() {
+        return CONTAINER_TITLE;
+      }
+
+      @Override
+      public ExperienceBottlerScreenHandler createMenu(
+          int syncId, net.minecraft.world.entity.player.Inventory inventory, Player player) {
+        return new ExperienceBottlerScreenHandler(
+            syncId,
+            inventory,
+            ExperienceSource.fromPlayer(player, ContainerLevelAccess.create(world, pos)));
+      }
+    };
   }
 
   @Override
-  protected ActionResult onUse(
-      BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-    if (world.isClient()) {
-      return ActionResult.SUCCESS;
+  protected InteractionResult useWithoutItem(
+      BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+    if (world.isClientSide()) {
+      return InteractionResult.SUCCESS;
     }
-    player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
-    player.incrementStat(Stats.INTERACT_WITH_EXPERIENCE_BOTTLER);
-    return ActionResult.CONSUME;
+    player.openMenu(state.getMenuProvider(world, pos));
+    player.awardStat(Stats.INTERACT_WITH_EXPERIENCE_BOTTLER);
+    return InteractionResult.CONSUME;
   }
 }

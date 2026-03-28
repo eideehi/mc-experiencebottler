@@ -30,41 +30,38 @@ import net.eidee.minecraft.experiencebottler.annotation.MethodsReturnNonnullByDe
 import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.sound.SoundManager;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import org.lwjgl.glfw.GLFW;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @Environment(EnvType.CLIENT)
-public class ExperienceInput extends ClickableWidget {
-
-  private final TextRenderer textRenderer;
+public class ExperienceInput extends EditBox {
+  private final Font font;
   private final Consumer<ExperienceInput> inputChangeListener;
 
   private long experiencePoint;
   private long experienceLevel;
   private long inputValue;
   private String displayText = "0";
-  private int[] colors = new int[] {0xFFFFFFFF, 0xFFA0A0A0, 0xFFE09090};
+  private final int[] colors = new int[] {0xFFFFFFFF, 0xFFA0A0A0, 0xFFE09090};
   private ExperienceType experienceType = ExperienceType.POINT;
-  private int frame;
 
-  public ExperienceInput(
-      TextRenderer textRenderer, int x, int y, Consumer<ExperienceInput> inputChangeListener) {
-    super(x, y, 90, 18, Text.empty());
-    this.textRenderer = textRenderer;
+  public ExperienceInput(Font font, int x, int y, Consumer<ExperienceInput> inputChangeListener) {
+    super(font, x, y, 90, 18, Component.empty());
+    this.font = font;
     this.inputChangeListener = inputChangeListener;
-    active = true;
+    setBordered(false);
+    setMaxLength(20);
+    updateDisplayedValue(0);
   }
 
   private static long convertExperience(long experience, ExperienceType convertTo) {
@@ -83,43 +80,56 @@ public class ExperienceInput extends ClickableWidget {
     };
   }
 
-  private void setDisplayText(long value) {
+  private void updateDisplayedValue(long value) {
     long absValue = Math.abs(value);
     if (absValue > Integer.MAX_VALUE) {
       String symbol = value < 0 ? "--" : "++";
       String text = Long.toString(absValue);
-      displayText = symbol + (text.substring(text.length() - 9));
+      displayText = symbol + text.substring(text.length() - 9);
     } else {
       displayText = Long.toString(value);
     }
+
+    setValue(Long.toString(value));
+    moveCursorToEnd(false);
+    updateTextColors();
   }
 
-  private int getTextColor() {
+  private void updateTextColors() {
+    boolean negative = displayText.startsWith("-");
+    int activeColor = negative ? colors[2] : colors[0];
+    int inactiveColor = negative ? colors[2] : colors[1];
+    setTextColor(activeColor);
+    setTextColorUneditable(inactiveColor);
+  }
+
+  private int getDisplayTextColor() {
     if (displayText.startsWith("-")) {
       return colors[2];
-    } else {
-      return active ? colors[0] : colors[1];
     }
+    return active ? colors[0] : colors[1];
   }
 
-  private void changeInputValue(long inputValue) {
-    if (this.inputValue != inputValue) {
-      if (experienceType.isPoint()) {
-        setExperiencePoint(inputValue);
-      } else {
-        setExperienceLevel(inputValue);
-      }
-      onInputValueChanged();
+  private void changeInputValue(long newInputValue) {
+    if (inputValue == newInputValue) {
+      return;
     }
+
+    if (experienceType.isPoint()) {
+      setExperiencePoint(newInputValue);
+    } else {
+      setExperienceLevel(newInputValue);
+    }
+    onInputValueChanged();
   }
 
   private void onExperienceChanged() {
     if (experienceType.isPoint()) {
       inputValue = experiencePoint;
-      setDisplayText(experiencePoint);
+      updateDisplayedValue(experiencePoint);
     } else {
       inputValue = experienceLevel;
-      setDisplayText(experienceLevel);
+      updateDisplayedValue(experienceLevel);
     }
   }
 
@@ -160,37 +170,40 @@ public class ExperienceInput extends ClickableWidget {
       if (active && isFocused()) {
         changeInputValue(convertExperience(inputValue, experienceType));
       } else {
-        setDisplayText(experienceType.isPoint() ? experiencePoint : experienceLevel);
+        onExperienceChanged();
       }
     }
   }
 
   public void setTextColors(int normal, int disabled, int minus) {
-    colors = new int[] {normal, disabled, minus};
+    colors[0] = normal;
+    colors[1] = disabled;
+    colors[2] = minus;
+    updateTextColors();
   }
 
   public void setDefaultTextColor(int color) {
     colors[0] = color;
+    updateTextColors();
   }
 
   public void setDisabledTextColor(int color) {
     colors[1] = color;
+    updateTextColors();
   }
 
   public void setErrorTextColor(int color) {
     colors[2] = color;
+    updateTextColors();
   }
 
   public void onInputValueChanged() {
     inputChangeListener.accept(this);
   }
 
-  public void tick() {
-    ++frame;
-  }
-
   @Override
-  protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+  public void extractWidgetRenderState(
+      net.minecraft.client.gui.GuiGraphicsExtractor extractor, int mouseX, int mouseY, float delta) {
     if (!visible) {
       return;
     }
@@ -201,47 +214,39 @@ public class ExperienceInput extends ClickableWidget {
     int bottom = top + getHeight();
 
     if (!isFocused() && isMouseOver(mouseX, mouseY)) {
-      context.fill(left + 1, top + 1, right - 1, bottom - 1, 0x40FFFFFF);
+      extractor.fill(left + 1, top + 1, right - 1, bottom - 1, 0x40FFFFFF);
     }
 
     if (isFocused()) {
-      context.drawHorizontalLine(left, right - 1, top, 0xFFFFFFFF);
-      context.drawHorizontalLine(left, right - 1, bottom - 1, 0xFFFFFFFF);
-      context.drawVerticalLine(left, top, bottom, 0xFFFFFFFF);
-      context.drawVerticalLine(right - 1, top, bottom, 0xFFFFFFFF);
+      extractor.horizontalLine(left, right - 1, top, 0xFFFFFFFF);
+      extractor.horizontalLine(left, right - 1, bottom - 1, 0xFFFFFFFF);
+      extractor.verticalLine(left, top, bottom - 1, 0xFFFFFFFF);
+      extractor.verticalLine(right - 1, top, bottom - 1, 0xFFFFFFFF);
     }
 
     String text = displayText;
-
-    int marginRight = textRenderer.getWidth("_");
-    if (active && isFocused()) {
-      if (frame / 6 % 2 == 0) {
-        marginRight = 0;
-        text += "_";
-      }
+    int marginRight = font.width("_");
+    if (active && isFocused() && (System.currentTimeMillis() / 300L) % 2L == 0L) {
+      marginRight = 0;
+      text += "_";
     }
 
-    context.drawText(
-        textRenderer,
+    extractor.text(
+        font,
         text,
-        right - textRenderer.getWidth(text) - marginRight - 3,
-        bottom - textRenderer.fontHeight - 3,
-        getTextColor(),
+        right - font.width(text) - marginRight - 3,
+        bottom - font.lineHeight - 3,
+        getDisplayTextColor(),
         false);
   }
 
   @Override
-  public void setFocused(boolean focused) {
-    super.setFocused(focused);
-    if (focused) {
-      changeInputValue(0);
-      frame = 0;
+  public boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
+    if (!active || !visible) {
+      return false;
     }
-  }
 
-  @Override
-  public boolean mouseClicked(Click click, boolean doubled) {
-    boolean result = super.mouseClicked(click, doubled);
+    boolean result = isMouseOver(event.x(), event.y());
     if (result && !isFocused()) {
       setFocused(true);
     } else if (!result && isFocused()) {
@@ -251,15 +256,17 @@ public class ExperienceInput extends ClickableWidget {
   }
 
   @Override
-  public boolean keyPressed(KeyInput input) {
+  public boolean keyPressed(KeyEvent input) {
     if (!active || !visible || !isFocused()) {
       return false;
     }
+
     int keyCode = input.key();
     if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
       changeInputValue(inputValue / 10);
       return true;
-    } else if (keyCode == GLFW.GLFW_KEY_DELETE) {
+    }
+    if (keyCode == GLFW.GLFW_KEY_DELETE) {
       changeInputValue(0);
       return true;
     }
@@ -267,36 +274,49 @@ public class ExperienceInput extends ClickableWidget {
   }
 
   @Override
-  public boolean charTyped(CharInput charInput) {
+  public boolean charTyped(CharacterEvent charInput) {
     if (!active || !visible || !isFocused()) {
       return false;
     }
-    char chr = (char) charInput.codepoint();
-    if (!Character.isDigit(chr) || (chr == '0' && inputValue == 0)) {
+
+    char character = (char) charInput.codepoint();
+    if (!Character.isDigit(character) || (character == '0' && inputValue == 0)) {
       return false;
     }
-    changeInputValue(adjustExperienceValue((inputValue * 10) + Character.getNumericValue(chr)));
+
+    changeInputValue(
+        adjustExperienceValue((inputValue * 10) + Character.getNumericValue(character)));
     return true;
   }
 
   @Override
-  public void playDownSound(SoundManager soundManager) {}
-
-  @Override
-  protected MutableText getNarrationMessage() {
-    return Text.translatable("narration.experiencebottler.experience_input_field");
+  protected MutableComponent createNarrationMessage() {
+    return Component.translatable("narration.experiencebottler.experience_input_field");
   }
 
   @Override
-  protected void appendClickableNarrations(NarrationMessageBuilder builder) {
-    builder.put(NarrationPart.TITLE, getNarrationMessage());
+  public void updateWidgetNarration(NarrationElementOutput builder) {
+    builder.add(NarratedElementType.TITLE, createNarrationMessage());
     if (!active) {
       return;
     }
-    Text type = Text.translatable(getExperienceType().getNarrationKey());
-    builder.put(
-        NarrationPart.HINT,
-        Text.translatable(
+
+    Component type = Component.translatable(getExperienceType().getNarrationKey());
+    builder.add(
+        NarratedElementType.HINT,
+        Component.translatable(
             "narration.experiencebottler.experience_input_field.info.value", inputValue, type));
+  }
+
+  @Override
+  public void setFocused(boolean focused) {
+    boolean wasFocused = isFocused();
+    super.setFocused(focused);
+    if (focused && !wasFocused) {
+      changeInputValue(0);
+      moveCursorToEnd(false);
+    } else if (!focused && wasFocused) {
+      onExperienceChanged();
+    }
   }
 }

@@ -24,8 +24,8 @@
 
 package net.eidee.minecraft.experiencebottler.util;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 
 /** Utility class for experience. */
 public class ExperienceUtil {
@@ -112,7 +112,7 @@ public class ExperienceUtil {
    */
   public static long getTotalExperienceToReachLevel(long level, float progress) {
     // Returns total XP at given level + fractional progress toward next level.
-    if (level <= 0) return progress > 0f ? Math.round(7L * MathHelper.clamp(progress, 0f, 1f)) : 0L;
+    if (level <= 0) return progress > 0f ? Math.round(7L * Mth.clamp(progress, 0f, 1f)) : 0L;
     long clampedLevel = level > MAX_SAFE_LEVEL ? MAX_SAFE_LEVEL : level;
     long base = totalExperienceAtLevel(clampedLevel);
     if (progress <= 0f) return base;
@@ -123,12 +123,12 @@ public class ExperienceUtil {
   }
 
   /** Return the current total experience of the player. */
-  public static long getTotalExperience(PlayerEntity player) {
+  public static long getTotalExperience(Player player) {
     return getTotalExperienceToReachLevel(player.experienceLevel, player.experienceProgress);
   }
 
   /** Gives the player experience. A negative integer removes experience from the player. */
-  public static void addExperience(PlayerEntity player, int experience) {
+  public static void addExperience(Player player, int experience) {
     if (experience == 0) {
       return;
     }
@@ -146,7 +146,7 @@ public class ExperienceUtil {
     int score;
     do {
       score = (int) Math.min(Math.min(total, Integer.MAX_VALUE), limit);
-      player.addScore(-score);
+      player.increaseScore(-score);
       limit -= score;
       total -= score;
     } while (total > 0 && limit > 0);
@@ -155,14 +155,14 @@ public class ExperienceUtil {
     limit = (long) Integer.MAX_VALUE - player.getScore();
     do {
       score = (int) Math.min(Math.min(total, limit), Integer.MAX_VALUE);
-      player.addScore(score);
+      player.increaseScore(score);
       limit -= score;
       total -= score;
     } while (total > 0 && limit > 0);
 
     int level = getLevelFromTotalExperience(newExperience);
     if (experience > 0 && level > 5) {
-      player.addExperienceLevels(5);
+      player.giveExperienceLevels(5);
       level -= 5;
     }
 
@@ -175,7 +175,7 @@ public class ExperienceUtil {
       player.experienceProgress = 0;
     }
 
-    player.totalExperience = (int) MathHelper.clamp(newExperience, 0, Integer.MAX_VALUE);
+    player.totalExperience = (int) Mth.clamp(newExperience, 0L, Integer.MAX_VALUE);
     if (player.totalExperience == prevTotalExperience) {
       // If totalExperience is not changed, synchronization packets will not be sent to the client,
       // so change it here.

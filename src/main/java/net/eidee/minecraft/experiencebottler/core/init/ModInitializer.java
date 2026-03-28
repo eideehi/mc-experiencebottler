@@ -42,7 +42,6 @@ public class ModInitializer {
   /** Mod initialization for the client. */
   @Environment(EnvType.CLIENT)
   public static void initClient() {
-    BlockInitializer.initClient();
     ScreenInitializer.initClient();
   }
 }

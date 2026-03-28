@@ -34,7 +34,7 @@ public class NetworkInitializer {
 
   /** Initializes the networks. */
   static void init() {
-    PayloadTypeRegistry.playC2S()
+    PayloadTypeRegistry.serverboundPlay()
         .register(BottlingExperiencePacket.ID, BottlingExperiencePacket.CODEC);
     ServerPlayNetworking.registerGlobalReceiver(
         BottlingExperiencePacket.ID, BottlingExperiencePacket::receive);

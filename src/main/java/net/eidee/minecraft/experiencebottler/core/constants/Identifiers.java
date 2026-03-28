@@ -26,7 +26,7 @@ package net.eidee.minecraft.experiencebottler.core.constants;
 
 import static net.eidee.minecraft.experiencebottler.ExperienceBottlerMod.identifier;
 
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 
 /** Defines identifiers of the Experience Bottler. */
 public class Identifiers {

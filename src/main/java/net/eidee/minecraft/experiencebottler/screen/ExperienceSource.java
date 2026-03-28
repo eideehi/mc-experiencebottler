@@ -28,19 +28,19 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import net.eidee.minecraft.experiencebottler.annotation.MethodsReturnNonnullByDefault;
 import net.eidee.minecraft.experiencebottler.block.Blocks;
 import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
-import net.minecraft.entity.ContainerUser;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.text.Text;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.ContainerUser;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public abstract class ExperienceSource implements Inventory {
+public abstract class ExperienceSource implements Container {
   private ItemStack stack;
 
   protected ExperienceSource(ItemStack stack) {
@@ -48,13 +48,13 @@ public abstract class ExperienceSource implements Inventory {
   }
 
   public static ExperienceSource forClient() {
-    return new ExperienceSource(new ItemStack(net.minecraft.block.Blocks.GLASS)) {
+    return new ExperienceSource(new ItemStack(net.minecraft.world.level.block.Blocks.GLASS)) {
       private String sourceName = "";
       private long totalExperience;
 
       @Override
-      public Text getSourceName() {
-        return Text.of(sourceName);
+      public Component getSourceName() {
+        return Component.literal(sourceName);
       }
 
       @Override
@@ -68,28 +68,28 @@ public abstract class ExperienceSource implements Inventory {
       }
 
       @Override
-      public void markDirty() {
-        NbtCompound nbt =
-            getStack(0)
+      public void setChanged() {
+        CompoundTag nbt =
+            getItem(0)
                 .getComponents()
-                .getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT)
-                .copyNbt();
+                .getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+                .copyTag();
         sourceName = nbt.getString("SourceName").orElse("");
         totalExperience = nbt.getLong("TotalExperience").orElse(0L);
       }
 
       @Override
-      public boolean canPlayerUse(PlayerEntity player) {
+      public boolean stillValid(Player player) {
         return true;
       }
     };
   }
 
-  public static ExperienceSource fromPlayer(PlayerEntity player, ScreenHandlerContext context) {
-    return new ExperienceSource(new ItemStack(net.minecraft.block.Blocks.GLASS)) {
+  public static ExperienceSource fromPlayer(Player player, ContainerLevelAccess context) {
+    return new ExperienceSource(new ItemStack(net.minecraft.world.level.block.Blocks.GLASS)) {
       @Override
-      public Text getSourceName() {
-        return Text.translatable("gui.experiencebottler.label.experience_source.player");
+      public Component getSourceName() {
+        return Component.translatable("gui.experiencebottler.label.experience_source.player");
       }
 
       @Override
@@ -100,14 +100,14 @@ public abstract class ExperienceSource implements Inventory {
       @Override
       public void removeExperience(int experience) {
         ExperienceUtil.addExperience(player, -experience);
-        markDirty();
+        setChanged();
       }
 
       @Override
-      public void markDirty() {
-        NbtComponent.set(
-            DataComponentTypes.CUSTOM_DATA,
-            getStack(0),
+      public void setChanged() {
+        CustomData.update(
+            DataComponents.CUSTOM_DATA,
+            getItem(0),
             (nbt) -> {
               nbt.putString("SourceName", getSourceName().getString());
               nbt.putLong("TotalExperience", getTotalExperience());
@@ -115,12 +115,12 @@ public abstract class ExperienceSource implements Inventory {
       }
 
       @Override
-      public boolean canPlayerUse(PlayerEntity user) {
-        return player.getUuid().equals(user.getUuid())
-            && context.get(
+      public boolean stillValid(Player user) {
+        return player.getUUID().equals(user.getUUID())
+            && context.evaluate(
                 (world, pos) ->
-                    world.getBlockState(pos).isOf(Blocks.EXPERIENCE_BOTTLER)
-                        && player.squaredDistanceTo(
+                    world.getBlockState(pos).is(Blocks.EXPERIENCE_BOTTLER)
+                        && player.distanceToSqr(
                                 pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)
                             <= 64.0,
                 false);
@@ -128,14 +128,14 @@ public abstract class ExperienceSource implements Inventory {
     };
   }
 
-  public abstract Text getSourceName();
+  public abstract Component getSourceName();
 
   public abstract long getTotalExperience();
 
   public abstract void removeExperience(int experience);
 
   @Override
-  public int size() {
+  public int getContainerSize() {
     return 1;
   }
 
@@ -145,58 +145,58 @@ public abstract class ExperienceSource implements Inventory {
   }
 
   @Override
-  public ItemStack getStack(int slot) {
+  public ItemStack getItem(int slot) {
     return stack;
   }
 
   @Override
-  public ItemStack removeStack(int slot, int amount) {
+  public ItemStack removeItem(int slot, int amount) {
     if (stack.isEmpty() || amount <= 0) {
       return ItemStack.EMPTY;
     }
     ItemStack result = stack.split(amount);
-    markDirty();
+    setChanged();
     return result;
   }
 
   @Override
-  public ItemStack removeStack(int slot) {
+  public ItemStack removeItemNoUpdate(int slot) {
     ItemStack result = stack;
     stack = ItemStack.EMPTY;
     return result;
   }
 
   @Override
-  public void setStack(int slot, ItemStack stack) {
+  public void setItem(int slot, ItemStack stack) {
     this.stack = stack;
-    if (!stack.isEmpty() && stack.getCount() > getMaxCountPerStack()) {
-      stack.setCount(getMaxCountPerStack());
+    if (!stack.isEmpty() && stack.getCount() > getMaxStackSize()) {
+      stack.setCount(getMaxStackSize());
     }
-    markDirty();
+    setChanged();
   }
 
   @Override
-  public void clear() {
-    removeStack(0);
-    markDirty();
+  public void clearContent() {
+    removeItemNoUpdate(0);
+    setChanged();
   }
 
   @Override
-  public void onOpen(ContainerUser user) {
-    markDirty();
+  public void startOpen(ContainerUser user) {
+    setChanged();
   }
 
   @Override
-  public void onClose(ContainerUser user) {
-    clear();
+  public void stopOpen(ContainerUser user) {
+    clearContent();
   }
 
   @Override
   public String toString() {
     if (!stack.isEmpty()) {
-      NbtComponent component = stack.getComponents().get(DataComponentTypes.CUSTOM_DATA);
+      CustomData component = stack.getComponents().get(DataComponents.CUSTOM_DATA);
       if (component != null) {
-        return component.copyNbt().toString();
+        return component.copyTag().toString();
       }
     }
     return "{}";

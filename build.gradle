@@ -1,8 +1,8 @@
 plugins {
-    id 'fabric-loom' version '1.14.7'
+    id 'net.fabricmc.fabric-loom' version '1.15.3'
     id 'maven-publish'
     id 'net.darkhax.curseforgegradle' version '1.1.28'
-    id 'com.modrinth.minotaur' version '2.+'
+    id 'com.modrinth.minotaur' version '2.9.0'
 }
 
 version = project.mod_version
@@ -19,14 +19,17 @@ repositories {
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+
+    testImplementation(platform("org.junit:junit-bom:5.11.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("net.fabricmc:fabric-loader-junit:${project.loader_version}")
 }
 
 processResources {
@@ -44,7 +47,7 @@ processResources {
     }
 }
 
-def targetJavaVersion = 21
+def targetJavaVersion = 25
 tasks.withType(JavaCompile).configureEach {
     // ensure that the encoding is set to UTF-8, no matter what the system default is
     // this fixes some edge cases with special characters not displaying correctly
@@ -53,6 +56,20 @@ tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
         it.options.release = targetJavaVersion
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = "experiencebottler-test"
+        enableGameTests = true
+        enableClientGameTests = false
+        eula = true
     }
 }
 
@@ -114,7 +131,7 @@ task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge)
         apiToken = resolveToken('CURSEFORGE_APIKEY', 'curseforge_apikey')
     }
 
-    def mainFile = upload(project.curseforge_projectId, remapJar)
+    def mainFile = upload(project.curseforge_projectId, jar)
     mainFile.releaseType = 'release'
     mainFile.addGameVersion(project.minecraft_version)
     mainFile.addGameVersion('Fabric')
@@ -130,7 +147,7 @@ modrinth {
     projectId = project.modrinth_projectId
     versionNumber = project.version
     versionName = "${project.display_name} ${project.version}"
-    uploadFile = remapJar
+    uploadFile = jar
     changelog = "[View changelog on GitHub](${project.changelog_url}#${project.version})"
     gameVersions = [project.minecraft_version]
     loaders = ["fabric"]

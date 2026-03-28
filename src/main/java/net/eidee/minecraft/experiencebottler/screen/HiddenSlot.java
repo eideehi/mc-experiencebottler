@@ -26,37 +26,37 @@ package net.eidee.minecraft.experiencebottler.screen;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.eidee.minecraft.experiencebottler.annotation.MethodsReturnNonnullByDefault;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class HiddenSlot extends Slot {
-  public HiddenSlot(Inventory inventory, int index) {
+  public HiddenSlot(Container inventory, int index) {
     super(inventory, index, -32, -32);
   }
 
   @Override
-  public ItemStack getStack() {
-    ItemStack stack = super.getStack();
-    inventory.markDirty();
+  public ItemStack getItem() {
+    ItemStack stack = super.getItem();
+    container.setChanged();
     return stack;
   }
 
   @Override
-  public boolean isEnabled() {
+  public boolean isActive() {
     return false;
   }
 
   @Override
-  public boolean canInsert(ItemStack stack) {
+  public boolean mayPlace(ItemStack stack) {
     return false;
   }
 
   @Override
-  public boolean canTakeItems(PlayerEntity playerEntity) {
+  public boolean mayPickup(Player playerEntity) {
     return false;
   }
 }

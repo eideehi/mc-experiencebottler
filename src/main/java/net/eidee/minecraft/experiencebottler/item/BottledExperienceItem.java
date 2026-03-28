@@ -26,20 +26,20 @@ package net.eidee.minecraft.experiencebottler.item;
 
 import net.eidee.minecraft.experiencebottler.component.type.BottledExperienceComponent;
 import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
-import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsage;
-import net.minecraft.item.Items;
-import net.minecraft.item.consume.UseAction;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.ItemUtils;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gameevent.GameEvent;
 
 /** The item of bottled experience points. */
 public class BottledExperienceItem extends Item {
@@ -47,33 +47,34 @@ public class BottledExperienceItem extends Item {
       new int[] {100, 500, 1000, 5000, 10000, 50000, 100000, 500000};
   private static final int MAX_USE_TIME = 32;
 
-  public BottledExperienceItem(net.minecraft.item.Item.Settings settings) {
+  public BottledExperienceItem(Item.Properties settings) {
     super(settings);
   }
 
   @Override
-  public ActionResult use(World world, PlayerEntity user, Hand hand) {
-    return ItemUsage.consumeHeldItem(world, user, hand);
+  public InteractionResult use(Level world, Player user, InteractionHand hand) {
+    return ItemUtils.startUsingInstantly(world, user, hand);
   }
 
-  public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-    PlayerEntity player = user instanceof PlayerEntity ? (PlayerEntity) user : null;
+  @Override
+  public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity user) {
+    Player player = user instanceof Player castUser ? castUser : null;
 
-    if (player instanceof ServerPlayerEntity serverPlayer) {
-      Criteria.CONSUME_ITEM.trigger(serverPlayer, stack);
+    if (player instanceof ServerPlayer serverPlayer) {
+      CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, stack);
     }
 
     if (player != null) {
-      if (!world.isClient()) {
+      if (!world.isClientSide()) {
         int experience = BottledExperienceComponent.getExperienceValue(stack);
         if (experience > 0) {
           ExperienceUtil.addExperience(player, experience);
         }
       }
 
-      player.incrementStat(Stats.USED.getOrCreateStat(this));
+      player.awardStat(Stats.ITEM_USED.get(this));
       if (!player.isCreative()) {
-        stack.decrement(1);
+        stack.shrink(1);
       }
     }
 
@@ -83,26 +84,26 @@ public class BottledExperienceItem extends Item {
       }
 
       if (player != null) {
-        player.getInventory().insertStack(new ItemStack(Items.GLASS_BOTTLE));
+        player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE));
       }
     }
 
-    user.emitGameEvent(GameEvent.DRINK);
+    user.gameEvent(GameEvent.DRINK);
     return stack;
   }
 
   @Override
-  public UseAction getUseAction(ItemStack stack) {
-    return UseAction.DRINK;
+  public ItemUseAnimation getUseAnimation(ItemStack stack) {
+    return ItemUseAnimation.DRINK;
   }
 
   @Override
-  public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+  public int getUseDuration(ItemStack stack, LivingEntity user) {
     return MAX_USE_TIME;
   }
 
   @Override
-  public boolean hasGlint(ItemStack stack) {
+  public boolean isFoil(ItemStack stack) {
     return true;
   }
 }

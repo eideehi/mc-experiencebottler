@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "experiencebottler-test",
+  "version": "1.0.0",
+  "name": "Experience Bottler GameTests",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": [
+      "net.eidee.minecraft.experiencebottler.gametest.ExperienceBottlerGameTests"
+    ]
+  }
+}

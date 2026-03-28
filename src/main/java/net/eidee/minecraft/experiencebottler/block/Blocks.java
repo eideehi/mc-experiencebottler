@@ -25,12 +25,12 @@
 package net.eidee.minecraft.experiencebottler.block;
 
 import net.eidee.minecraft.experiencebottler.core.constants.Identifiers;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.MapColor;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
 
 /** Defines the blocks of the Experience Bottler. */
 public class Blocks {
@@ -39,13 +39,13 @@ public class Blocks {
   static {
     EXPERIENCE_BOTTLER =
         new ExperienceBottlerBlock(
-            AbstractBlock.Settings.create()
-                .mapColor(MapColor.IRON_GRAY)
-                .requiresTool()
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
+                .requiresCorrectToolForDrops()
                 .strength(4.0F, 5.0F)
-                .sounds(BlockSoundGroup.METAL)
-                .nonOpaque()
-                .registryKey(RegistryKey.of(RegistryKeys.BLOCK, Identifiers.EXPERIENCE_BOTTLER)));
+                .sound(SoundType.METAL)
+                .noOcclusion()
+                .setId(ResourceKey.create(Registries.BLOCK, Identifiers.EXPERIENCE_BOTTLER)));
   }
 
   private Blocks() {}

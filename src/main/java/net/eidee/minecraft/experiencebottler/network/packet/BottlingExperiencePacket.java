@@ -28,23 +28,21 @@ import io.netty.buffer.ByteBuf;
 import net.eidee.minecraft.experiencebottler.ExperienceBottlerMod;
 import net.eidee.minecraft.experiencebottler.screen.ExperienceBottlerScreenHandler;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
  * This class handles the packets that reflect the experience values entered by the user in the
  * client to the server.
  */
-public record BottlingExperiencePacket(int experience) implements CustomPayload {
-  public static final CustomPayload.Id<BottlingExperiencePacket> ID;
-  public static final PacketCodec<ByteBuf, BottlingExperiencePacket> CODEC;
+public record BottlingExperiencePacket(int experience) implements CustomPacketPayload {
+  public static final CustomPacketPayload.Type<BottlingExperiencePacket> ID;
+  public static final StreamCodec<ByteBuf, BottlingExperiencePacket> CODEC;
 
   static {
-    ID = new Id<>(ExperienceBottlerMod.identifier("bottling_experience"));
-    CODEC =
-        PacketCodecs.VAR_INT.xmap(
-            BottlingExperiencePacket::new, BottlingExperiencePacket::experience);
+    ID = new CustomPacketPayload.Type<>(ExperienceBottlerMod.identifier("bottling_experience"));
+    CODEC = ByteBufCodecs.VAR_INT.map(BottlingExperiencePacket::new, BottlingExperiencePacket::experience);
   }
 
   /**
@@ -55,14 +53,14 @@ public record BottlingExperiencePacket(int experience) implements CustomPayload 
    */
   public static void receive(
       BottlingExperiencePacket payload, ServerPlayNetworking.Context context) {
-    if (context.player().currentScreenHandler
+    if (context.player().containerMenu
         instanceof ExperienceBottlerScreenHandler screenHandler) {
       screenHandler.setBottlingExperience(payload.experience());
     }
   }
 
   @Override
-  public Id<? extends CustomPayload> getId() {
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
     return ID;
   }
 }

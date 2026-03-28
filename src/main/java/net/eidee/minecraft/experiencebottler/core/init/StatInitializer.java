@@ -25,18 +25,18 @@
 package net.eidee.minecraft.experiencebottler.core.init;
 
 import net.eidee.minecraft.experiencebottler.stat.Stats;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.stat.StatFormatter;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.stats.StatFormatter;
 
 /** Experience Bottler's stat initializer. */
 public class StatInitializer {
   private StatInitializer() {}
 
   private static void register(Identifier identifier, StatFormatter formatter) {
-    Registry.register(Registries.CUSTOM_STAT, identifier, identifier);
-    net.minecraft.stat.Stats.CUSTOM.getOrCreateStat(identifier, formatter);
+    Registry.register(BuiltInRegistries.CUSTOM_STAT, identifier, identifier);
+    net.minecraft.stats.Stats.CUSTOM.get(identifier, formatter);
   }
 
   /** Initializes the stats. */

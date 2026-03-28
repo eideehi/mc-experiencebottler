@@ -24,7 +24,7 @@
 
 package net.eidee.minecraft.experiencebottler;
 
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 
 /** Experience Bottler's system class. */
 public class ExperienceBottlerMod {
@@ -33,6 +33,6 @@ public class ExperienceBottlerMod {
   private ExperienceBottlerMod() {}
 
   public static Identifier identifier(String path) {
-    return Identifier.of(MOD_ID, path);
+    return Identifier.fromNamespaceAndPath(MOD_ID, path);
   }
 }

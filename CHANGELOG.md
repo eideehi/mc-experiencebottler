@@ -1,3 +1,7 @@
+## [26.1+build.1 [2026-03-27]](#26.1+build.1)
+* EideeHi: Migrate to Minecraft 26.1
+* EideeHi: Require Java 25 and unobfuscated Fabric Loom
+
 ## [1.21.11+build.1 [2026-01-11]](#1.21.11+build.1)
 * EideeHi: Migrate to Minecraft 1.21.11
 

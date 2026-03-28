@@ -37,53 +37,90 @@ import net.eidee.minecraft.experiencebottler.screen.ExperienceBottlerScreenHandl
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerListener;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerListener;
+import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @Environment(EnvType.CLIENT)
-public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScreenHandler>
-    implements ScreenHandlerListener {
-  private static final Identifier BACKGROUND;
+public class ExperienceBottlerScreen extends AbstractContainerScreen<ExperienceBottlerScreenHandler>
+    implements ContainerListener {
+  private static final Identifier BACKGROUND =
+      identifier("textures/gui/container/experience_bottler.png");
+  private static final Component BOTTLING_EXPERIENCE_LABEL =
+      Component.translatable("gui.experiencebottler.label.bottling_experience");
+  private static final Component AFTER_BOTTLING_EXPERIENCE_LABEL =
+      Component.translatable("gui.experiencebottler.label.after_experience");
 
-  static {
-    BACKGROUND = identifier("textures/gui/container/experience_bottler.png");
-  }
-
-  private Text sourceExperienceLabel;
+  private Component sourceExperienceLabel = Component.empty();
   private ExperienceInput sourceExperience;
-  private Text experienceValueToBottleLabel;
   private ExperienceInput experienceValueToBottle;
-  private Text afterBottlingExperienceLabel;
   private ExperienceInput afterBottlingExperience;
   private long lastSendExperience = -1;
   private ExperienceInput lastFocusedInput;
 
   public ExperienceBottlerScreen(
-      ExperienceBottlerScreenHandler handler, PlayerInventory inventory, Text title) {
-    super(handler, inventory, title);
-    backgroundWidth = 200;
-    backgroundHeight = 210;
-    playerInventoryTitleX = 20;
-    playerInventoryTitleY = backgroundHeight - 94;
+      ExperienceBottlerScreenHandler handler, Inventory inventory, Component title) {
+    super(handler, inventory, title, 200, 210);
+    inventoryLabelX = 20;
+    inventoryLabelY = imageHeight - 94;
   }
 
   private static Consumer<ExperienceTypeToggleButton> onExperienceTypeChanged(
       Consumer<ExperienceType> consumer) {
     return button -> consumer.accept(button.getExperienceType());
+  }
+
+  private void syncFocusedInput() {
+    if (experienceValueToBottle == null || afterBottlingExperience == null) {
+      return;
+    }
+
+    if (experienceValueToBottle.isFocused()) {
+      lastFocusedInput = experienceValueToBottle;
+      if (afterBottlingExperience.isFocused()) {
+        afterBottlingExperience.setFocused(false);
+      }
+    } else if (afterBottlingExperience.isFocused()) {
+      lastFocusedInput = afterBottlingExperience;
+      if (experienceValueToBottle.isFocused()) {
+        experienceValueToBottle.setFocused(false);
+      }
+    }
+  }
+
+  private boolean clearEditableFocus() {
+    boolean cleared = false;
+    if (experienceValueToBottle != null && experienceValueToBottle.isFocused()) {
+      experienceValueToBottle.setFocused(false);
+      cleared = true;
+    }
+    if (afterBottlingExperience != null && afterBottlingExperience.isFocused()) {
+      afterBottlingExperience.setFocused(false);
+      cleared = true;
+    }
+    if (cleared) {
+      setFocused(null);
+    }
+    return cleared;
+  }
+
+  private void refreshSourceState() {
+    sourceExperienceLabel =
+        Component.translatable(
+            "gui.experiencebottler.label.source_experience", menu.getSourceName());
+    sourceExperience.setExperiencePoint(menu.getSourceExperience());
+    onInputValueChange(sourceExperience);
   }
 
   private void onInputValueChange(ExperienceInput input) {
@@ -95,14 +132,12 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
       } else if (afterBottlingExperience.isFocused()) {
         experienceValueToBottle.setExperiencePoint(
             source - afterBottlingExperience.getExperiencePoint());
+      } else if (lastFocusedInput == null || lastFocusedInput == experienceValueToBottle) {
+        afterBottlingExperience.setExperiencePoint(
+            source - experienceValueToBottle.getExperiencePoint());
       } else {
-        if (lastFocusedInput == null || lastFocusedInput == experienceValueToBottle) {
-          afterBottlingExperience.setExperiencePoint(
-              source - experienceValueToBottle.getExperiencePoint());
-        } else {
-          experienceValueToBottle.setExperiencePoint(
-              source - afterBottlingExperience.getExperiencePoint());
-        }
+        experienceValueToBottle.setExperiencePoint(
+            source - afterBottlingExperience.getExperiencePoint());
       }
     } else if (input == experienceValueToBottle) {
       if (input.isFocused()) {
@@ -110,18 +145,17 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
         long bottled = input.getExperiencePoint();
         afterBottlingExperience.setExperiencePoint(source - bottled);
       }
-    } else if (input == afterBottlingExperience) {
-      if (input.isFocused()) {
-        long source = sourceExperience.getExperiencePoint();
-        long after = input.getExperiencePoint();
-        experienceValueToBottle.setExperiencePoint(Math.min(source - after, Integer.MAX_VALUE));
-      }
+    } else if (input == afterBottlingExperience && input.isFocused()) {
+      long source = sourceExperience.getExperiencePoint();
+      long after = input.getExperiencePoint();
+      experienceValueToBottle.setExperiencePoint(Math.min(source - after, Integer.MAX_VALUE));
     }
+
     int experience =
         (int) Math.min(experienceValueToBottle.getExperiencePoint(), Integer.MAX_VALUE);
     if (experience != lastSendExperience) {
       lastSendExperience = experience;
-      getScreenHandler().setBottlingExperience(experience);
+      menu.setBottlingExperience(experience);
       ClientPlayNetworking.send(new BottlingExperiencePacket(experience));
     }
   }
@@ -130,162 +164,122 @@ public class ExperienceBottlerScreen extends HandledScreen<ExperienceBottlerScre
   protected void init() {
     super.init();
 
-    sourceExperienceLabel = Text.empty();
     sourceExperience =
-        addDrawableChild(
-            new ExperienceInput(textRenderer, x + 67, y + 31, this::onInputValueChange));
+        addRenderableWidget(
+            new ExperienceInput(font, leftPos + 67, topPos + 31, this::onInputValueChange));
     sourceExperience.active = false;
+    sourceExperience.setEditable(false);
     sourceExperience.setDisabledTextColor(0xFF404040);
-    addDrawableChild(
+    addRenderableWidget(
         new ExperienceTypeToggleButton(
-            x + 163, y + 31, onExperienceTypeChanged(sourceExperience::setExperienceType)));
+            leftPos + 163, topPos + 31, onExperienceTypeChanged(sourceExperience::setExperienceType)));
 
-    experienceValueToBottleLabel =
-        Text.translatable("gui.experiencebottler.label.bottling_experience");
     experienceValueToBottle =
-        addDrawableChild(
-            new ExperienceInput(textRenderer, x + 67, y + 63, this::onInputValueChange));
-    addDrawableChild(
+        addRenderableWidget(
+            new ExperienceInput(font, leftPos + 67, topPos + 63, this::onInputValueChange));
+    addRenderableWidget(
         new ExperienceTypeToggleButton(
-            x + 163, y + 63, onExperienceTypeChanged(experienceValueToBottle::setExperienceType)));
+            leftPos + 163,
+            topPos + 63,
+            onExperienceTypeChanged(experienceValueToBottle::setExperienceType)));
 
-    afterBottlingExperienceLabel =
-        Text.translatable("gui.experiencebottler.label.after_experience");
     afterBottlingExperience =
-        addDrawableChild(
-            new ExperienceInput(textRenderer, x + 67, y + 95, this::onInputValueChange));
-    addDrawableChild(
+        addRenderableWidget(
+            new ExperienceInput(font, leftPos + 67, topPos + 95, this::onInputValueChange));
+    addRenderableWidget(
         new ExperienceTypeToggleButton(
-            x + 163, y + 95, onExperienceTypeChanged(afterBottlingExperience::setExperienceType)));
+            leftPos + 163,
+            topPos + 95,
+            onExperienceTypeChanged(afterBottlingExperience::setExperienceType)));
 
-    getScreenHandler().addListener(this);
+    titleLabelX = 20;
+    menu.addSlotListener(this);
+    refreshSourceState();
   }
 
   @Override
   public void removed() {
+    menu.removeSlotListener(this);
     super.removed();
-    getScreenHandler().removeListener(this);
   }
 
   @Override
-  public void setFocused(@Nullable Element focused) {
-    super.setFocused(focused);
-    if (experienceValueToBottle == null || afterBottlingExperience == null) {
-      return;
-    }
-    if (focused == experienceValueToBottle) {
-      lastFocusedInput = experienceValueToBottle;
-      if (afterBottlingExperience.isFocused()) {
-        afterBottlingExperience.setFocused(false);
-      }
-    } else if (focused == afterBottlingExperience) {
-      lastFocusedInput = afterBottlingExperience;
-      if (experienceValueToBottle.isFocused()) {
-        experienceValueToBottle.setFocused(false);
-      }
-    }
-  }
-
-  @Override
-  protected void handledScreenTick() {
-    experienceValueToBottle.tick();
-    afterBottlingExperience.tick();
-  }
-
-  @Override
-  public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-    super.render(context, mouseX, mouseY, delta);
-    drawMouseoverTooltip(context, mouseX, mouseY);
-  }
-
-  @Override
-  protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-    context.drawTexture(
+  public void extractBackground(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float delta) {
+    super.extractBackground(extractor, mouseX, mouseY, delta);
+    extractor.blit(
         RenderPipelines.GUI_TEXTURED,
         BACKGROUND,
-        x,
-        y,
+        leftPos,
+        topPos,
         0.0F,
         0.0F,
-        backgroundWidth,
-        backgroundHeight,
+        imageWidth,
+        imageHeight,
         256,
         256);
   }
 
   @Override
-  protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
-    super.drawForeground(context, mouseX, mouseY);
+  protected void extractLabels(GuiGraphicsExtractor extractor, int mouseX, int mouseY) {
+    super.extractLabels(extractor, mouseX, mouseY);
 
-    final int labelX = 68;
+    int labelX = 68;
     int labelY = 20;
-    context.drawText(textRenderer, sourceExperienceLabel, labelX, labelY, 0xFF404040, false);
+    extractor.text(font, sourceExperienceLabel, labelX, labelY, 0xFF404040, false);
 
     labelY += 32;
-    context.drawText(textRenderer, experienceValueToBottleLabel, labelX, labelY, 0xFF404040, false);
+    extractor.text(font, BOTTLING_EXPERIENCE_LABEL, labelX, labelY, 0xFF404040, false);
 
     labelY += 32;
-    context.drawText(textRenderer, afterBottlingExperienceLabel, labelX, labelY, 0xFF404040, false);
+    extractor.text(font, AFTER_BOTTLING_EXPERIENCE_LABEL, labelX, labelY, 0xFF404040, false);
   }
 
   @Override
-  public boolean mouseClicked(Click click, boolean doubled) {
-    boolean result = super.mouseClicked(click, doubled);
-    double mouseX = click.x();
-    double mouseY = click.y();
-    if (experienceValueToBottle.isFocused() && !experienceValueToBottle.isMouseOver(mouseX, mouseY)) {
-      experienceValueToBottle.setFocused(false);
-      setFocused(null);
-    } else if (afterBottlingExperience.isFocused() && !afterBottlingExperience.isMouseOver(mouseX, mouseY)) {
-      afterBottlingExperience.setFocused(false);
-      setFocused(null);
+  public boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
+    boolean result = super.mouseClicked(event, doubled);
+    if (!experienceValueToBottle.isMouseOver(event.x(), event.y())
+        && !afterBottlingExperience.isMouseOver(event.x(), event.y())) {
+      clearEditableFocus();
     }
+    syncFocusedInput();
     return result;
   }
 
   @Override
-  public boolean keyPressed(KeyInput input) {
+  public boolean keyPressed(KeyEvent input) {
     int keyCode = input.key();
     boolean tryInputDeactivate =
         keyCode == GLFW.GLFW_KEY_ENTER
+            || keyCode == GLFW.GLFW_KEY_KP_ENTER
             || keyCode == GLFW.GLFW_KEY_ESCAPE
-            || (client != null && client.options.inventoryKey.matchesKey(input));
-    if (tryInputDeactivate) {
-      if (experienceValueToBottle.isFocused()) {
-        experienceValueToBottle.setFocused(false);
-        setFocused(null);
-        return true;
-      } else if (afterBottlingExperience.isFocused()) {
-        afterBottlingExperience.setFocused(false);
-        setFocused(null);
-        return true;
-      }
+            || minecraft.options.keyInventory.matches(input);
+    if (tryInputDeactivate && clearEditableFocus()) {
+      return true;
     }
 
-    return super.keyPressed(input);
+    boolean result = super.keyPressed(input);
+    syncFocusedInput();
+    return result;
   }
 
   @Override
-  public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
+  public void slotChanged(AbstractContainerMenu handler, int slotId, ItemStack stack) {
     if (slotId == 0 || slotId == 1) {
       if (stack.isEmpty()) {
         return;
       }
-      if (!experienceValueToBottle.isFocused() && !afterBottlingExperience.isFocused()) {
-        if (experienceValueToBottle.getExperiencePoint() == 0) {
-          experienceValueToBottle.setFocused(true);
-          setFocused(experienceValueToBottle);
-        }
+      if (!experienceValueToBottle.isFocused()
+          && !afterBottlingExperience.isFocused()
+          && experienceValueToBottle.getExperiencePoint() == 0) {
+        experienceValueToBottle.setFocused(true);
+        setFocused(experienceValueToBottle);
+        syncFocusedInput();
       }
     } else if (slotId == 2) {
-      sourceExperienceLabel =
-          Text.translatable(
-              "gui.experiencebottler.label.source_experience", getScreenHandler().getSourceName());
-      sourceExperience.setExperiencePoint(getScreenHandler().getSourceExperience());
-      sourceExperience.onInputValueChanged();
+      refreshSourceState();
     }
   }
 
   @Override
-  public void onPropertyUpdate(ScreenHandler handler, int property, int value) {}
+  public void dataChanged(AbstractContainerMenu handler, int property, int value) {}
 }

@@ -24,16 +24,20 @@
 
 package net.eidee.minecraft.experiencebottler.screen;
 
-import net.minecraft.resource.featuretoggle.FeatureFlags;
-import net.minecraft.screen.ScreenHandlerType;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuType;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.Unit;
+import net.minecraft.world.inventory.MenuType;
 
 /** Defines the screen handlers of the Experience Bottler. */
 public class ScreenHandlerTypes {
-  public static final ScreenHandlerType<ExperienceBottlerScreenHandler> EXPERIENCE_BOTTLER;
+  public static final MenuType<ExperienceBottlerScreenHandler> EXPERIENCE_BOTTLER;
 
   static {
     EXPERIENCE_BOTTLER =
-        new ScreenHandlerType<>(ExperienceBottlerScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
+        new ExtendedMenuType<>(
+            (syncId, inventory, unused) -> new ExperienceBottlerScreenHandler(syncId, inventory),
+            StreamCodec.unit(Unit.INSTANCE));
   }
 
   private ScreenHandlerTypes() {}

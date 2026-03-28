@@ -30,93 +30,111 @@ import net.eidee.minecraft.experiencebottler.component.type.BottledExperienceCom
 import net.eidee.minecraft.experiencebottler.item.Items;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.CraftingResultInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ResultContainer;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class ExperienceBottlerScreenHandler extends ScreenHandler {
+public class ExperienceBottlerScreenHandler extends AbstractContainerMenu {
   private final ExperienceSource experienceSource;
-  private final Inventory input;
-  private final Inventory result;
+  private final Container input;
+  private final Container result;
   private int bottlingExperience;
+  private int resultExperience;
+
+  private final class ResultSlot extends Slot {
+    private int pendingResultExperience;
+
+    private ResultSlot() {
+      super(result, 0, 20, 85);
+    }
+
+    private void prepareTake() {
+      pendingResultExperience = resultExperience;
+    }
+
+    @Override
+    public boolean mayPlace(ItemStack stack) {
+      return false;
+    }
+
+    @Override
+    public boolean mayPickup(Player player) {
+      return player.isCreative()
+          || (resultExperience > 0 && resultExperience <= experienceSource.getTotalExperience());
+    }
+
+    @Override
+    public ItemStack remove(int amount) {
+      if (hasItem() && amount > 0) {
+        prepareTake();
+      }
+      return super.remove(amount);
+    }
+
+    @Override
+    public void onTake(Player player, ItemStack stack) {
+      int experience = pendingResultExperience;
+      pendingResultExperience = 0;
+      if (!player.isCreative()) {
+        ItemStack glassBottle = input.getItem(0).copy();
+        if (!glassBottle.isEmpty()) {
+          glassBottle.shrink(1);
+          input.setItem(0, glassBottle);
+        }
+        if (experience > 0 && experience <= experienceSource.getTotalExperience()) {
+          experienceSource.removeExperience(experience);
+        }
+        updateResult();
+      }
+    }
+  }
 
   public ExperienceBottlerScreenHandler(
-      int syncId, PlayerInventory inventory, ExperienceSource experienceSource) {
+      int syncId, Inventory inventory, ExperienceSource experienceSource) {
     super(ScreenHandlerTypes.EXPERIENCE_BOTTLER, syncId);
     this.experienceSource = experienceSource;
 
-    experienceSource.onOpen(inventory.player);
+    experienceSource.startOpen(inventory.player);
 
     input =
-        new SimpleInventory(1) {
+        new SimpleContainer(1) {
           @Override
-          public void markDirty() {
-            onContentChanged(this);
+          public void setChanged() {
+            slotsChanged(this);
           }
         };
 
     result =
-        new CraftingResultInventory() {
+        new ResultContainer() {
           @Override
-          public void markDirty() {
-            onContentChanged(this);
+          public void setChanged() {
+            slotsChanged(this);
           }
         };
 
     addSlot(
         new Slot(input, 0, 20, 44) {
           @Override
-          public boolean canInsert(ItemStack stack) {
-            return stack.getItem() == net.minecraft.item.Items.GLASS_BOTTLE;
+          public boolean mayPlace(ItemStack stack) {
+            return stack.getItem() == net.minecraft.world.item.Items.GLASS_BOTTLE;
           }
         });
 
-    addSlot(
-        new Slot(result, 0, 20, 85) {
-          @Override
-          public boolean canInsert(ItemStack stack) {
-            return false;
-          }
-
-          @Override
-          public boolean canTakeItems(PlayerEntity playerEntity) {
-            if (!playerEntity.isCreative()) {
-              int experience = BottledExperienceComponent.getExperienceValue(getStack());
-              return experience > 0 && experience <= experienceSource.getTotalExperience();
-            }
-            return true;
-          }
-
-          @Override
-          public void onTakeItem(PlayerEntity player, ItemStack stack) {
-            if (!player.isCreative()) {
-              ItemStack glassBottle = input.getStack(0).copy();
-              if (!glassBottle.isEmpty()) {
-                glassBottle.decrement(1);
-                input.setStack(0, glassBottle);
-              }
-              int experience = BottledExperienceComponent.getExperienceValue(stack);
-              if (experience <= experienceSource.getTotalExperience()) {
-                experienceSource.removeExperience(experience);
-              }
-              updateResult();
-            }
-          }
-        });
+    addSlot(new ResultSlot());
 
     addSlot(
         new HiddenSlot(experienceSource, 0) {
           @Override
-          public void markDirty() {
-            onContentChanged(experienceSource);
+          public void setChanged() {
+            slotsChanged(experienceSource);
           }
         });
 
@@ -131,25 +149,27 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
     }
   }
 
-  public ExperienceBottlerScreenHandler(int syncId, PlayerInventory inventory) {
+  public ExperienceBottlerScreenHandler(int syncId, Inventory inventory) {
     this(syncId, inventory, ExperienceSource.forClient());
   }
 
   private void updateResult() {
     if (bottlingExperience > 0
-        && !input.getStack(0).isEmpty()
+        && !input.getItem(0).isEmpty()
         && experienceSource.getTotalExperience() >= bottlingExperience) {
       ItemStack bottledExperience = new ItemStack(Items.BOTTLED_EXPERIENCE);
       BottledExperienceComponent.setExperienceValue(bottledExperience, bottlingExperience);
-      result.setStack(0, bottledExperience);
+      resultExperience = bottlingExperience;
+      result.setItem(0, bottledExperience);
     } else {
-      result.setStack(0, ItemStack.EMPTY);
+      resultExperience = 0;
+      result.setItem(0, ItemStack.EMPTY);
     }
-    sendContentUpdates();
+    broadcastChanges();
   }
 
   @Environment(EnvType.CLIENT)
-  public Text getSourceName() {
+  public Component getSourceName() {
     return experienceSource.getSourceName();
   }
 
@@ -164,53 +184,55 @@ public class ExperienceBottlerScreenHandler extends ScreenHandler {
   }
 
   @Override
-  public void onClosed(PlayerEntity player) {
-    super.onClosed(player);
-    experienceSource.onClose(player);
-    dropInventory(player, input);
+  public void removed(Player player) {
+    super.removed(player);
+    experienceSource.stopOpen(player);
+    clearContainer(player, input);
   }
 
   @Override
-  public boolean canUse(PlayerEntity player) {
-    return experienceSource.canPlayerUse(player);
+  public boolean stillValid(Player player) {
+    return experienceSource.stillValid(player);
   }
 
   @Override
-  public void onContentChanged(Inventory inventory) {
-    super.onContentChanged(inventory);
+  public void slotsChanged(Container inventory) {
+    super.slotsChanged(inventory);
     if (inventory == input || inventory == result || inventory == experienceSource) {
       updateResult();
     }
   }
 
   @Override
-  public ItemStack quickMove(PlayerEntity player, int slotIndex) {
+  public ItemStack quickMoveStack(Player player, int slotIndex) {
     ItemStack stack = ItemStack.EMPTY;
     Slot slot = slots.get(slotIndex);
-    if (slot.hasStack()) {
-      ItemStack stackInSlot = slot.getStack();
+    if (slot.hasItem()) {
+      ItemStack stackInSlot = slot.getItem();
       stack = stackInSlot.copy();
-      if (slot.inventory == input) {
-        if (!insertItem(stackInSlot, 3, slots.size(), true)) {
+      if (slot.container == input) {
+        if (!moveItemStackTo(stackInSlot, 3, slots.size(), true)) {
           return ItemStack.EMPTY;
         }
-      } else if (slot.inventory == result) {
-        if (!insertItem(stackInSlot, 3, slots.size(), true)) {
+      } else if (slot.container == result) {
+        if (slot instanceof ResultSlot resultSlot) {
+          resultSlot.prepareTake();
+        }
+        if (!moveItemStackTo(stackInSlot, 3, slots.size(), true)) {
           return ItemStack.EMPTY;
         }
-        slot.onQuickTransfer(stackInSlot, stack);
-      } else if (!insertItem(stackInSlot, 0, 1, false)) {
+      } else if (!moveItemStackTo(stackInSlot, 0, 1, false)) {
         return ItemStack.EMPTY;
       }
       if (stackInSlot.isEmpty()) {
-        slot.setStack(ItemStack.EMPTY);
+        slot.set(ItemStack.EMPTY);
       } else {
-        slot.markDirty();
+        slot.setChanged();
       }
       if (stackInSlot.getCount() == stack.getCount()) {
         return ItemStack.EMPTY;
       }
-      slot.onTakeItem(player, stack);
+      slot.onTake(player, stack);
     }
     return stack;
   }

@@ -7,28 +7,26 @@ import net.eidee.minecraft.experiencebottler.component.DataComponentTypes;
 import net.eidee.minecraft.experiencebottler.util.ExperienceUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.component.ComponentsAccess;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipAppender;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.text.Text;
-import net.minecraft.util.dynamic.Codecs;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipProvider;
 
-public record BottledExperienceComponent(int experience) implements TooltipAppender {
+public record BottledExperienceComponent(int experience) implements TooltipProvider {
   public static final BottledExperienceComponent DEFAULT = new BottledExperienceComponent(0);
   public static final Codec<BottledExperienceComponent> CODEC =
-      Codecs.NON_NEGATIVE_INT.xmap(
+      ExtraCodecs.NON_NEGATIVE_INT.xmap(
           BottledExperienceComponent::new, BottledExperienceComponent::experience);
-  public static final PacketCodec<ByteBuf, BottledExperienceComponent> PACKET_CODEC =
-      PacketCodec.tuple(
-          PacketCodecs.INTEGER,
-          BottledExperienceComponent::experience,
-          BottledExperienceComponent::new);
+  public static final StreamCodec<ByteBuf, BottledExperienceComponent> STREAM_CODEC =
+      ByteBufCodecs.VAR_INT.map(BottledExperienceComponent::new, BottledExperienceComponent::experience);
 
   /**
    * Get the experience value set in the item stack. If no experience value is set, it returns 0.
@@ -44,30 +42,28 @@ public record BottledExperienceComponent(int experience) implements TooltipAppen
     stack.set(DataComponentTypes.BOTTLED_EXPERIENCE, new BottledExperienceComponent(value));
   }
 
-  private void doAppendTooltip(Consumer<Text> textConsumer, PlayerEntity player) {
+  private void doAppendTooltip(Consumer<Component> textConsumer, Player player) {
     if (experience < 0) return;
-    Text arg = Text.literal(String.format("%,d", experience));
+    Component arg = Component.literal(String.format("%,d", experience));
     textConsumer.accept(
-        Text.translatable("item.experiencebottler.bottled_experience.tooltip.0", arg));
+        Component.translatable("item.experiencebottler.bottled_experience.tooltip.0", arg));
 
     if (player != null) {
       long playerExperience = ExperienceUtil.getTotalExperience(player);
       int level = ExperienceUtil.getLevelFromTotalExperience(experience + playerExperience);
-      arg = Text.literal(String.format("%,d", level));
+      arg = Component.literal(String.format("%,d", level));
       textConsumer.accept(
-          Text.translatable("item.experiencebottler.bottled_experience.tooltip.1", arg));
+          Component.translatable("item.experiencebottler.bottled_experience.tooltip.1", arg));
     }
   }
 
   @Override
-  public void appendTooltip(
+  public void addToTooltip(
       Item.TooltipContext context,
-      Consumer<Text> textConsumer,
-      TooltipType type,
-      ComponentsAccess components) {
-    // FIXME: If there is a better side detection method, it will be modified.
-    String threadName = Thread.currentThread().getName();
-    if (threadName.equals("Render thread")) {
+      Consumer<Component> textConsumer,
+      TooltipFlag type,
+      DataComponentGetter components) {
+    if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
       appendTooltipClient(textConsumer);
     } else {
       doAppendTooltip(textConsumer, null);
@@ -75,7 +71,7 @@ public record BottledExperienceComponent(int experience) implements TooltipAppen
   }
 
   @Environment(EnvType.CLIENT)
-  private void appendTooltipClient(Consumer<Text> textConsumer) {
-    doAppendTooltip(textConsumer, MinecraftClient.getInstance().player);
+  private void appendTooltipClient(Consumer<Component> textConsumer) {
+    doAppendTooltip(textConsumer, Minecraft.getInstance().player);
   }
 }

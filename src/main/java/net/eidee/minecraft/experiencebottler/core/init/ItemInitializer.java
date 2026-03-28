@@ -33,17 +33,17 @@ import net.eidee.minecraft.experiencebottler.component.type.BottledExperienceCom
 import net.eidee.minecraft.experiencebottler.core.constants.Identifiers;
 import net.eidee.minecraft.experiencebottler.item.BottledExperienceItem;
 import net.eidee.minecraft.experiencebottler.item.Items;
-import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.minecraft.component.ComponentType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.util.Identifier;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
+import net.fabricmc.fabric.api.item.v1.ItemComponentTooltipProviderRegistry;
+import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 /** Experience Bottler's item initializer. */
@@ -54,34 +54,34 @@ public class ItemInitializer {
 
   private static void registerItem(
       Item item,
-      RegistryKey<ItemGroup> itemGroup,
-      @Nullable ItemGroupEvents.ModifyEntries modifyEntries,
+      ResourceKey<CreativeModeTab> itemGroup,
+      @Nullable CreativeModeTabEvents.ModifyOutput modifyEntries,
       Identifier id) {
-    Registry.register(Registries.ITEM, id, item);
+    Registry.register(BuiltInRegistries.ITEM, id, item);
     if (modifyEntries != null) {
-      ItemGroupEvents.modifyEntriesEvent(itemGroup).register(modifyEntries);
+      CreativeModeTabEvents.modifyOutputEvent(itemGroup).register(modifyEntries);
     } else {
-      ItemGroupEvents.modifyEntriesEvent(itemGroup).register(entries -> entries.add(item));
+      CreativeModeTabEvents.modifyOutputEvent(itemGroup).register(entries -> entries.accept(item));
     }
   }
 
-  private static void registerDataComponent(String id, ComponentType<?> type) {
-    Registry.register(Registries.DATA_COMPONENT_TYPE, identifier(id), type);
+  private static void registerDataComponent(String id, DataComponentType<?> type) {
+    Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, identifier(id), type);
   }
 
   /** Initializes the items. */
   static void init() {
     registerDataComponent("experience", DataComponentTypes.BOTTLED_EXPERIENCE);
-    ComponentTooltipAppenderRegistry.addLast(DataComponentTypes.BOTTLED_EXPERIENCE);
+    ItemComponentTooltipProviderRegistry.addLast(DataComponentTypes.BOTTLED_EXPERIENCE);
 
     registerItem(
         Items.BOTTLED_EXPERIENCE,
-        ItemGroups.FOOD_AND_DRINK,
+        CreativeModeTabs.FOOD_AND_DRINKS,
         entries -> {
           for (int experience : BottledExperienceItem.EXPERIENCE_LIST) {
             ItemStack stack = new ItemStack(Items.BOTTLED_EXPERIENCE);
             BottledExperienceComponent.setExperienceValue(stack, experience);
-            entries.add(stack);
+            entries.accept(stack);
           }
         },
         Identifiers.BOTTLED_EXPERIENCE);

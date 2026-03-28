@@ -27,52 +27,32 @@ package net.eidee.minecraft.experiencebottler.client.gui.widget;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ButtonTextures;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 /** A button widget to switch between displaying experience as either levels or points. */
 @Environment(EnvType.CLIENT)
-public class ExperienceTypeToggleButton extends ClickableWidget.InactivityIndicatingWidget {
-  private static final ButtonTextures TEXTURES;
-  private static final Text TEXT_POINT;
-  private static final Text TEXT_LEVEL;
-
-  static {
-    TEXT_POINT = Text.translatable("gui.experiencebottler.experience_bottler.exp_display.point");
-    TEXT_LEVEL = Text.translatable("gui.experiencebottler.experience_bottler.exp_display.level");
-    TEXTURES =
-        new ButtonTextures(
-            Identifier.of("widget/button"),
-            Identifier.of("widget/button_disabled"),
-            Identifier.of("widget/button_highlighted"));
-  }
+public class ExperienceTypeToggleButton extends Button {
+  private static final Component TEXT_POINT =
+      Component.translatable("gui.experiencebottler.experience_bottler.exp_display.point");
+  private static final Component TEXT_LEVEL =
+      Component.translatable("gui.experiencebottler.experience_bottler.exp_display.level");
 
   private final Consumer<ExperienceTypeToggleButton> action;
-
   private ExperienceType experienceType;
 
   public ExperienceTypeToggleButton(int x, int y, Consumer<ExperienceTypeToggleButton> action) {
-    super(x, y, 18, 18, ScreenTexts.EMPTY);
+    super(x, y, 18, 18, TEXT_POINT, button -> {}, DEFAULT_NARRATION);
     this.action = action;
-    experienceType = ExperienceType.POINT;
-  }
-
-  private void onPress() {
-    setExperienceType(getExperienceType().rotate());
-    action.accept(this);
+    this.experienceType = ExperienceType.POINT;
+    updatePresentation();
   }
 
   public ExperienceType getExperienceType() {
@@ -81,87 +61,62 @@ public class ExperienceTypeToggleButton extends ClickableWidget.InactivityIndica
 
   public void setExperienceType(ExperienceType experienceType) {
     this.experienceType = experienceType;
+    updatePresentation();
+  }
+
+  private void updatePresentation() {
+    Component message = experienceType == ExperienceType.POINT ? TEXT_POINT : TEXT_LEVEL;
+    setMessage(message);
+    setTooltip(Tooltip.create(message));
   }
 
   @Override
-  public Text getMessage() {
-    return getExperienceType() == ExperienceType.POINT ? TEXT_POINT : TEXT_LEVEL;
+  public void onPress(InputWithModifiers input) {
+    setExperienceType(experienceType.rotate());
+    action.accept(this);
+    setFocused(false);
   }
 
   @Override
-  public void setMessage(Text message) {}
-
-  @Override
-  public void onClick(Click click, boolean doubled) {
-    onPress();
+  protected MutableComponent createNarrationMessage() {
+    return Component.translatable("narration.experiencebottler.experience_type_toggle_button");
   }
 
   @Override
-  public boolean keyPressed(KeyInput input) {
-    if (!isInteractable()) {
-      return false;
-    } else if (input.isEnterOrSpace()) {
-      playDownSound(MinecraftClient.getInstance().getSoundManager());
-      onPress();
-      return true;
+  public void updateWidgetNarration(NarrationElementOutput builder) {
+    builder.add(NarratedElementType.TITLE, createNarrationMessage());
+    if (!active) {
+      return;
+    }
+
+    if (isFocused()) {
+      builder.add(
+          NarratedElementType.USAGE,
+          Component.translatable(
+              "narration.experiencebottler.experience_type_toggle_button.usage.focused"));
     } else {
-      return false;
+      builder.add(
+          NarratedElementType.USAGE,
+          Component.translatable(
+              "narration.experiencebottler.experience_type_toggle_button.usage.hovered"));
     }
+
+    Component type = Component.translatable(experienceType.getNarrationKey());
+    builder.add(
+        NarratedElementType.HINT,
+        Component.translatable(
+            "narration.experiencebottler.experience_type_toggle_button.info.current_type", type));
   }
 
   @Override
-  protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-    setCursor(context);
+  protected void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float delta) {
+    extractDefaultSprite(extractor);
 
-    final int width = getWidth();
-    final int height = getHeight();
-    final int left = getX();
-    final int top = getY();
-
-    context.drawGuiTexture(
-        RenderPipelines.GUI_TEXTURED, TEXTURES.get(active, isHovered()), left, top, width, height);
-
-    final int xCenter = left + width / 2;
-
-    MinecraftClient minecraft = MinecraftClient.getInstance();
-    int textColor = active ? 0xFFFFFF : 0xA0A0A0;
-    TextRenderer textRenderer = minecraft.textRenderer;
-    Text message = getMessage();
-    context.drawText(
-        textRenderer,
-        message,
-        xCenter - (textRenderer.getWidth(message) / 2),
-        top + (height - 8) / 2,
-        textColor | MathHelper.ceil(alpha * 255.0f) << 24,
-        false);
-  }
-
-  @Override
-  protected MutableText getNarrationMessage() {
-    return Text.translatable("narration.experiencebottler.experience_type_toggle_button");
-  }
-
-  @Override
-  public void appendClickableNarrations(NarrationMessageBuilder builder) {
-    builder.put(NarrationPart.TITLE, getNarrationMessage());
-    if (active) {
-      if (isFocused()) {
-        builder.put(
-            NarrationPart.USAGE,
-            Text.translatable(
-                "narration.experiencebottler.experience_type_toggle_button.usage.focused"));
-      } else {
-        builder.put(
-            NarrationPart.USAGE,
-            Text.translatable(
-                "narration.experiencebottler.experience_type_toggle_button.usage.hovered"));
-      }
-
-      Text type = Text.translatable(getExperienceType().getNarrationKey());
-      builder.put(
-          NarrationPart.HINT,
-          Text.translatable(
-              "narration.experiencebottler.experience_type_toggle_button.info.current_type", type));
-    }
+    var font = Minecraft.getInstance().font;
+    var message = getMessage();
+    int color = active ? 0xFFFFFFFF : 0xFFA0A0A0;
+    int textX = getX() + ((getWidth() - font.width(message)) / 2);
+    int textY = getY() + ((getHeight() - font.lineHeight) / 2) + 1;
+    extractor.text(font, message, textX, textY, color, false);
   }
 }
