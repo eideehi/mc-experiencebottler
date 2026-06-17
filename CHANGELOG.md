@@ -1,3 +1,6 @@
+## [26.2+build.1 [2026-06-17]](#26.2+build.1)
+* EideeHi: Migrate to Minecraft 26.2
+
 ## [26.1+build.1 [2026-03-28]](#26.1+build.1)
 * EideeHi: Migrate to Minecraft 26.1
 

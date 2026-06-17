@@ -1,5 +1,5 @@
 plugins {
-    id 'net.fabricmc.fabric-loom' version '1.15.3'
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
     id 'maven-publish'
     id 'net.darkhax.curseforgegradle' version '1.1.28'
     id 'com.modrinth.minotaur' version '2.9.0'
@@ -22,7 +22,7 @@ dependencies {
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
     // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
@@ -35,15 +35,17 @@ dependencies {
 processResources {
     inputs.property "version", project.version
     inputs.property "minecraft_version", project.minecraft_version
+    inputs.property "minecraft_dependency_version", project.minecraft_dependency_version
     inputs.property "loader_version", project.loader_version
-    inputs.property "fabric_version", project.fabric_version
+    inputs.property "fabric_api_version", project.fabric_api_version
     filteringCharset "UTF-8"
 
     filesMatching("fabric.mod.json") {
         expand "version": project.version,
                 "minecraft_version": project.minecraft_version,
+                "minecraft_dependency_version": project.minecraft_dependency_version,
                 "loader_version": project.loader_version,
-                "fabric_version": project.fabric_version
+                "fabric_api_version": project.fabric_api_version
     }
 }
 
