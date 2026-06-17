@@ -22,9 +22,9 @@ body:
     attributes:
       label: Mod version
       options:
+        - 26.2+build.1
         - 26.1+build.1
         - 1.21.11+build.1
-        - 1.21.10+build.1
         - older version
         - development build / unknown
     validations:
