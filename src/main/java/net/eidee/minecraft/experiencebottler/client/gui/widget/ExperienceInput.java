@@ -55,10 +55,24 @@ public class ExperienceInput extends EditBox {
   private final int[] colors = new int[] {0xFFFFFFFF, 0xFFA0A0A0, 0xFFE09090};
   private ExperienceType experienceType = ExperienceType.POINT;
 
+  /**
+   * Values derived from {@link #displayText}, refreshed only in {@link #updateDisplayedValue(long)}
+   * so that rendering never has to measure text or build the caret string per frame.
+   */
+  private String displayTextWithCaret = "";
+
+  private int displayTextWidth;
+  private int displayTextWithCaretWidth;
+  private boolean displayTextNegative;
+
+  /** Width of the caret glyph, constant for the lifetime of this widget. */
+  private final int caretWidth;
+
   public ExperienceInput(Font font, int x, int y, Consumer<ExperienceInput> inputChangeListener) {
     super(font, x, y, 90, 18, Component.empty());
     this.font = font;
     this.inputChangeListener = inputChangeListener;
+    this.caretWidth = font.width("_");
     setBordered(false);
     setMaxLength(20);
     updateDisplayedValue(0);
@@ -90,13 +104,18 @@ public class ExperienceInput extends EditBox {
       displayText = Long.toString(value);
     }
 
+    displayTextWithCaret = displayText + "_";
+    displayTextWidth = font.width(displayText);
+    displayTextWithCaretWidth = font.width(displayTextWithCaret);
+    displayTextNegative = displayText.startsWith("-");
+
     setValue(Long.toString(value));
     moveCursorToEnd(false);
     updateTextColors();
   }
 
   private void updateTextColors() {
-    boolean negative = displayText.startsWith("-");
+    boolean negative = displayTextNegative;
     int activeColor = negative ? colors[2] : colors[0];
     int inactiveColor = negative ? colors[2] : colors[1];
     setTextColor(activeColor);
@@ -104,7 +123,7 @@ public class ExperienceInput extends EditBox {
   }
 
   private int getDisplayTextColor() {
-    if (displayText.startsWith("-")) {
+    if (displayTextNegative) {
       return colors[2];
     }
     return active ? colors[0] : colors[1];
@@ -225,16 +244,18 @@ public class ExperienceInput extends EditBox {
     }
 
     String text = displayText;
-    int marginRight = font.width("_");
+    int textWidth = displayTextWidth;
+    int marginRight = caretWidth;
     if (active && isFocused() && (System.currentTimeMillis() / 300L) % 2L == 0L) {
       marginRight = 0;
-      text += "_";
+      text = displayTextWithCaret;
+      textWidth = displayTextWithCaretWidth;
     }
 
     extractor.text(
         font,
         text,
-        right - font.width(text) - marginRight - 3,
+        right - textWidth - marginRight - 3,
         bottom - font.lineHeight - 3,
         getDisplayTextColor(),
         false);
