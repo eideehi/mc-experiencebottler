@@ -84,13 +84,18 @@ public class ExperienceBottlerScreenHandler extends AbstractContainerMenu {
       int experience = pendingResultExperience;
       pendingResultExperience = 0;
       if (!player.isCreative()) {
+        // Deduct the experience before consuming the bottle. Consuming the bottle writes to the
+        // input container, whose setChanged() re-enters updateResult(); doing that first would run
+        // updateResult() against the not-yet-deducted experience and force a second corrective
+        // pass. Neither guard depends on the other's effect: the experience guard reads only the
+        // player's experience, and the bottle guard reads only the input stack.
+        if (experience > 0 && experience <= experienceSource.getTotalExperience()) {
+          experienceSource.removeExperience(experience);
+        }
         ItemStack glassBottle = input.getItem(0).copy();
         if (!glassBottle.isEmpty()) {
           glassBottle.shrink(1);
           input.setItem(0, glassBottle);
-        }
-        if (experience > 0 && experience <= experienceSource.getTotalExperience()) {
-          experienceSource.removeExperience(experience);
         }
         updateResult();
       }
@@ -154,14 +159,32 @@ public class ExperienceBottlerScreenHandler extends AbstractContainerMenu {
   }
 
   private void updateResult() {
+    // The skip checks below must look at the real contents of the result container, not only at
+    // resultExperience. A creative player taking the result empties the container through vanilla
+    // slot mechanics without ResultSlot#onTake resetting resultExperience, so the field alone would
+    // wrongly report "already up to date" and the preview would never be refilled.
+    ItemStack current = result.getItem(0);
     if (bottlingExperience > 0
         && !input.getItem(0).isEmpty()
         && experienceSource.getTotalExperience() >= bottlingExperience) {
+      // Caveat: this only compares item, count, and the bottled-XP value - not every component.
+      // If another code path ever attaches an extra component to this result stack without
+      // changing bottlingExperience, that extra data survives here, where the old unconditional
+      // rebuild below would have discarded it. No code in this repo does that today.
+      if (resultExperience == bottlingExperience
+          && current.is(Items.BOTTLED_EXPERIENCE)
+          && current.getCount() == 1
+          && BottledExperienceComponent.getExperienceValue(current) == bottlingExperience) {
+        return;
+      }
       ItemStack bottledExperience = new ItemStack(Items.BOTTLED_EXPERIENCE);
       BottledExperienceComponent.setExperienceValue(bottledExperience, bottlingExperience);
       resultExperience = bottlingExperience;
       result.setItem(0, bottledExperience);
     } else {
+      if (resultExperience == 0 && current.isEmpty()) {
+        return;
+      }
       resultExperience = 0;
       result.setItem(0, ItemStack.EMPTY);
     }
