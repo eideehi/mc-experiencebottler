@@ -123,6 +123,16 @@ public abstract class ExperienceSource implements Container {
         // place - getItem() exposes the real backing object, not a copy. No code in this repo does
         // that today; if it ever does, this cache would not detect or repair the resulting mismatch.
         ItemStack stack = getItem(0);
+        if (stack.isEmpty()) {
+          // clearContent()/removeItemNoUpdate() route here with the shared ItemStack.EMPTY
+          // singleton. Unlike getComponents()/get()/has() - which hide the backing component map
+          // whenever isEmpty() is true - ItemStack#set writes into it directly with no such guard,
+          // so calling it here would mutate that shared singleton's internal state for no
+          // observable benefit (nothing will ever read it back through the normal API, since
+          // isEmpty() stays true). Skip the wasted write; there is nothing to sync into a stack
+          // that is being discarded anyway.
+          return;
+        }
         long totalExperience = getTotalExperience();
         if (stack == lastWrittenStack && totalExperience == lastWrittenTotalExperience) {
           return;
