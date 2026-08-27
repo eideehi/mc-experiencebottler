@@ -87,6 +87,15 @@ public abstract class ExperienceSource implements Container {
 
   public static ExperienceSource fromPlayer(Player player, ContainerLevelAccess context) {
     return new ExperienceSource(new ItemStack(net.minecraft.world.level.block.Blocks.GLASS)) {
+      /** The stack the cached value below was last written into, compared by identity. */
+      private ItemStack lastWrittenStack = ItemStack.EMPTY;
+
+      /**
+       * Total experience last written to the backing stack. {@link #getTotalExperience()} is never
+       * negative, so -1 reliably marks "nothing written yet".
+       */
+      private long lastWrittenTotalExperience = -1L;
+
       @Override
       public Component getSourceName() {
         return Component.translatable("gui.experiencebottler.label.experience_source.player");
@@ -105,12 +114,28 @@ public abstract class ExperienceSource implements Container {
 
       @Override
       public void setChanged() {
+        // This runs once per slot sweep in AbstractContainerMenu#broadcastChanges (via HiddenSlot),
+        // so roughly 20 times per second per open screen. Skip the NBT copy/rewrite unless the
+        // value actually differs from what is already stored in the current stack. The cache key
+        // deliberately omits getSourceName(), which is a constant for this instance; if this source
+        // ever gets a name that can change at runtime, the key must include it too. Caveat: this
+        // guard trusts that nothing else mutates this exact ItemStack instance's CUSTOM_DATA in
+        // place - getItem() exposes the real backing object, not a copy. No code in this repo does
+        // that today; if it ever does, this cache would not detect or repair the resulting mismatch.
+        ItemStack stack = getItem(0);
+        long totalExperience = getTotalExperience();
+        if (stack == lastWrittenStack && totalExperience == lastWrittenTotalExperience) {
+          return;
+        }
+        lastWrittenStack = stack;
+        lastWrittenTotalExperience = totalExperience;
+
         CustomData.update(
             DataComponents.CUSTOM_DATA,
-            getItem(0),
+            stack,
             (nbt) -> {
               nbt.putString("SourceName", getSourceName().getString());
-              nbt.putLong("TotalExperience", getTotalExperience());
+              nbt.putLong("TotalExperience", totalExperience);
             });
       }
 
