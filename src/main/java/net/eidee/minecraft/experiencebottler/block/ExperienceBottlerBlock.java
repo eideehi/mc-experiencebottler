@@ -24,7 +24,6 @@
 
 package net.eidee.minecraft.experiencebottler.block;
 
-import com.mojang.serialization.MapCodec;
 import net.eidee.minecraft.experiencebottler.screen.ExperienceBottlerScreenHandler;
 import net.eidee.minecraft.experiencebottler.screen.ExperienceSource;
 import net.eidee.minecraft.experiencebottler.stat.Stats;
@@ -61,7 +60,6 @@ public class ExperienceBottlerBlock extends HorizontalDirectionalBlock {
   private static final VoxelShape SOUTH_SHAPE;
   private static final VoxelShape EAST_SHAPE;
   private static final VoxelShape WEST_SHAPE;
-  private static final MapCodec<ExperienceBottlerBlock> CODEC;
 
   static {
     CONTAINER_TITLE = Component.translatable("container.experiencebottler.experience_bottler");
@@ -92,17 +90,11 @@ public class ExperienceBottlerBlock extends HorizontalDirectionalBlock {
             Block.box(10, 2, 0, 16, 13, 16),
             Block.box(0, 2, 0, 10, 6, 3),
             Block.box(0, 2, 13, 10, 6, 16));
-    CODEC = BlockBehaviour.simpleCodec(ExperienceBottlerBlock::new);
   }
 
   public ExperienceBottlerBlock(BlockBehaviour.Properties settings) {
     super(settings);
     registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
-  }
-
-  @Override
-  protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-    return CODEC;
   }
 
   @Override

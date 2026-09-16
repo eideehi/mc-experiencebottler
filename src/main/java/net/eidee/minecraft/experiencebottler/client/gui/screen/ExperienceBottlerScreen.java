@@ -48,7 +48,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.item.ItemStack;
-import org.lwjgl.glfw.GLFW;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -247,11 +246,9 @@ public class ExperienceBottlerScreen extends AbstractContainerScreen<ExperienceB
 
   @Override
   public boolean keyPressed(KeyEvent input) {
-    int keyCode = input.key();
     boolean tryInputDeactivate =
-        keyCode == GLFW.GLFW_KEY_ENTER
-            || keyCode == GLFW.GLFW_KEY_KP_ENTER
-            || keyCode == GLFW.GLFW_KEY_ESCAPE
+        input.isConfirmation()
+            || input.isEscape()
             || minecraft.options.keyInventory.matches(input);
     if (tryInputDeactivate && clearEditableFocus()) {
       return true;

@@ -24,6 +24,7 @@
 
 package net.eidee.minecraft.experiencebottler.client.gui.widget;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import java.util.function.Consumer;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.eidee.minecraft.experiencebottler.annotation.MethodsReturnNonnullByDefault;
@@ -39,7 +40,6 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import org.lwjgl.glfw.GLFW;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -282,12 +282,12 @@ public class ExperienceInput extends EditBox {
       return false;
     }
 
-    int keyCode = input.key();
-    if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
+    int keyCode = input.shortcutKey();
+    if (keyCode == InputConstants.KEYCODE_BACKSPACE) {
       changeInputValue(inputValue / 10);
       return true;
     }
-    if (keyCode == GLFW.GLFW_KEY_DELETE) {
+    if (keyCode == InputConstants.KEYCODE_DELETE) {
       changeInputValue(0);
       return true;
     }
@@ -332,6 +332,8 @@ public class ExperienceInput extends EditBox {
   @Override
   public void setFocused(boolean focused) {
     boolean wasFocused = isFocused();
+    // EditBox#setFocused calls Minecraft#onTextInputFocusChange for editable boxes, which keeps
+    // SDL text input (and therefore charTyped) in sync with this widget's focus.
     super.setFocused(focused);
     if (focused && !wasFocused) {
       changeInputValue(0);
