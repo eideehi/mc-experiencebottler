@@ -1,3 +1,7 @@
+## [26.3+build.1 [2026-09-18]](#26.3+build.1)
+* EideeHi: Migrate to Minecraft 26.3
+* EideeHi: Improve performance of the Experience Bottler screen (experience syncing, result updates, and input rendering)
+
 ## [26.2+build.1 [2026-06-17]](#26.2+build.1)
 * EideeHi: Migrate to Minecraft 26.2
 
