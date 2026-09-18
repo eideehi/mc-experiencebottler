@@ -137,6 +137,7 @@ task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge)
     mainFile.releaseType = 'release'
     mainFile.addGameVersion(project.minecraft_version)
     mainFile.addGameVersion('Fabric')
+    mainFile.addEnvironment('Client', 'Server')
     mainFile.changelogType = 'markdown'
     mainFile.changelog = "[View changelog on GitHub](${project.changelog_url}#${project.version})"
     mainFile.displayName = "${project.display_name} ${project.version}"
